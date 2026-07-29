@@ -31,20 +31,20 @@ const SCENE_SCRIPT = [
 
   // Post-bench: scene resumes here
   {id:"pb1", type:"dialogue", speaker:"SAM", text:"Hey, Jerry, could you grab the\u2014 JERRY!", next:"pb2", showSprites:["sam","jerry","esther"]},
-  {id:"pb2", type:"narration", text:"A crash. Then for one whole second, nothing \u2014 just small pieces of glass rolling to a stop in four directions.", next:"pb3"},
+  {id:"pb2", type:"narration", text:"A crash. Glass on tile. Small pieces rolling outward in four directions.", next:"pb3"},
   {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I\u2019m sorry \u2014 it wasn\u2019t\u2014 I turned around and my sleeve caught it, it was right on the edge, I didn\u2019t\u2014", next:"pb4"},
   {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"alarm"},
 
   {id:"alarm", type:"alarm"},
 
   // Post-alarm
-  {id:"pa1", type:"narration", text:"Silver beads scatter across the tile and keep moving, finding the low points, splitting and rejoining.", next:"pa2"},
+  {id:"pa1", type:"narration", text:"Mercury on the floor. Small beads rolling into the grout lines, pooling where the tile dips.", next:"pa2"},
   {id:"pa2", type:"dialogue", speaker:"ESTHER", text:"Everyone stop walking. Jerry \u2014 vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Sam, seal the door and kill the manifold to three and four. That unit holds about six ounces of elemental mercury and the vent is running. I\u2019ll write the incident report. Jerry, what\u2019s your surname? I\u2019m putting your name down as the person responsible. And \u2014 this was an accident, correct?", next:"pa3"},
   {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That\u2019s what I just said.", next:"pa4"},
   {id:"pa4", type:"narration", text:"He hasn\u2019t moved. Neither has anyone else. Sam is looking at the floor.", next:"choice1_inner"},
 
   // Inner voice before choice
-  {id:"choice1_inner", type:"inner", text:"Something is wrong. Not with the mercury \u2014 with the room. The air changed when you said his name.", next:"choice1"},
+  {id:"choice1_inner", type:"inner", text:"You asked a yes-or-no question. He said yes. But he\u2019s frozen, and his voice went tight. People don\u2019t react like that to answering a question correctly.", next:"choice1"},
 
   // CHOICE 1
   {id:"choice1", type:"choice", choices:[
@@ -59,11 +59,11 @@ const SCENE_SCRIPT = [
   {id:"ba4", type:"dialogue", speaker:"ESTHER", text:"Your sleeve caught the device. That\u2019s the sequence of events. The form has a field labelled \u201Cperson responsible\u201D and it doesn\u2019t have a field for anything else.", next:"ba5"},
   {id:"ba5", type:"dialogue", speaker:"JERRY", text:"We could have sorted out whose name goes where later. It\u2019s the way you said it. \u201CWhat\u2019s your surname, I\u2019m putting you down as responsible.\u201D A first-week student. Like you were reading out a sentence.", next:"ba6"},
   {id:"ba6", type:"inner", text:"He\u2019s not angry about the form. He\u2019s angry about the way you said it. You replay the sentence in your head. You can hear the words but you can\u2019t hear what he heard.", next:"ba7"},
-  {id:"ba7", type:"narration", text:"Four minutes, and the vent is running. The mercury is still moving.", next:"choice2", applyStats:{career:-3}},
+  {id:"ba7", type:"narration", text:"The mercury is still on the floor. The vent is still running.", next:"choice2", applyStats:{career:-3}},
 
   // Branch B
   {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry. Sorry.", next:"bb2"},
-  {id:"bb2", type:"narration", text:"He gets the bin. He does it fast and he does it well, and he doesn\u2019t look at anyone for the rest of the hour. The spill is contained in three minutes forty. The report is filed and correct. Sam says \u201Cnice work\u201D in a voice that means something else, and Esther will spend the rest of the shift trying to work out what.", next:"bb3", applyStats:{emotional:-3,mental:-4}},
+  {id:"bb2", type:"narration", text:"He gets the bin. Works fast, works correctly, doesn\u2019t look at anyone. The spill is contained in three minutes forty. The report is filed. Sam says \u201Cnice work\u201D in a tone Esther can\u2019t decode.", next:"bb3", applyStats:{emotional:-3,mental:-4}},
   {id:"bb3", type:"inner", text:"Nice work. Two words. You run them through every filter you have and none of them return a clean result. Was it genuine? Sarcastic? Relieved? All three?", next:"choice2"},
 
   // CHOICE 2
@@ -74,11 +74,11 @@ const SCENE_SCRIPT = [
   ]},
 
   // Closing
-  {id:"closing", type:"narration", text:"The Director arrives eleven minutes later, reads the report, and asks who authorised a visiting student to file safety documentation. Nobody answers. The monitor\u2019s casing gets swept into the corner by the door, because disposing of it requires Form 12-B.", next:"end"}
+  {id:"closing", type:"narration", text:"The Director arrives eleven minutes later. She reads the incident report, then looks up. \u201CWho authorised this? This was filed by a visiting student. Visiting students do not have clearance to submit safety documentation.\u201D Nobody answers. Esther hadn\u2019t known she needed authorisation. The form was there, so she filled it in.", next:"end"}
 ];
 
 const REFLECTION_TEXT = "\u201CNobody in that room was being cruel. Two people used the same words to mean different things, in a building that punishes whoever gets blamed.\u201D";
-const REFLECTION_SUB = "This scene is based on lived experience shared with us in interview.";
+const REFLECTION_SUB = "";
 
 /* ---- NODE MAP ---- */
 const NODE_MAP = {};

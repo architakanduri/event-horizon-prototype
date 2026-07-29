@@ -154,7 +154,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 /* === INTRO === */
 #screen-intro{
   background:var(--navy);
-  display:flex;align-items:center;justify-content:center;
+  align-items:center;justify-content:center;
   cursor:pointer;
 }
 #screen-intro.active{display:flex;}
