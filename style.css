@@ -265,14 +265,14 @@ body.reduce-motion #lab-arrow{animation:none;}
 }
 .scene-sprite.dimmed{opacity:0.75;filter:brightness(0.75);}
 #scene-sprite-sam{
-  width:24px;height:31px;
-  background:url('./assets/sam_idle_1x.png') no-repeat;
-  background-size:48px 31px;
+  width:18px;height:31px;
+  background:url('./assets/sam.png') no-repeat;
+  background-size:18px 31px;
 }
 #scene-sprite-jerry{
-  width:24px;height:31px;
-  background:url('./assets/jerry_idle_1x.png') no-repeat;
-  background-size:48px 31px;
+  width:18px;height:31px;
+  background:url('./assets/jerry.png') no-repeat;
+  background-size:18px 31px;
 }
 #scene-sprite-esther{
   width:18px;height:31px;
@@ -296,8 +296,8 @@ body.reduce-motion #lab-arrow{animation:none;}
   image-rendering:pixelated;
   background-repeat:no-repeat;
 }
-#dialogue-portrait.char-sam{background-image:url('./assets/sam_idle_1x.png');background-size:48px 31px;}
-#dialogue-portrait.char-jerry{background-image:url('./assets/jerry_idle_1x.png');background-size:48px 31px;}
+#dialogue-portrait.char-sam{background-image:url('./assets/sam.png');background-size:18px 31px;}
+#dialogue-portrait.char-jerry{background-image:url('./assets/jerry.png');background-size:18px 31px;}
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-esther{
   background-image:url('./assets/player.png');

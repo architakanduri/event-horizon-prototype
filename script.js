@@ -513,13 +513,13 @@ function sceneAnimLoop(ts) {
       const frameX = S.idleBounce * 24;
       // Bounce scene sprites
       $$(".scene-sprite").forEach(sp => {
-        if (sp.dataset.char === "esther") return;
+        if (sp.dataset.char === "esther" || sp.dataset.char === "sam" || sp.dataset.char === "jerry") return;
         if (sp.classList.contains("hidden")) return;
         sp.style.backgroundPosition = `-${frameX}px 0`;
       });
-      // Bounce the dialogue portrait (if it's an NPC, not Esther)
+      // Bounce the dialogue portrait (if it's an NPC, not Esther, Sam, or Jerry)
       const portrait = $("#dialogue-portrait");
-      if (!portrait.classList.contains("hidden") && !portrait.classList.contains("char-esther")) {
+      if (!portrait.classList.contains("hidden") && !portrait.classList.contains("char-esther") && !portrait.classList.contains("char-sam") && !portrait.classList.contains("char-jerry")) {
         portrait.style.backgroundPosition = `-${frameX}px 0`;
       }
     }
