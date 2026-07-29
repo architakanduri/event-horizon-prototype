@@ -209,7 +209,7 @@ function applyStatBlock(obj) {
   Object.entries(obj).forEach(([k, v]) => animateBar(k, v));
 }
 
-function showBars() { $("#bar-footer").classList.remove("hidden"); }
+function showBars() { /* persistent footer stats are hidden from the player */ }
 
 /* ---- SCREEN MGR ---- */
 function showScreen(name) {
@@ -715,7 +715,6 @@ function initRestart() {
     S.labIdleTimer = 0;
     S.idlePaused = false;
     syncBars(true);
-    $("#bar-footer").classList.add("hidden");
     $("#alarm-overlay").classList.add("hidden");
     $("#alarm-overlay").classList.remove("pulse");
     $("#choice-panel").classList.add("hidden");
