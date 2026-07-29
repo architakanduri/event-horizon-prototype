@@ -98,19 +98,19 @@ button:focus-visible{outline:2px solid var(--yellow);}
 /* === TITLE === */
 .title-layer{position:absolute;inset:0;}
 .title-bg{
-  background:url('assets/title_bg.png') no-repeat;
+  background:url('./assets/title_bg.png') no-repeat;
   background-size:320px 180px;
   image-rendering:pixelated;
 }
 .title-stars{
-  background:url('assets/starfield_tile.png') repeat-x;
+  background:url('./assets/starfield_tile.png') repeat-x;
   background-size:640px 180px;
   image-rendering:pixelated;
 }
 #title-blackhole{
   width:156px;height:68px;
   left:158px;top:50px;
-  background:url('assets/blackhole_large.png') no-repeat;
+  background:url('./assets/blackhole_large.png') no-repeat;
   background-size:624px 68px;
   image-rendering:pixelated;
 }
@@ -190,7 +190,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   position:absolute;
   width:72px;height:32px;
   left:256px;top:34px;
-  background:url('assets/blackhole_small.png') no-repeat;
+  background:url('./assets/blackhole_small.png') no-repeat;
   background-size:288px 32px;
   image-rendering:pixelated;
   z-index:1;
@@ -199,7 +199,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   position:absolute;
   width:24px;height:30px;
   z-index:10;
-  background:url('assets/esther_sheet_1x.png') no-repeat;
+  background:url('./assets/esther_sheet_1x.png') no-repeat;
   background-size:96px 120px;
   image-rendering:pixelated;
 }
@@ -281,17 +281,17 @@ body.reduce-motion #lab-arrow{animation:none;}
 .scene-sprite.dimmed{opacity:0.75;filter:brightness(0.75);}
 #scene-sprite-sam{
   width:24px;height:31px;
-  background:url('assets/sam_idle_1x.png') no-repeat;
+  background:url('./assets/sam_idle_1x.png') no-repeat;
   background-size:48px 31px;
 }
 #scene-sprite-jerry{
   width:24px;height:31px;
-  background:url('assets/jerry_idle_1x.png') no-repeat;
+  background:url('./assets/jerry_idle_1x.png') no-repeat;
   background-size:48px 31px;
 }
 #scene-sprite-esther{
   width:24px;height:30px;
-  background:url('assets/esther_sheet_1x.png') no-repeat;
+  background:url('./assets/esther_sheet_1x.png') no-repeat;
   background-size:96px 120px;
   background-position:0 -30px; /* left-facing stand */
 }
@@ -312,11 +312,11 @@ body.reduce-motion #lab-arrow{animation:none;}
   image-rendering:pixelated;
   background-repeat:no-repeat;
 }
-#dialogue-portrait.char-sam{background-image:url('assets/sam_idle_1x.png');background-size:48px 31px;}
-#dialogue-portrait.char-jerry{background-image:url('assets/jerry_idle_1x.png');background-size:48px 31px;}
-#dialogue-portrait.char-director{background-image:url('assets/director_idle_1x.png');background-size:48px 31px;}
+#dialogue-portrait.char-sam{background-image:url('./assets/sam_idle_1x.png');background-size:48px 31px;}
+#dialogue-portrait.char-jerry{background-image:url('./assets/jerry_idle_1x.png');background-size:48px 31px;}
+#dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-esther{
-  background-image:url('assets/esther_sheet_1x.png');
+  background-image:url('./assets/esther_sheet_1x.png');
   background-size:96px 120px;
   background-position:0 0; /* down-facing stand */
   width:24px;height:30px;
