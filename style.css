@@ -128,13 +128,16 @@ button:focus-visible{outline:2px solid var(--yellow);}
 /* === INTRO === */
 #screen-intro{
   background:var(--navy);
-  align-items:center;justify-content:center;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:60px;
   cursor:pointer;
 }
 #screen-intro.active{display:flex;}
 .intro-text{
-  max-width:260px;
-  text-align:center;
+  width:260px;
+  min-height:90px;
+  text-align:left;
   color:var(--yellow);
   font-size:var(--text-body);
   line-height:1.7;

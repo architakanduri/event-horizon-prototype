@@ -5,9 +5,9 @@
 /* ---- SCRIPT DATA ----------------------------------------- */
 
 const INTRO_CARDS = [
-  "The universe is getting smaller. Not slowly \u2014 measurably. Somebody is supposed to be finding out why.",
-  "Your school gave up on you. So they sent you somewhere nobody would ask questions.",
-  "Your lab has thirty days of funding left. Today is your first shift."
+  "The universe has gotten a lot busier these days. It barely takes any time to get anywhere, as long as you've got the equipment for it.",
+  "Unfortunately for you, you're stuck where you are. While fifty years ago people would have fought tooth and nail to be in your research organization, it's currently operating—in exile—in the worst of places: an abandoned space station revolving around a black hole.",
+  "This is no situation any reasonable scientist wants to operate in. You don't really have a choice, though. The gubernatorial board of your university seems to have deemed you to be, in their words, \"uncooperative and a hazard to the scientific community\”. It seems your only hope is to get this failing research station back to its glory days."
 ];
 
 /* Node types: "dialogue", "inner", "narration", "choice", "alarm", "control" */
