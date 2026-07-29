@@ -173,24 +173,26 @@ function animateBar(stat, delta) {
   const prev = S.stats[stat];
   S.stats[stat] = Math.max(0, Math.min(100, prev + delta));
   const bar = $(`.bar[data-stat="${stat}"]`);
+  if (!bar) return;
   const blocks = bar.querySelectorAll(".bar-block");
   const oldFilled = statToBlocks(prev);
   const newFilled = statToBlocks(S.stats[stat]);
   const label = bar.querySelector(".bar-label");
+  if (label) {
+    label.classList.add("flash");
+    setTimeout(() => label.classList.remove("flash"), 300);
+  }
 
-  // Flash label
-  label.classList.add("flash");
-  setTimeout(() => label.classList.remove("flash"), 300);
-
-  // Delta text
   const deltaEl = bar.querySelector(".bar-delta");
-  deltaEl.textContent = (delta > 0 ? "+" : "\u2212") + Math.abs(delta);
-  deltaEl.classList.remove("show");
-  void deltaEl.offsetWidth;
-  deltaEl.classList.add("show");
-  setTimeout(() => deltaEl.classList.remove("show"), 1100);
+  if (deltaEl) {
+    deltaEl.textContent = (delta > 0 ? "+" : "\u2212") + Math.abs(delta);
+    deltaEl.classList.remove("show");
+    void deltaEl.offsetWidth;
+    deltaEl.classList.add("show");
+    setTimeout(() => deltaEl.classList.remove("show"), 1100);
+  }
 
-  // Animate blocks
+  if (blocks.length === 0) return;
   if (S.settings.reduceMotion) {
     blocks.forEach((b, i) => b.classList.toggle("filled", i < newFilled));
   } else {
