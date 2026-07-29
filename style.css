@@ -197,10 +197,10 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #lab-esther{
   position:absolute;
-  width:24px;height:30px;
+  width:18px;height:31px;
   z-index:10;
-  background:url('./assets/esther_sheet_1x.png') no-repeat;
-  background-size:96px 120px;
+  background:url('./assets/player.png') no-repeat;
+  background-size:18px 31px;
   image-rendering:pixelated;
 }
 #lab-prompt{
@@ -290,10 +290,9 @@ body.reduce-motion #lab-arrow{animation:none;}
   background-size:48px 31px;
 }
 #scene-sprite-esther{
-  width:24px;height:30px;
-  background:url('./assets/esther_sheet_1x.png') no-repeat;
-  background-size:96px 120px;
-  background-position:0 -30px; /* left-facing stand */
+  width:18px;height:31px;
+  background:url('./assets/player.png') no-repeat;
+  background-size:18px 31px;
 }
 
 /* Dialogue row: portrait + text box side by side */
@@ -316,10 +315,9 @@ body.reduce-motion #lab-arrow{animation:none;}
 #dialogue-portrait.char-jerry{background-image:url('./assets/jerry_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-esther{
-  background-image:url('./assets/esther_sheet_1x.png');
-  background-size:96px 120px;
-  background-position:0 0; /* down-facing stand */
-  width:24px;height:30px;
+  background-image:url('./assets/player.png');
+  background-size:18px 31px;
+  width:18px;height:31px;
 }
 #dialogue-box{
   flex:1;

@@ -362,7 +362,7 @@ const BENCHES = [
   {x1:540,x2:602, y1:102, y2:114},
 ];
 
-let labAnimFrame = 0, labLastTs = 0;
+let labLastTs = 0;
 let bhSmallT = 0;
 let flickerTimer = 0, flickerNext = 6000;
 
@@ -444,15 +444,7 @@ function labLoop(ts) {
       }
       if (!xBlocked) S.estherX = nx;
       if (!yBlocked) S.estherY = ny;
-
-      // Animate walk
-      labAnimFrame += dt;
-      if (labAnimFrame > 125) { // ~8fps
-        labAnimFrame -= 125;
-        S.estherFrame = (S.estherFrame + 1) % 4;
-      }
     } else {
-      S.estherFrame = 0;
       S.labIdleTimer += dt;
     }
 
@@ -499,7 +491,6 @@ function renderLab() {
   const e = $("#lab-esther");
   e.style.left = Math.round(S.estherX) + "px";
   e.style.top = Math.round(S.estherY) + "px";
-  e.style.backgroundPosition = `-${S.estherFrame * 24}px -${S.estherDir * 30}px`;
 }
 
 function getProximateObject() {
