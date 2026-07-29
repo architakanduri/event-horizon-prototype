@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Horizon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game-wrapper">
+  <div id="game" style="width:320px;height:180px;">
+
+    <!-- SETTINGS OVERLAY -->
+    <div id="settings-overlay" class="overlay hidden" role="dialog" aria-label="Settings">
+      <div class="settings-box">
+        <div class="settings-title">SETTINGS</div>
+        <label class="set-row"><input type="checkbox" id="set-quiet"><span>Quiet mode</span></label>
+        <label class="set-row"><input type="checkbox" id="set-dyslexia"><span>Dyslexia-friendly font</span></label>
+        <fieldset class="set-group"><legend>Text size</legend>
+          <label><input type="radio" name="tsize" value="small"> S</label>
+          <label><input type="radio" name="tsize" value="medium" checked> M</label>
+          <label><input type="radio" name="tsize" value="large"> L</label>
+        </fieldset>
+        <label class="set-row"><input type="checkbox" id="set-reducemotion"><span>Reduce motion</span></label>
+        <fieldset class="set-group"><legend>Text speed</legend>
+          <label><input type="radio" name="tspeed" value="slow"> Slow</label>
+          <label><input type="radio" name="tspeed" value="normal" checked> Normal</label>
+          <label><input type="radio" name="tspeed" value="instant"> Instant</label>
+        </fieldset>
+        <button class="btn btn-purple" id="settings-close">CLOSE</button>
+      </div>
+    </div>
+
+    <!-- GEAR ICON -->
+    <button id="gear-btn" class="hidden" aria-label="Settings" tabindex="0">&#9881;</button>
+
+    <!-- SCREEN: TITLE -->
+    <div id="screen-title" class="screen active">
+      <div class="title-layer title-bg"></div>
+      <div class="title-layer title-stars"></div>
+      <div id="title-blackhole" class="title-layer"></div>
+      <div id="title-station" class="title-layer"></div>
+      <div class="title-layer title-ui">
+        <div id="title-text" class="title-fadein">
+          <div class="title-main">EVENT<br>HORIZON</div>
+          <div class="title-sub">Thirty days to keep the lab open.</div>
+        </div>
+        <div class="title-buttons">
+          <button class="btn btn-purple" id="btn-start" tabindex="0">START</button>
+          <button class="btn btn-purple" id="btn-title-settings" tabindex="0">SETTINGS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN: INTRO -->
+    <div id="screen-intro" class="screen">
+      <div id="intro-text" class="intro-text"></div>
+      <div id="intro-counter" class="intro-counter"></div>
+    </div>
+
+    <!-- SCREEN: LAB -->
+    <div id="screen-lab" class="screen">
+      <div id="lab-world">
+        <img id="lab-bg" src="assets/lab_room_wide.png" alt="">
+        <div id="lab-blackhole-small"></div>
+        <div id="lab-esther"></div>
+        <div id="lab-prompt" class="hidden">[E] LOOK</div>
+      </div>
+      <div id="lab-objective"></div>
+      <div id="lab-arrow" class="hidden"></div>
+      <div id="lab-textbox" class="hidden">
+        <p id="lab-textbox-text"></p>
+        <span class="click-hint">SPACE</span>
+      </div>
+    </div>
+
+    <!-- SCREEN: SCENE -->
+    <div id="screen-scene" class="screen">
+      <div id="scene-world">
+        <img id="scene-bg" src="assets/lab_room_wide.png" alt="">
+        <div id="scene-sprite-sam" class="scene-sprite" data-char="sam"></div>
+        <div id="scene-sprite-jerry" class="scene-sprite hidden" data-char="jerry"></div>
+        <div id="scene-sprite-esther" class="scene-sprite" data-char="esther"></div>
+      </div>
+      <div id="dialogue-row" class="hidden">
+        <div id="dialogue-portrait" class="hidden"></div>
+        <div id="dialogue-box">
+          <div id="dialogue-speaker"></div>
+          <p id="dialogue-text"></p>
+        </div>
+      </div>
+      <div id="choice-panel" class="hidden"></div>
+    </div>
+
+    <!-- ALARM OVERLAY -->
+    <div id="alarm-overlay" class="overlay hidden" role="alertdialog" aria-label="Atmospheric Alert">
+      <div class="alarm-box">
+        <div class="alarm-title">ATMOSPHERIC ALERT</div>
+        <div class="alarm-db">96 dB</div>
+        <button class="btn btn-purple choice-btn" data-alarm="ears">
+          Cover your ears and stay
+          <span class="cost">MENTAL -8</span>
+        </button>
+        <button class="btn btn-purple choice-btn" data-alarm="corridor">
+          Step into the corridor and listen from the doorway
+          <span class="cost">SOCIAL -3</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SCREEN: END -->
+    <div id="screen-end" class="screen">
+      <div class="end-inner">
+        <div id="end-bars"></div>
+        <div id="end-reflection" class="hidden"></div>
+        <div class="end-buttons hidden" id="end-buttons">
+          <button class="btn btn-purple" id="btn-restart">RESTART</button>
+          <button class="btn btn-purple" id="btn-end-settings">SETTINGS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BAR FOOTER -->
+    <div id="bar-footer" class="hidden">
+      <div class="bar" data-stat="social"><span class="bar-label">SOCIAL</span><div class="bar-track"><div class="bar-fill"></div></div><span class="bar-delta"></span></div>
+      <div class="bar" data-stat="career"><span class="bar-label">CAREER</span><div class="bar-track"><div class="bar-fill"></div></div><span class="bar-delta"></span></div>
+      <div class="bar" data-stat="emotional"><span class="bar-label">EMOTIONAL</span><div class="bar-track"><div class="bar-fill"></div></div><span class="bar-delta"></span></div>
+      <div class="bar" data-stat="mental"><span class="bar-label">MENTAL</span><div class="bar-track"><div class="bar-fill"></div></div><span class="bar-delta"></span></div>
+    </div>
+
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
