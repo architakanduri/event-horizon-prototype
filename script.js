@@ -5,32 +5,25 @@
 /* ---- SCRIPT DATA ----------------------------------------- */
 
 const INTRO_CARDS = [
-  "The universe is getting smaller. Not slowly \u2014 measurably. Somebody is supposed to be finding out why.",
-  "Your school gave up on you. So they sent you somewhere nobody would ask questions.",
-  "Your lab has thirty days of funding left. Today is your first shift."
-];
-
-const LAB_OBJECTS = [
-  { id:"whiteboard", x1:52, x2:130, text:"Five names on the whiteboard. Four are crossed out. One isn\u2019t.", stats:{emotional:-2} },
-  { id:"window",     x1:240,x2:332, text:"The black hole. The accretion disk completes a rotation every forty-one minutes. Esther has checked twice.", stats:{mental:4} },
-  { id:"terminal",   x1:360,x2:426, text:"Requisition terminal. Form 12-B requires Form 12-A, which requires a signature from someone who requires Form 12-B.", stats:{career:2} },
-  { id:"monitor",    x1:534,x2:554, text:"The atmospheric monitor. A hand\u2019s width from the bench edge, cable across the walkway. It has been here eight months, apparently.", stats:{} }
+  "The universe has gotten a lot busier these days. It barely takes any time to get anywhere, as long as you've got the equipment for it.",
+  "Unfortunately for you, you're stuck where you are. While fifty years ago people would have fought tooth and nail to be in your research organization, it's currently operating—in exile—in the worst of places: an abandoned space station revolving around a black hole.",
+  "This is no situation any reasonable scientist wants to operate in. You don't really have a choice, though. The gubernatorial board of your university seems to have deemed you to be, in their words, \"uncooperative and a hazard to the scientific community\”. It seems your only hope is to get this failing research station back to its glory days."
 ];
 
 /* Node types: "dialogue", "inner", "narration", "choice", "alarm", "control" */
 const SCENE_SCRIPT = [
-  {id:"s1", type:"dialogue", speaker:"SAM", text:"Shadowing rules \u2014 you observe, you don\u2019t touch, and if anyone asks you\u2019re a visiting student, not a hire, because the hiring freeze is technically still on. Any questions?", next:"s2", showSprites:["sam","esther"]},
-  {id:"s2", type:"dialogue", speaker:"ESTHER", text:"Two. Is the fume hood on bench four vented to the same manifold as three?", next:"s3"},
-  {id:"s3", type:"dialogue", speaker:"SAM", text:"\u2026Yes?", next:"s4"},
-  {id:"s4", type:"dialogue", speaker:"ESTHER", text:"Then bench four shouldn\u2019t have a mercury-column instrument on it. And the atmospheric monitor is a hand\u2019s width from the bench edge with its cable across the walkway.", next:"s5"},
-  {id:"s5", type:"dialogue", speaker:"SAM", text:"It\u2019s been there eight months.", next:"s6"},
-  {id:"s6", type:"dialogue", speaker:"ESTHER", text:"That doesnt make it further from the edge.", next:"lab_explore"},
+  {id:"s1", type:"dialogue", speaker:"SAM", text:"Alright. Your name’s Ester, right? I’m your supervisor because I’m technically your senior here, but don’t come to me with complaints later because I can’t help with the higher-ups. Oh yeah, you’re technically a \"visiting student\" even though you’re still going to be working. Questions?", next:"s2", showSprites:["sam","ester"]},
+  {id:"s2", type:"dialogue", speaker:"ESTER", text:"Yes. I’m concerned about how the terminal system is bolted in close proximity to the atmospheric monitoring devices. The venting should cause some issues, right? Do you have a fume hood anywhere?", next:"s3"},
+  {id:"s3", type:"dialogue", speaker:"SAM", text:"…Yes?", next:"s4"},
+  {id:"s4", type:"dialogue", speaker:"ESTER", text:"And there shouldn’t be a device containing high mercury haphazardly arranged in this room.", next:"s5"},
+  {id:"s5", type:"dialogue", speaker:"SAM", text:"It’s been there eight months.", next:"s6"},
+  {id:"s6", type:"dialogue", speaker:"ESTER", text:"But that doesn’t decrease the health risk, it just means you’ve been in close range to danger for longer!", next:"lab_explore"},
 
   // lab_explore is a control node — starts the lab screen
   {id:"lab_explore", type:"control", action:"start_lab"},
 
   // Post-bench: scene resumes here
-  {id:"pb1", type:"dialogue", speaker:"SAM", text:"Hey, Jerry, could you grab the\u2014 JERRY!", next:"pb2", showSprites:["sam","jerry","esther"]},
+  {id:"pb1", type:"dialogue", speaker:"SAM", text:"Hey, Jerry, could you grab the\u2014 JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
   {id:"pb2", type:"narration", text:"A crash. Glass on tile. Small pieces rolling outward in four directions.", next:"pb3"},
   {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I\u2019m sorry \u2014 it wasn\u2019t\u2014 I turned around and my sleeve caught it, it was right on the edge, I didn\u2019t\u2014", next:"pb4"},
   {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"alarm"},
@@ -39,7 +32,7 @@ const SCENE_SCRIPT = [
 
   // Post-alarm
   {id:"pa1", type:"narration", text:"Mercury on the floor. Small beads rolling into the grout lines, pooling where the tile dips.", next:"pa2"},
-  {id:"pa2", type:"dialogue", speaker:"ESTHER", text:"Everyone stop walking. Jerry \u2014 vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Sam, seal the door and kill the manifold to three and four. That unit holds about six ounces of elemental mercury and the vent is running. I\u2019ll write the incident report. Jerry, what\u2019s your surname? I\u2019m putting your name down as the person responsible. And \u2014 this was an accident, correct?", next:"pa3"},
+  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry \u2014 vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Sam, seal the door and kill the manifold to three and four. That unit holds about six ounces of elemental mercury and the vent is running. I\u2019ll write the incident report. Jerry, what\u2019s your surname? I\u2019m putting your name down as the person responsible. And \u2014 this was an accident, correct?", next:"pa3"},
   {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That\u2019s what I just said.", next:"pa4"},
   {id:"pa4", type:"narration", text:"He hasn\u2019t moved. Neither has anyone else. Sam is looking at the floor.", next:"choice1_inner"},
 
@@ -54,16 +47,16 @@ const SCENE_SCRIPT = [
 
   // Branch A
   {id:"ba1", type:"dialogue", speaker:"JERRY", text:"What\u2019s wrong? I\u2019ve worked here eleven years. I\u2019ve never seen you before in my life and your first act is to put my name in an incident report in front of two witnesses. What did I ever do to you?", next:"ba2"},
-  {id:"ba2", type:"dialogue", speaker:"ESTHER", text:"I\u2019ve never seen you before either. I don\u2019t hold any vendetta against you. I don\u2019t know you well enough to.", next:"ba3"},
+  {id:"ba2", type:"dialogue", speaker:"ESTER", text:"I\u2019ve never seen you before either. I don\u2019t hold any vendetta against you. I don\u2019t know you well enough to.", next:"ba3"},
   {id:"ba3", type:"dialogue", speaker:"JERRY", text:"Then why are you being so accusatory?", next:"ba4"},
-  {id:"ba4", type:"dialogue", speaker:"ESTHER", text:"Your sleeve caught the device. That\u2019s the sequence of events. The form has a field labelled \u201Cperson responsible\u201D and it doesn\u2019t have a field for anything else.", next:"ba5"},
+  {id:"ba4", type:"dialogue", speaker:"ESTER", text:"Your sleeve caught the device. That\u2019s the sequence of events. The form has a field labelled \u201Cperson responsible\u201D and it doesn\u2019t have a field for anything else.", next:"ba5"},
   {id:"ba5", type:"dialogue", speaker:"JERRY", text:"We could have sorted out whose name goes where later. It\u2019s the way you said it. \u201CWhat\u2019s your surname, I\u2019m putting you down as responsible.\u201D A first-week student. Like you were reading out a sentence.", next:"ba6"},
   {id:"ba6", type:"inner", text:"He\u2019s not angry about the form. He\u2019s angry about the way you said it. You replay the sentence in your head. You can hear the words but you can\u2019t hear what he heard.", next:"ba7"},
   {id:"ba7", type:"narration", text:"The mercury is still on the floor. The vent is still running.", next:"choice2", applyStats:{career:-3}},
 
   // Branch B
   {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry. Sorry.", next:"bb2"},
-  {id:"bb2", type:"narration", text:"He gets the bin. Works fast, works correctly, doesn\u2019t look at anyone. The spill is contained in three minutes forty. The report is filed. Sam says \u201Cnice work\u201D in a tone Esther can\u2019t decode.", next:"bb3", applyStats:{emotional:-3,mental:-4}},
+  {id:"bb2", type:"narration", text:"He gets the bin. Works fast, works correctly, doesn\u2019t look at anyone. The spill is contained in three minutes forty. The report is filed. Sam says \u201Cnice work\u201D in a tone Ester can\u2019t decode.", next:"bb3", applyStats:{emotional:-3,mental:-4}},
   {id:"bb3", type:"inner", text:"Nice work. Two words. You run them through every filter you have and none of them return a clean result. Was it genuine? Sarcastic? Relieved? All three?", next:"choice2"},
 
   // CHOICE 2
@@ -74,7 +67,7 @@ const SCENE_SCRIPT = [
   ]},
 
   // Closing
-  {id:"closing", type:"narration", text:"The Director arrives eleven minutes later. She reads the incident report, then looks up. \u201CWho authorised this? This was filed by a visiting student. Visiting students do not have clearance to submit safety documentation.\u201D Nobody answers. Esther hadn\u2019t known she needed authorisation. The form was there, so she filled it in.", next:"end"}
+  {id:"closing", type:"narration", text:"The Director arrives eleven minutes later. She reads the incident report, then looks up. \u201CWho authorised this? This was filed by a visiting student. Visiting students do not have clearance to submit safety documentation.\u201D Nobody answers. Ester hadn\u2019t known she needed authorisation. The form was there, so she filled it in.", next:"end"}
 ];
 
 const REFLECTION_TEXT = "\u201CNobody in that room was being cruel. Two people used the same words to mean different things, in a building that punishes whoever gets blamed.\u201D";
@@ -97,10 +90,10 @@ const S = {
   fullText: "",
   settings: {quiet:false, dyslexia:false, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
   // lab
-  estherX: 140, estherY: 116,
-  estherDir: 2, // 0=down,1=left,2=right,3=up
-  estherFrame: 0,
-  estherMoving: false,
+  esterX: 140, esterY: 116,
+  esterDir: 2, // 0=down,1=left,2=right,3=up
+  esterFrame: 0,
+  esterMoving: false,
   camX: 0,
   keys: {},
   labActive: false,
@@ -173,24 +166,26 @@ function animateBar(stat, delta) {
   const prev = S.stats[stat];
   S.stats[stat] = Math.max(0, Math.min(100, prev + delta));
   const bar = $(`.bar[data-stat="${stat}"]`);
+  if (!bar) return;
   const blocks = bar.querySelectorAll(".bar-block");
   const oldFilled = statToBlocks(prev);
   const newFilled = statToBlocks(S.stats[stat]);
   const label = bar.querySelector(".bar-label");
+  if (label) {
+    label.classList.add("flash");
+    setTimeout(() => label.classList.remove("flash"), 300);
+  }
 
-  // Flash label
-  label.classList.add("flash");
-  setTimeout(() => label.classList.remove("flash"), 300);
-
-  // Delta text
   const deltaEl = bar.querySelector(".bar-delta");
-  deltaEl.textContent = (delta > 0 ? "+" : "\u2212") + Math.abs(delta);
-  deltaEl.classList.remove("show");
-  void deltaEl.offsetWidth;
-  deltaEl.classList.add("show");
-  setTimeout(() => deltaEl.classList.remove("show"), 1100);
+  if (deltaEl) {
+    deltaEl.textContent = (delta > 0 ? "+" : "\u2212") + Math.abs(delta);
+    deltaEl.classList.remove("show");
+    void deltaEl.offsetWidth;
+    deltaEl.classList.add("show");
+    setTimeout(() => deltaEl.classList.remove("show"), 1100);
+  }
 
-  // Animate blocks
+  if (blocks.length === 0) return;
   if (S.settings.reduceMotion) {
     blocks.forEach((b, i) => b.classList.toggle("filled", i < newFilled));
   } else {
@@ -317,18 +312,18 @@ function advanceIntro() {
 }
 
 /* ---- LAB ---- */
-const ESTHER_W = 24, ESTHER_H = 30;
+const ESTER_W = 24, ESTER_H = 30;
 const LAB_W = 640, VIEW_W = 320, VIEW_H = 180;
 const FOOTER_H = 28;
 // Walkable area: top of blue floor tiles to just above the footer
-// Footer top = 180 - 28 = 152. Esther bottom must be ≤ 152 → top ≤ 122.
+// Footer top = 180 - 28 = 152. Ester bottom must be ≤ 152 → top ≤ 122.
 const FLOOR_TOP = 88;
-const FLOOR_BOT = 122; // Esther's feet at 152, flush above footer
-const ESTHER_SPEED = 60; // px/sec in world coords
+const FLOOR_BOT = 122; // Ester's feet at 152, flush above footer
+const ESTER_SPEED = 60; // px/sec in world coords
 
 // Bench collision zones matching lab_room_wide.png (640x180).
 // The benches sit on the floor. Collision uses a narrow vertical band
-// (y=102-114) so Esther can walk in front of the benches (y ≥ 114)
+// (y=102-114) so Ester can walk in front of the benches (y ≥ 114)
 // or behind them near the wall (y < 102, navigating through gaps).
 const BENCHES = [
   {x1:56, x2:118, y1:102, y2:114},
@@ -347,10 +342,10 @@ function startLab() {
   showBars();
   S.labActive = true;
   S.benchTriggered = false;
-  S.estherX = 140;
-  S.estherY = 116;
-  S.estherDir = 2;
-  S.estherFrame = 0;
+  S.esterX = 140;
+  S.esterY = 116;
+  S.esterDir = 2;
+  S.esterFrame = 0;
   S.camX = 0;
   S.keys = {};
   S.labIdleTimer = 0;
@@ -385,32 +380,32 @@ function labLoop(ts) {
     if (S.keys["ArrowUp"] || S.keys["w"] || S.keys["W"]) dy = -1;
     if (S.keys["ArrowDown"] || S.keys["s"] || S.keys["S"]) dy = 1;
 
-    S.estherMoving = dx !== 0 || dy !== 0;
+    S.esterMoving = dx !== 0 || dy !== 0;
 
-    if (S.estherMoving) {
+    if (S.esterMoving) {
       S.labIdleTimer = 0;
-      if (dx < 0) S.estherDir = 1;
-      else if (dx > 0) S.estherDir = 2;
-      else if (dy < 0) S.estherDir = 3;
-      else if (dy > 0) S.estherDir = 0;
+      if (dx < 0) S.esterDir = 1;
+      else if (dx > 0) S.esterDir = 2;
+      else if (dy < 0) S.esterDir = 3;
+      else if (dy > 0) S.esterDir = 0;
 
-      let nx = S.estherX + dx * ESTHER_SPEED * dt / 1000;
-      let ny = S.estherY + dy * ESTHER_SPEED * dt / 1000;
-      nx = Math.max(4, Math.min(LAB_W - ESTHER_W - 4, nx));
+      let nx = S.esterX + dx * ESTER_SPEED * dt / 1000;
+      let ny = S.esterY + dy * ESTER_SPEED * dt / 1000;
+      nx = Math.max(4, Math.min(LAB_W - ESTER_W - 4, nx));
       ny = Math.max(FLOOR_TOP, Math.min(FLOOR_BOT, ny));
 
       // Move freely without bench collision blocking.
-      S.estherX = nx;
-      S.estherY = ny;
+      S.esterX = nx;
+      S.esterY = ny;
     } else {
       S.labIdleTimer += dt;
     }
 
-    // Camera follows Esther directly to avoid jitter from easing + rounding.
-    S.camX = Math.max(0, Math.min(LAB_W - VIEW_W, S.estherX - VIEW_W / 2 + ESTHER_W / 2));
+    // Camera follows Ester directly to avoid jitter from easing + rounding.
+    S.camX = Math.max(0, Math.min(LAB_W - VIEW_W, S.esterX - VIEW_W / 2 + ESTER_W / 2));
 
     // Check bench trigger — walk near far-right bench (world x~500+)
-    if (!S.benchTriggered && S.estherX > 500 && S.estherX < 560) {
+    if (!S.benchTriggered && S.esterX > 500 && S.esterX < 560) {
       S.benchTriggered = true;
       S.labActive = false;
       S.keys = {};
@@ -443,8 +438,8 @@ function renderLab() {
   const world = $("#lab-world");
   world.style.transform = `translate3d(${-S.camX}px,0,0)`;
 
-  const e = $("#lab-esther");
-  e.style.transform = `translate3d(${S.estherX}px,${S.estherY}px,0)`;
+  const e = $("#lab-ester");
+  e.style.transform = `translate3d(${S.esterX}px,${S.esterY}px,0)`;
 }
 
 function updateLabPrompt() {
@@ -486,14 +481,14 @@ function startSceneDialogue(nodeId) {
     // Opening: camera on left side, sprites near first bench
     S.sceneScrollX = 20;
     $("#scene-sprite-sam").style.left = "140px";
-    $("#scene-sprite-esther").style.left = "180px";
+    $("#scene-sprite-ester").style.left = "180px";
     $("#scene-sprite-jerry").classList.add("hidden");
   } else {
     // Post-bench: camera on right side
     S.sceneScrollX = 320;
     $("#scene-sprite-sam").style.left = "385px";
     $("#scene-sprite-jerry").style.left = "430px";
-    $("#scene-sprite-esther").style.left = "465px";
+    $("#scene-sprite-ester").style.left = "465px";
   }
   sw.style.left = -S.sceneScrollX + "px";
 
@@ -518,13 +513,13 @@ function sceneAnimLoop(ts) {
       const frameX = S.idleBounce * 24;
       // Bounce scene sprites
       $$(".scene-sprite").forEach(sp => {
-        if (sp.dataset.char === "esther") return;
+        if (sp.dataset.char === "ester" || sp.dataset.char === "sam" || sp.dataset.char === "jerry") return;
         if (sp.classList.contains("hidden")) return;
         sp.style.backgroundPosition = `-${frameX}px 0`;
       });
-      // Bounce the dialogue portrait (if it's an NPC, not Esther)
+      // Bounce the dialogue portrait (if it's an NPC, not Ester, Sam, or Jerry)
       const portrait = $("#dialogue-portrait");
-      if (!portrait.classList.contains("hidden") && !portrait.classList.contains("char-esther")) {
+      if (!portrait.classList.contains("hidden") && !portrait.classList.contains("char-ester") && !portrait.classList.contains("char-sam") && !portrait.classList.contains("char-jerry")) {
         portrait.style.backgroundPosition = `-${frameX}px 0`;
       }
     }
@@ -544,7 +539,7 @@ function runNode(nodeId) {
   if (node.showSprites) {
     $("#scene-sprite-sam").classList.toggle("hidden", !node.showSprites.includes("sam"));
     $("#scene-sprite-jerry").classList.toggle("hidden", !node.showSprites.includes("jerry"));
-    $("#scene-sprite-esther").classList.toggle("hidden", !node.showSprites.includes("esther"));
+    $("#scene-sprite-ester").classList.toggle("hidden", !node.showSprites.includes("ester"));
   }
 
   // Control nodes
@@ -570,6 +565,8 @@ function runNode(nodeId) {
   // Show the dialogue row
   const row = $("#dialogue-row");
   row.classList.remove("hidden");
+
+  ensureDialogueBoxHeight();
 
   // Dialogue / inner / narration
   const box = $("#dialogue-box");
@@ -598,6 +595,60 @@ function runNode(nodeId) {
   }
 
   typeText($("#dialogue-text"), node.text);
+}
+
+/* Lock the dialogue box to a single fixed height, sized to the longest
+   line in the script, so it no longer grows/shrinks per line. Measured
+   from the real DOM once so it stays correct if lines are edited later. */
+let dialogueBoxFixedHeight = null;
+
+function measureMaxDialogueBoxHeight() {
+  const box = $("#dialogue-box");
+  const portrait = $("#dialogue-portrait");
+  const textEl = $("#dialogue-text");
+
+  const dialogueTexts = SCENE_SCRIPT.filter(n => n.type === "dialogue" && n.text).map(n => n.text);
+  const captionTexts = SCENE_SCRIPT.filter(n => (n.type === "inner" || n.type === "narration") && n.text).map(n => n.text);
+  const longestDialogue = dialogueTexts.reduce((a, b) => (b.length > a.length ? b : a), "");
+  const longestCaption = captionTexts.reduce((a, b) => (b.length > a.length ? b : a), "");
+
+  const prev = {
+    boxHeight: box.style.height,
+    boxOverflow: box.style.overflow,
+    boxClass: box.className,
+    portraitClass: portrait.className,
+    text: textEl.textContent,
+  };
+
+  box.style.height = "auto";
+  box.style.overflow = "visible";
+
+  // Widest text, narrowest box: a speaker line (portrait eats into the width).
+  box.className = "type-dialogue";
+  portrait.className = "char-sam";
+  textEl.textContent = longestDialogue;
+  const dialogueHeight = box.scrollHeight;
+
+  // Narration/inner: no portrait, full-width box.
+  box.className = "type-narration";
+  portrait.className = "hidden";
+  textEl.textContent = longestCaption;
+  const captionHeight = box.scrollHeight;
+
+  box.className = prev.boxClass;
+  portrait.className = prev.portraitClass;
+  textEl.textContent = prev.text;
+  box.style.height = prev.boxHeight;
+  box.style.overflow = prev.boxOverflow;
+
+  return Math.max(dialogueHeight, captionHeight);
+}
+
+function ensureDialogueBoxHeight() {
+  if (dialogueBoxFixedHeight == null) {
+    dialogueBoxFixedHeight = measureMaxDialogueBoxHeight();
+  }
+  $("#dialogue-box").style.height = dialogueBoxFixedHeight + "px";
 }
 
 function advanceScene() {
