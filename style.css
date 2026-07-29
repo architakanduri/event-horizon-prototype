@@ -173,7 +173,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   image-rendering:pixelated;
   z-index:1;
 }
-#lab-esther{
+#lab-ester{
   position:absolute;
   width:18px;height:31px;
   z-index:10;
@@ -274,7 +274,7 @@ body.reduce-motion #lab-arrow{animation:none;}
   background:url('./assets/jerry.png') no-repeat;
   background-size:18px 31px;
 }
-#scene-sprite-esther{
+#scene-sprite-ester{
   width:18px;height:31px;
   background:url('./assets/player.png') no-repeat;
   background-size:18px 31px;
@@ -299,7 +299,7 @@ body.reduce-motion #lab-arrow{animation:none;}
 #dialogue-portrait.char-sam{background-image:url('./assets/sam.png');background-size:18px 31px;}
 #dialogue-portrait.char-jerry{background-image:url('./assets/jerry.png');background-size:18px 31px;}
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
-#dialogue-portrait.char-esther{
+#dialogue-portrait.char-ester{
   background-image:url('./assets/player.png');
   background-size:18px 31px;
   width:18px;height:31px;
