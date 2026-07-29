@@ -296,8 +296,16 @@ body.reduce-motion #lab-arrow{animation:none;}
   image-rendering:pixelated;
   background-repeat:no-repeat;
 }
-#dialogue-portrait.char-sam{background-image:url('./assets/sam.png');background-size:18px 31px;}
-#dialogue-portrait.char-jerry{background-image:url('./assets/jerry.png');background-size:18px 31px;}
+#dialogue-portrait.char-sam{
+  background-image:url('./assets/sam.png');
+  background-size:18px 31px;
+  width:18px;height:31px;
+}
+#dialogue-portrait.char-jerry{
+  background-image:url('./assets/jerry.png');
+  background-size:18px 31px;
+  width:18px;height:31px;
+}
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-ester{
   background-image:url('./assets/player.png');
@@ -307,9 +315,10 @@ body.reduce-motion #lab-arrow{animation:none;}
 #dialogue-box{
   flex:1;
   padding:4px 6px 5px;
-  font-size:var(--text-body);
+  font-size:calc(var(--text-body) - 1px);
   line-height:1.6;
-  min-height:36px;
+  overflow-y:auto;
+  overflow-x:hidden;
   cursor:pointer;
 }
 #dialogue-box.type-dialogue{background:var(--lyellow);color:var(--navy);}

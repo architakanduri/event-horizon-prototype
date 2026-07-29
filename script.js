@@ -566,6 +566,8 @@ function runNode(nodeId) {
   const row = $("#dialogue-row");
   row.classList.remove("hidden");
 
+  ensureDialogueBoxHeight();
+
   // Dialogue / inner / narration
   const box = $("#dialogue-box");
   box.classList.remove("type-dialogue", "type-inner", "type-narration");
@@ -593,6 +595,60 @@ function runNode(nodeId) {
   }
 
   typeText($("#dialogue-text"), node.text);
+}
+
+/* Lock the dialogue box to a single fixed height, sized to the longest
+   line in the script, so it no longer grows/shrinks per line. Measured
+   from the real DOM once so it stays correct if lines are edited later. */
+let dialogueBoxFixedHeight = null;
+
+function measureMaxDialogueBoxHeight() {
+  const box = $("#dialogue-box");
+  const portrait = $("#dialogue-portrait");
+  const textEl = $("#dialogue-text");
+
+  const dialogueTexts = SCENE_SCRIPT.filter(n => n.type === "dialogue" && n.text).map(n => n.text);
+  const captionTexts = SCENE_SCRIPT.filter(n => (n.type === "inner" || n.type === "narration") && n.text).map(n => n.text);
+  const longestDialogue = dialogueTexts.reduce((a, b) => (b.length > a.length ? b : a), "");
+  const longestCaption = captionTexts.reduce((a, b) => (b.length > a.length ? b : a), "");
+
+  const prev = {
+    boxHeight: box.style.height,
+    boxOverflow: box.style.overflow,
+    boxClass: box.className,
+    portraitClass: portrait.className,
+    text: textEl.textContent,
+  };
+
+  box.style.height = "auto";
+  box.style.overflow = "visible";
+
+  // Widest text, narrowest box: a speaker line (portrait eats into the width).
+  box.className = "type-dialogue";
+  portrait.className = "char-sam";
+  textEl.textContent = longestDialogue;
+  const dialogueHeight = box.scrollHeight;
+
+  // Narration/inner: no portrait, full-width box.
+  box.className = "type-narration";
+  portrait.className = "hidden";
+  textEl.textContent = longestCaption;
+  const captionHeight = box.scrollHeight;
+
+  box.className = prev.boxClass;
+  portrait.className = prev.portraitClass;
+  textEl.textContent = prev.text;
+  box.style.height = prev.boxHeight;
+  box.style.overflow = prev.boxOverflow;
+
+  return Math.max(dialogueHeight, captionHeight);
+}
+
+function ensureDialogueBoxHeight() {
+  if (dialogueBoxFixedHeight == null) {
+    dialogueBoxFixedHeight = measureMaxDialogueBoxHeight();
+  }
+  $("#dialogue-box").style.height = dialogueBoxFixedHeight + "px";
 }
 
 function advanceScene() {
