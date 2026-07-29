@@ -427,23 +427,9 @@ function labLoop(ts) {
       nx = Math.max(4, Math.min(LAB_W - ESTHER_W - 4, nx));
       ny = Math.max(FLOOR_TOP, Math.min(FLOOR_BOT, ny));
 
-      // Per-axis collision: resolve X and Y independently so Esther
-      // can slide along bench edges instead of freezing in place.
-      let xBlocked = false, yBlocked = false;
-      for (const b of BENCHES) {
-        // Would new X overlap this bench (at current Y)?
-        if (nx + ESTHER_W > b.x1 && nx < b.x2 &&
-            S.estherY + ESTHER_H > b.y1 && S.estherY < b.y2) {
-          xBlocked = true;
-        }
-        // Would new Y overlap this bench (at current X)?
-        if (S.estherX + ESTHER_W > b.x1 && S.estherX < b.x2 &&
-            ny + ESTHER_H > b.y1 && ny < b.y2) {
-          yBlocked = true;
-        }
-      }
-      if (!xBlocked) S.estherX = nx;
-      if (!yBlocked) S.estherY = ny;
+      // Move freely without bench collision blocking.
+      S.estherX = nx;
+      S.estherY = ny;
     } else {
       S.labIdleTimer += dt;
     }

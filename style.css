@@ -10,7 +10,7 @@
 html,body{
   width:100%;height:100%;overflow:hidden;
   background:#000;
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
 }
 body.dyslexia-font,body.dyslexia-font *{
   font-family:'Atkinson Hyperlegible','Segoe UI',Arial,sans-serif!important;
@@ -41,7 +41,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 
 /* === BUTTONS === */
 .btn{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:4px;
   border:none;cursor:pointer;
   padding:3px 6px;
@@ -85,13 +85,13 @@ button:focus-visible{outline:2px solid var(--yellow);}
   display:flex;flex-direction:column;gap:4px;
 }
 .settings-title{
-  font-family:'Press Start 2P',monospace;font-size:5px;
+  font-family:'Arial',monospace;font-size:5px;
   color:var(--lyellow);text-align:center;margin-bottom:2px;
 }
 .set-row{display:flex;align-items:center;gap:3px;color:var(--lyellow);font-size:4px;}
 .set-row input{width:6px;height:6px;}
 .set-group{border:1px solid var(--purple);padding:3px;display:flex;gap:4px;align-items:center;}
-.set-group legend{font-family:'Press Start 2P',monospace;font-size:3px;color:var(--lyellow);padding:0 2px;}
+.set-group legend{font-family:'Arial',monospace;font-size:3px;color:var(--lyellow);padding:0 2px;}
 .set-group label{color:var(--lyellow);font-size:4px;display:flex;align-items:center;gap:1px;}
 .set-group input{width:5px;height:5px;}
 
@@ -135,13 +135,13 @@ button:focus-visible{outline:2px solid var(--yellow);}
 #title-text{opacity:0;transition:opacity 0.8s ease;}
 #title-text.visible{opacity:1;}
 .title-main{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:12px;line-height:1.5;
   color:var(--lyellow);
   text-shadow:1px 1px 0 var(--navy);
 }
 .title-sub{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:4px;
   color:var(--yellow);
   margin-top:6px;
@@ -168,7 +168,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 .intro-counter{
   position:absolute;bottom:6px;right:8px;
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:4px;
   color:var(--lyellow);
 }
@@ -205,7 +205,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #lab-prompt{
   position:absolute;z-index:20;
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;
   color:var(--yellow);
   text-align:center;
@@ -215,7 +215,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   position:absolute;
   bottom:29px;left:0;right:0;
   text-align:center;
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;
   color:var(--yellow);
   z-index:30;
@@ -254,7 +254,7 @@ body.reduce-motion #lab-arrow{animation:none;}
 }
 #lab-textbox .click-hint{
   display:block;text-align:right;
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;color:var(--purple);
   margin-top:2px;
 }
@@ -331,7 +331,7 @@ body.reduce-motion #lab-arrow{animation:none;}
 #dialogue-box.type-inner{background:var(--navy);color:var(--purple);font-style:italic;border:1px solid var(--purple);}
 #dialogue-box.type-narration{background:var(--navy);color:var(--yellow);border:1px solid var(--purple);}
 #dialogue-speaker{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:4px;
   color:var(--purple);
   margin-bottom:2px;
@@ -352,7 +352,7 @@ body.reduce-motion #lab-arrow{animation:none;}
   display:flex;flex-direction:column;
 }
 .choice-btn .cost{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;
   margin-top:1px;
   opacity:.8;
@@ -377,11 +377,11 @@ body.reduce-motion #lab-arrow{animation:none;}
   padding:10px;
 }
 .alarm-title{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:6px;color:var(--yellow);
 }
 .alarm-db{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:10px;color:var(--lyellow);
 }
 .alarm-box .choice-btn{
@@ -389,7 +389,7 @@ body.reduce-motion #lab-arrow{animation:none;}
   font-size:4px;
 }
 .alarm-box .cost{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;margin-top:2px;
   text-align:center;
 }
@@ -409,7 +409,7 @@ body.reduce-motion #lab-arrow{animation:none;}
   display:flex;flex-direction:column;align-items:center;gap:2px;
 }
 .end-bar-label{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;color:var(--yellow);
 }
 .end-bar-track{
@@ -426,7 +426,7 @@ body.reduce-motion #lab-arrow{animation:none;}
   transition:height 1.2s ease;
 }
 .end-bar-val{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:4px;color:var(--lyellow);
 }
 #end-reflection{
@@ -443,7 +443,7 @@ body.reduce-motion #lab-arrow{animation:none;}
 #end-reflection .lived-exp{
   display:block;margin-top:4px;
   font-size:4px;
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   color:var(--yellow);
   opacity:.7;
 }
@@ -470,7 +470,7 @@ body.reduce-motion #lab-arrow{animation:none;}
   gap:1px;
 }
 .bar-label{
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:3px;
   color:var(--yellow);
   transition:color .15s;
@@ -494,7 +494,7 @@ body.reduce-motion #lab-arrow{animation:none;}
 .bar-delta{
   position:absolute;top:-8px;left:50%;
   transform:translateX(-50%);
-  font-family:'Press Start 2P',monospace;
+  font-family:'Arial',monospace;
   font-size:4px;
   color:var(--yellow);
   opacity:0;
