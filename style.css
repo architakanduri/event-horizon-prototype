@@ -186,17 +186,24 @@ button:focus-visible{outline:2px solid var(--yellow);}
   text-align:center;
   pointer-events:none;
 }
-#lab-objective{
+#lab-footer{
   position:absolute;
-  bottom:29px;left:0;right:0;
-  text-align:center;
-  font-family:'Arial',monospace;
-  font-size:3px;
-  color:var(--yellow);
+  left:0;right:0;bottom:0;
+  height:24px;
+  background:rgba(16,6,122,.95);
   z-index:30;
   pointer-events:none;
-  padding:1px 0;
-  background:rgba(16,6,122,.8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 4px;
+}
+#lab-objective{
+  font-family:'Arial',monospace;
+  font-size:8px;
+  color:var(--yellow);
+  text-align:center;
+  width:100%;
 }
 #lab-arrow{
   position:absolute;z-index:25;
