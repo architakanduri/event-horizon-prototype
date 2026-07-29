@@ -12,30 +12,6 @@
 <div id="game-wrapper">
   <div id="game" style="width:320px;height:180px;">
 
-    <!-- SETTINGS OVERLAY -->
-    <div id="settings-overlay" class="overlay hidden" role="dialog" aria-label="Settings">
-      <div class="settings-box">
-        <div class="settings-title">SETTINGS</div>
-        <label class="set-row"><input type="checkbox" id="set-quiet"><span>Quiet mode</span></label>
-        <label class="set-row"><input type="checkbox" id="set-dyslexia"><span>Dyslexia-friendly font</span></label>
-        <fieldset class="set-group"><legend>Text size</legend>
-          <label><input type="radio" name="tsize" value="small"> S</label>
-          <label><input type="radio" name="tsize" value="medium" checked> M</label>
-          <label><input type="radio" name="tsize" value="large"> L</label>
-        </fieldset>
-        <label class="set-row"><input type="checkbox" id="set-reducemotion"><span>Reduce motion</span></label>
-        <fieldset class="set-group"><legend>Text speed</legend>
-          <label><input type="radio" name="tspeed" value="slow"> Slow</label>
-          <label><input type="radio" name="tspeed" value="normal" checked> Normal</label>
-          <label><input type="radio" name="tspeed" value="instant"> Instant</label>
-        </fieldset>
-        <button class="btn btn-purple" id="settings-close">CLOSE</button>
-      </div>
-    </div>
-
-    <!-- GEAR ICON -->
-    <button id="gear-btn" class="hidden" aria-label="Settings" tabindex="0">&#9881;</button>
-
     <!-- SCREEN: TITLE -->
     <div id="screen-title" class="screen active">
       <div class="title-layer title-bg"></div>
@@ -49,7 +25,6 @@
         </div>
         <div class="title-buttons">
           <button class="btn btn-purple" id="btn-start" tabindex="0">START</button>
-          <button class="btn btn-purple" id="btn-title-settings" tabindex="0">SETTINGS</button>
         </div>
       </div>
     </div>
@@ -117,7 +92,6 @@
         <div id="end-reflection" class="hidden"></div>
         <div class="end-buttons hidden" id="end-buttons">
           <button class="btn btn-purple" id="btn-restart">RESTART</button>
-          <button class="btn btn-purple" id="btn-end-settings">SETTINGS</button>
         </div>
       </div>
     </div>

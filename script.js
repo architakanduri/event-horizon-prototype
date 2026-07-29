@@ -143,28 +143,6 @@ function applyScale() {
 }
 window.addEventListener("resize", applyScale);
 
-/* ---- SETTINGS ---- */
-function applySettings() {
-  const s = S.settings;
-  document.body.classList.toggle("dyslexia-font", s.dyslexia);
-  document.body.classList.toggle("reduce-motion", s.reduceMotion);
-  document.body.classList.remove("text-small", "text-large");
-  if (s.textSize === "small") document.body.classList.add("text-small");
-  if (s.textSize === "large") document.body.classList.add("text-large");
-}
-
-function initSettings() {
-  $("#set-quiet").addEventListener("change", e => S.settings.quiet = e.target.checked);
-  $("#set-dyslexia").addEventListener("change", e => { S.settings.dyslexia = e.target.checked; applySettings(); });
-  $("#set-reducemotion").addEventListener("change", e => { S.settings.reduceMotion = e.target.checked; applySettings(); });
-  $$('input[name="tsize"]').forEach(r => r.addEventListener("change", e => { S.settings.textSize = e.target.value; applySettings(); }));
-  $$('input[name="tspeed"]').forEach(r => r.addEventListener("change", e => { S.settings.textSpeed = e.target.value; }));
-  $("#settings-close").addEventListener("click", () => $("#settings-overlay").classList.add("hidden"));
-  $("#btn-title-settings").addEventListener("click", () => $("#settings-overlay").classList.remove("hidden"));
-  $("#gear-btn").addEventListener("click", () => $("#settings-overlay").classList.remove("hidden"));
-  $("#btn-end-settings").addEventListener("click", () => $("#settings-overlay").classList.remove("hidden"));
-}
-
 /* ---- STAT BARS ---- */
 function initBarBlocks() {
   $$(".bar-track").forEach(track => {
@@ -233,7 +211,7 @@ function applyStatBlock(obj) {
   Object.entries(obj).forEach(([k, v]) => animateBar(k, v));
 }
 
-function showBars() { $("#bar-footer").classList.remove("hidden"); $("#gear-btn").classList.remove("hidden"); }
+function showBars() { $("#bar-footer").classList.remove("hidden"); }
 
 /* ---- SCREEN MGR ---- */
 function showScreen(name) {
@@ -881,12 +859,10 @@ function initInput() {
 /* ---- INIT ---- */
 function init() {
   applyScale();
-  initSettings();
   initTitle();
   initBarBlocks();
   initRestart();
   initInput();
-  applySettings();
 
   // Start title animation
   lastTime = performance.now();

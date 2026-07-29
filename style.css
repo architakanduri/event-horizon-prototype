@@ -69,32 +69,6 @@ button:focus-visible{outline:2px solid var(--yellow);}
 .hidden{display:none!important;}
 
 /* === GEAR === */
-#gear-btn{
-  position:absolute;top:2px;right:2px;z-index:80;
-  background:none;border:none;
-  color:var(--yellow);
-  font-size:8px;line-height:1;
-  cursor:pointer;
-}
-
-/* === SETTINGS === */
-#settings-overlay{background:rgba(0,0,0,.75);z-index:100;}
-.settings-box{
-  background:var(--navy);border:1px solid var(--purple);
-  padding:6px;width:200px;
-  display:flex;flex-direction:column;gap:4px;
-}
-.settings-title{
-  font-family:'Arial',monospace;font-size:5px;
-  color:var(--lyellow);text-align:center;margin-bottom:2px;
-}
-.set-row{display:flex;align-items:center;gap:3px;color:var(--lyellow);font-size:4px;}
-.set-row input{width:6px;height:6px;}
-.set-group{border:1px solid var(--purple);padding:3px;display:flex;gap:4px;align-items:center;}
-.set-group legend{font-family:'Arial',monospace;font-size:3px;color:var(--lyellow);padding:0 2px;}
-.set-group label{color:var(--lyellow);font-size:4px;display:flex;align-items:center;gap:1px;}
-.set-group input{width:5px;height:5px;}
-
 /* === TITLE === */
 .title-layer{position:absolute;inset:0;}
 .title-bg{
