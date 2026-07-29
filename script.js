@@ -719,7 +719,6 @@ function initRestart() {
     S.idlePaused = false;
     syncBars(true);
     $("#bar-footer").classList.add("hidden");
-    $("#gear-btn").classList.add("hidden");
     $("#alarm-overlay").classList.add("hidden");
     $("#alarm-overlay").classList.remove("pulse");
     $("#choice-panel").classList.add("hidden");
