@@ -155,6 +155,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   top:0;left:0;
   image-rendering:pixelated;
   overflow:hidden;
+  transform: translate3d(0,0,0);
 }
 #lab-bg{
   position:absolute;top:0;left:0;

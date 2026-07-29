@@ -406,10 +406,8 @@ function labLoop(ts) {
       S.labIdleTimer += dt;
     }
 
-    // Camera
-    const targetCam = Math.max(0, Math.min(LAB_W - VIEW_W, S.estherX - VIEW_W / 2 + ESTHER_W / 2));
-    S.camX += (targetCam - S.camX) * 0.08;
-    S.camX = Math.max(0, Math.min(LAB_W - VIEW_W, S.camX));
+    // Camera follows Esther directly to avoid jitter from easing + rounding.
+    S.camX = Math.max(0, Math.min(LAB_W - VIEW_W, S.estherX - VIEW_W / 2 + ESTHER_W / 2));
 
     // Check bench trigger — walk near far-right bench (world x~500+)
     if (!S.benchTriggered && S.estherX > 500 && S.estherX < 560) {
@@ -443,11 +441,10 @@ function labLoop(ts) {
 
 function renderLab() {
   const world = $("#lab-world");
-  world.style.left = -Math.round(S.camX) + "px";
+  world.style.transform = `translate3d(${-S.camX}px,0,0)`;
 
   const e = $("#lab-esther");
-  e.style.left = Math.round(S.estherX) + "px";
-  e.style.top = Math.round(S.estherY) + "px";
+  e.style.transform = `translate3d(${S.estherX}px,${S.estherY}px,0)`;
 }
 
 function updateLabPrompt() {
