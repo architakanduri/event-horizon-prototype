@@ -24,7 +24,7 @@ const SCENE_SCRIPT = [
   {id:"s3", type:"dialogue", speaker:"SAM", text:"\u2026Yes?", next:"s4"},
   {id:"s4", type:"dialogue", speaker:"ESTHER", text:"Then bench four shouldn\u2019t have a mercury-column instrument on it. And the atmospheric monitor is a hand\u2019s width from the bench edge with its cable across the walkway.", next:"s5"},
   {id:"s5", type:"dialogue", speaker:"SAM", text:"It\u2019s been there eight months.", next:"s6"},
-  {id:"s6", type:"dialogue", speaker:"ESTHER", text:"That doesn\u2019t make it further from the edge.", next:"lab_explore"},
+  {id:"s6", type:"dialogue", speaker:"ESTHER", text:"That doesnt make it further from the edge.", next:"lab_explore"},
 
   // lab_explore is a control node — starts the lab screen
   {id:"lab_explore", type:"control", action:"start_lab"},
@@ -91,7 +91,6 @@ const S = {
   introIdx: 0,
   introTyping: false,
   introFullText: "",
-  labSeen: {},
   benchTriggered: false,
   currentNode: null,
   typing: false,
@@ -106,7 +105,6 @@ const S = {
   keys: {},
   labActive: false,
   labIdleTimer: 0,
-  allExamined: false,
   // scene
   sceneScrollX: 0,
   idleBounce: 0,
@@ -356,7 +354,6 @@ function startLab() {
   S.camX = 0;
   S.keys = {};
   S.labIdleTimer = 0;
-  S.allExamined = false;
   updateLabObjective();
   renderLab();
   labLastTs = performance.now();
@@ -372,9 +369,6 @@ function labKeyDown(e) {
     e.preventDefault();
   }
   S.keys[e.key] = true;
-  if (e.key === " " || e.key === "e" || e.key === "E") {
-    tryExamine();
-  }
 }
 function labKeyUp(e) { S.keys[e.key] = false; }
 
@@ -428,8 +422,7 @@ function labLoop(ts) {
       return;
     }
 
-    // Show arrow after 45s idle or all examined
-    checkLabArrow();
+    // No object interactions in this simplified lab.
   }
 
   // Black hole small anim
@@ -457,78 +450,17 @@ function renderLab() {
   e.style.top = Math.round(S.estherY) + "px";
 }
 
-function getProximateObject() {
-  const ecx = S.estherX + ESTHER_W / 2;
-  for (const obj of LAB_OBJECTS) {
-    if (S.labSeen[obj.id]) continue;
-    // Check if Esther's x-center is within the object's x-range (± 20px margin)
-    if (ecx >= obj.x1 - 20 && ecx <= obj.x2 + 20) return obj;
-  }
-  return null;
-}
-
 function updateLabPrompt() {
-  const obj = getProximateObject();
-  const prompt = $("#lab-prompt");
-  if (obj && S.labActive) {
-    prompt.classList.remove("hidden");
-    prompt.textContent = "[E] LOOK";
-    prompt.style.left = (S.estherX + ESTHER_W / 2 - 12) + "px";
-    prompt.style.top = (S.estherY - 8) + "px";
-  } else {
-    prompt.classList.add("hidden");
-  }
-
-  // Update object highlight outlines (create clickable zones on first call)
-  LAB_OBJECTS.forEach(o => {
-    let el = document.getElementById("lab-highlight-" + o.id);
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "lab-highlight-" + o.id;
-      el.style.cssText = "position:absolute;z-index:2;border:1px solid transparent;cursor:pointer;";
-      el.style.left = o.x1 + "px";
-      el.style.top = "22px";
-      el.style.width = (o.x2 - o.x1) + "px";
-      el.style.height = "96px";
-      // Click to examine
-      el.addEventListener("click", () => {
-        if (!S.labActive) return;
-        if (S.labSeen[o.id]) return;
-        // Walk Esther toward the object, then examine
-        const targetX = (o.x1 + o.x2) / 2 - ESTHER_W / 2;
-        S.estherX = Math.max(4, Math.min(LAB_W - ESTHER_W - 4, targetX));
-        S.labSeen[o.id] = true;
-        if (o.stats) applyStatBlock(o.stats);
-        showLabTextbox(o.text);
-        updateLabObjective();
-      });
-      $("#lab-world").appendChild(el);
-    }
-    if (S.labSeen[o.id]) {
-      el.style.borderColor = "#555";
-      el.style.cursor = "default";
-    } else if (obj && obj.id === o.id && S.labActive) {
-      el.style.borderColor = "#ffc421";
-    } else {
-      el.style.borderColor = "transparent";
-    }
-  });
+  $("#lab-prompt").classList.add("hidden");
+  $("#lab-arrow").classList.add("hidden");
 }
 
 function tryExamine() {
-  const obj = getProximateObject();
-  if (!obj) return;
-  S.labSeen[obj.id] = true;
-  if (obj.stats) applyStatBlock(obj.stats);
-  showLabTextbox(obj.text);
-  updateLabObjective();
+  // No object interactions in the simplified lab.
 }
 
 function showLabTextbox(text) {
-  S.labActive = false;
-  const box = $("#lab-textbox");
-  box.classList.remove("hidden");
-  typeText($("#lab-textbox-text"), text);
+  // Interaction removed; this should never be called.
 }
 
 function dismissLabTextbox() {
@@ -538,31 +470,11 @@ function dismissLabTextbox() {
 }
 
 function updateLabObjective() {
-  const seen = LAB_OBJECTS.filter(o => S.labSeen[o.id]).length;
-  S.allExamined = seen >= LAB_OBJECTS.length;
-  const el = $("#lab-objective");
-  if (S.allExamined) {
-    el.textContent = "Go to the far bench.";
-  } else {
-    el.textContent = "Get your bearings before Jerry arrives.";
-  }
+  $("#lab-objective").textContent = "Walk to the far bench.";
 }
 
 function checkLabArrow() {
-  const arrow = $("#lab-arrow");
-  if (S.allExamined || S.labIdleTimer > 45000) {
-    arrow.classList.remove("hidden");
-    // Point toward trigger zone (x~520)
-    if (S.estherX < 480) {
-      arrow.classList.remove("arrow-left");
-      arrow.style.right = "2px"; arrow.style.left = "";
-    } else {
-      arrow.classList.add("arrow-left");
-      arrow.style.left = "2px"; arrow.style.right = "";
-    }
-  } else {
-    arrow.classList.add("hidden");
-  }
+  // Arrow not used in the simplified lab.
 }
 
 /* ---- SCENE ---- */
