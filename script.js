@@ -10,13 +10,6 @@ const INTRO_CARDS = [
   "Your lab has thirty days of funding left. Today is your first shift."
 ];
 
-const LAB_OBJECTS = [
-  { id:"whiteboard", x1:52, x2:130, text:"Five names on the whiteboard. Four are crossed out. One isn\u2019t.", stats:{emotional:-2} },
-  { id:"window",     x1:240,x2:332, text:"The black hole. The accretion disk completes a rotation every forty-one minutes. Esther has checked twice.", stats:{mental:4} },
-  { id:"terminal",   x1:360,x2:426, text:"Requisition terminal. Form 12-B requires Form 12-A, which requires a signature from someone who requires Form 12-B.", stats:{career:2} },
-  { id:"monitor",    x1:534,x2:554, text:"The atmospheric monitor. A hand\u2019s width from the bench edge, cable across the walkway. It has been here eight months, apparently.", stats:{} }
-];
-
 /* Node types: "dialogue", "inner", "narration", "choice", "alarm", "control" */
 const SCENE_SCRIPT = [
   {id:"s1", type:"dialogue", speaker:"SAM", text:"Shadowing rules \u2014 you observe, you don\u2019t touch, and if anyone asks you\u2019re a visiting student, not a hire, because the hiring freeze is technically still on. Any questions?", next:"s2", showSprites:["sam","esther"]},
