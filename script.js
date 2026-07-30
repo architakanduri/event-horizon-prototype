@@ -481,7 +481,7 @@ function showChoicePanel(choices) {
   choices.forEach((c, i) => {
     const btn = document.createElement("button");
     btn.className = "btn btn-purple choice-btn";
-    btn.innerHTML = `<span>${c.label}</span><span class="cost">${c.cost}</span>`;
+    btn.innerHTML = `<span>${c.label}</span>`;
     btn.tabIndex = 0;
     btn.addEventListener("click", () => {
       panel.classList.add("hidden");
