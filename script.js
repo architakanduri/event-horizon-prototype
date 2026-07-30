@@ -6,8 +6,11 @@
 
 const INTRO_CARDS = [
   "The universe has gotten a lot busier these days. It barely takes any time to get anywhere, as long as you've got the equipment for it.",
-  "Unfortunately for you, you're stuck where you are. While fifty years ago people would have fought tooth and nail to be in your research organization, it's currently operating—in exile—in the worst of places: an abandoned space station revolving around a black hole.",
-  "This is no situation any reasonable scientist wants to operate in. You don't really have a choice, though. The gubernatorial board of your university seems to have deemed you to be, in their words, \"uncooperative and a hazard to the scientific community\”. It seems your only hope is to get this failing research station back to its glory days."
+  "Unfortunately for you, you're stuck where you are.",
+  "While fifty years ago, people would have fought tooth and nail to be in your research organization, it’s been exiled to an abandoned space station locked in orbit around a black hole.",
+  "This is no situation any reasonable scientist wants to operate in. You don’t really have a choice, though. Your old university decided you were \"uncooperative and a hazard to the scientific community.\”",
+  "It seems your only hope is to get this failing research station back to its glory days by fixing the transport ship.",
+  "To do so, you must work efficiently, while maintaining courteous relationships with your supervisor,  Sam, and coworker, Jerry."
 ];
 
 /* Node types: "dialogue", "inner", "narration", "choice", "control" */
@@ -19,8 +22,8 @@ const SCENE_SCRIPT = [
   {id:"s5", type:"dialogue", speaker:"SAM", text:"It’s been there for eight months.", next:"s6"},
   {id:"s6", type:"dialogue", speaker:"ESTER", text:"But that doesn’t decrease the health risk, it just means you’ve been in close range to danger for longer!", next:"crash_cut"},
 
-  // crash_cut is a control node — pans the camera to the crash before pb1 shows
-  {id:"crash_cut", type:"control", action:"pan_to_crash", next:"pb1"},
+  // crash_cut is a control node — Jerry walks into frame as pb1 plays, no camera cut
+  {id:"crash_cut", type:"control", action:"jerry_enter", next:"pb1"},
 
   {id:"pb1", type:"dialogue", speaker:"SAM", text:"I promise you it’s fine, Ester. Oh, Jerry’s here. Hey, Jerry, can you grab the—JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
   {id:"pb2", type:"inner", text:"I’ve had accidents like that before when I was still in my old lab. No matter how many times it happens, I flinch like a rabbit being chased.", next:"pb3"},
@@ -79,12 +82,16 @@ const S = {
   currentNode: null,
   typing: false,
   fullText: "",
+  transitioning: false,
   settings: {dyslexia:false, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
   settingsOpen: false,
   // scene
   sceneScrollX: 0,
   idleBounce: 0,
   idlePaused: false,
+  freeRoam: false,
+  walkFrame: 0,
+  playerX: 0,
   // anim
   bhLargeFrame: 0,
   starsOffset: 0,
@@ -115,75 +122,13 @@ function applyScale() {
 }
 window.addEventListener("resize", applyScale);
 
-/* ---- STAT BARS ---- */
-function initBarBlocks() {
-  $$(".bar-track").forEach(track => {
-    track.innerHTML = "";
-    for (let i = 0; i < 14; i++) {
-      const b = document.createElement("div");
-      b.className = "bar-block";
-      track.appendChild(b);
-    }
-  });
-  syncBars(true);
-}
-
-function statToBlocks(val) { return Math.round(val / 100 * 14); }
-
-function syncBars(instant) {
-  $$(".bar").forEach(bar => {
-    const stat = bar.dataset.stat;
-    const val = S.stats[stat];
-    const blocks = bar.querySelectorAll(".bar-block");
-    const filled = statToBlocks(val);
-    if (instant) {
-      blocks.forEach((b, i) => b.classList.toggle("filled", i < filled));
-    }
-  });
-}
-
-function animateBar(stat, delta) {
-  if (delta === 0) return;
-  const prev = S.stats[stat];
-  S.stats[stat] = Math.max(0, Math.min(100, prev + delta));
-  const bar = $(`.bar[data-stat="${stat}"]`);
-  if (!bar) return;
-  const blocks = bar.querySelectorAll(".bar-block");
-  const oldFilled = statToBlocks(prev);
-  const newFilled = statToBlocks(S.stats[stat]);
-  const label = bar.querySelector(".bar-label");
-  if (label) {
-    label.classList.add("flash");
-    setTimeout(() => label.classList.remove("flash"), 300);
-  }
-  const deltaEl = bar.querySelector(".bar-delta");
-  if (deltaEl) {
-    deltaEl.textContent = (delta > 0 ? "+" : "−") + Math.abs(delta);
-    deltaEl.classList.remove("show");
-    void deltaEl.offsetWidth;
-    deltaEl.classList.add("show");
-    setTimeout(() => deltaEl.classList.remove("show"), 1100);
-  }
-  if (blocks.length === 0) return;
-  if (S.settings.reduceMotion) {
-    blocks.forEach((b, i) => b.classList.toggle("filled", i < newFilled));
-  } else {
-    const dir = newFilled > oldFilled ? 1 : -1;
-    let cur = oldFilled;
-    const iv = setInterval(() => {
-      if (cur === newFilled) { clearInterval(iv); return; }
-      cur += dir;
-      blocks.forEach((b, i) => b.classList.toggle("filled", i < cur));
-    }, 60);
-  }
-}
-
+/* ---- STATS ---- */
 function applyStatBlock(obj) {
   if (!obj) return;
-  Object.entries(obj).forEach(([k, v]) => animateBar(k, v));
+  Object.entries(obj).forEach(([k, v]) => {
+    S.stats[k] = Math.max(0, Math.min(100, S.stats[k] + v));
+  });
 }
-
-function showBars() { /* persistent footer stats are hidden from the player */ }
 
 /* ---- SCREEN MGR ---- */
 function showScreen(name) {
@@ -281,7 +226,7 @@ function advanceIntro() {
   if (S.typing) { completeType(el); return; }
   S.introIdx++;
   if (S.introIdx >= INTRO_CARDS.length) {
-    startSceneDialogue("s1");
+    startScene();
   } else {
     showIntroCard();
   }
@@ -289,32 +234,86 @@ function advanceIntro() {
 
 /* ---- SCENE ---- */
 let sceneIdleBounceTimer = 0;
+let walkAnimTimer = 0;
 
-function startSceneDialogue(nodeId) {
+// Free-roam bounds within the lab.
+const VIEWPORT_WIDTH = 320;
+const WORLD_WIDTH = 640;
+const CAM_MAX_SCROLL = WORLD_WIDTH - VIEWPORT_WIDTH;
+const LAB_MIN_X = 12;
+const LAB_MAX_X = 400;
+const SAM_LAB_X = 380; // Sam waits further into the lab, out of the starting frame
+const PLAYER_START_X = 30;
+const PROXIMITY_DIST = 22; // how close Ester must get to Sam to start s1
+const PLAYER_MOVE_SPEED = 60; // px/sec
+const JERRY_ENTER_X = SAM_LAB_X + 140; // where Jerry starts, further down the room
+const JERRY_JOIN_X = SAM_LAB_X + 40; // where Jerry ends up, beside Sam and Ester
+const JERRY_WALK_MS = 1300;
+const WALK_FRAME_MS = 130; // ms per leg-cycle frame while Ester is moving
+const moveKeys = { left: false, right: false };
+
+function startScene() {
   showScreen("scene");
-  showBars();
 
-  // Opening: camera on left side, sprites near first bench
-  S.sceneScrollX = 20;
-  $("#scene-sprite-sam").style.left = "140px";
-  $("#scene-sprite-ester").style.left = "180px";
+  // Opening: camera follows Ester from the left edge of the lab. Sam
+  // waits further in, out of frame, until she walks over to him.
+  S.playerX = PLAYER_START_X;
+  S.sceneScrollX = Math.max(0, Math.min(CAM_MAX_SCROLL, S.playerX - VIEWPORT_WIDTH / 2));
+  S.freeRoam = true;
+  $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
+  $("#scene-sprite-ester").style.left = S.playerX + "px";
+  $("#scene-sprite-ester").classList.remove("facing-left"); // she starts walking right, toward Sam
   $("#scene-sprite-jerry").classList.add("hidden");
   $("#scene-world").style.left = -S.sceneScrollX + "px";
 
   sceneIdleBounceTimer = 0;
+  walkAnimTimer = 0;
+  S.walkFrame = 0;
   sceneAnimTs = performance.now();
   requestAnimationFrame(sceneAnimLoop);
-  runNode(nodeId);
 }
 
-function panToCrash() {
-  // Cut the camera to the right side of the room where Jerry is, right
-  // before his dialogue starts.
-  S.sceneScrollX = 320;
-  $("#scene-sprite-sam").style.left = "385px";
-  $("#scene-sprite-jerry").style.left = "430px";
-  $("#scene-sprite-ester").style.left = "465px";
-  $("#scene-world").style.left = -S.sceneScrollX + "px";
+let jerryWalkInterval = null;
+
+function jerryEnter(nextNodeId) {
+  // Jerry walks into frame and joins Sam and Ester, rather than the
+  // camera cutting to him. The dialogue box is hidden for this beat —
+  // it otherwise covers the whole sprite layer, which would make the
+  // walk-in invisible — and reappears with pb1 once he arrives.
+  const jerry = $("#scene-sprite-jerry");
+  S.transitioning = true;
+  $("#dialogue-row").classList.add("hidden");
+  jerry.classList.remove("walking");
+  jerry.style.left = JERRY_ENTER_X + "px";
+  jerry.style.backgroundPosition = "0 0";
+  jerry.classList.toggle("facing-left", JERRY_JOIN_X < JERRY_ENTER_X); // art faces right natively
+  jerry.classList.remove("hidden");
+
+  const arrive = () => {
+    clearInterval(jerryWalkInterval);
+    jerryWalkInterval = null;
+    jerry.style.backgroundPosition = "0 0";
+    S.transitioning = false;
+    runNode(nextNodeId);
+  };
+
+  if (S.settings.reduceMotion) {
+    jerry.style.left = JERRY_JOIN_X + "px";
+    arrive();
+    return;
+  }
+  void jerry.offsetWidth; // flush the start position before transitioning
+  jerry.classList.add("walking");
+  jerry.style.left = JERRY_JOIN_X + "px";
+  let jerryWalkFrame = 0;
+  jerryWalkInterval = setInterval(() => {
+    jerryWalkFrame = (jerryWalkFrame + 1) % 4;
+    jerry.style.backgroundPosition = `-${jerryWalkFrame * 36}px 0`;
+  }, WALK_FRAME_MS);
+  setTimeout(() => {
+    jerry.classList.remove("walking");
+    arrive();
+  }, JERRY_WALK_MS);
 }
 
 let sceneAnimTs = 0;
@@ -322,6 +321,40 @@ function sceneAnimLoop(ts) {
   if (S.screen !== "scene") return;
   const dt = ts - sceneAnimTs;
   sceneAnimTs = ts;
+
+  if (S.freeRoam && !S.settingsOpen) {
+    let dx = 0;
+    if (moveKeys.left) dx -= 1;
+    if (moveKeys.right) dx += 1;
+    if (dx !== 0) {
+      S.playerX = Math.max(LAB_MIN_X, Math.min(LAB_MAX_X, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
+      $("#scene-sprite-ester").style.left = S.playerX + "px";
+      $("#scene-sprite-ester").classList.toggle("facing-left", dx < 0); // art faces right natively
+      S.sceneScrollX = Math.max(0, Math.min(CAM_MAX_SCROLL, S.playerX - VIEWPORT_WIDTH / 2));
+      $("#scene-world").style.left = -S.sceneScrollX + "px";
+
+      if (S.settings.reduceMotion) {
+        S.walkFrame = 0;
+      } else {
+        walkAnimTimer += dt;
+        while (walkAnimTimer >= WALK_FRAME_MS) {
+          walkAnimTimer -= WALK_FRAME_MS;
+          S.walkFrame = (S.walkFrame + 1) % 4;
+        }
+      }
+      $("#scene-sprite-ester").style.backgroundPosition = `-${S.walkFrame * 36}px 0`;
+    } else if (S.walkFrame !== 0) {
+      S.walkFrame = 0;
+      walkAnimTimer = 0;
+      $("#scene-sprite-ester").style.backgroundPosition = "0 0";
+    }
+    if (Math.abs(S.playerX - SAM_LAB_X) <= PROXIMITY_DIST) {
+      S.freeRoam = false;
+      moveKeys.left = false;
+      moveKeys.right = false;
+      runNode("s1");
+    }
+  }
 
   if (!S.idlePaused && !S.settings.reduceMotion) {
     sceneIdleBounceTimer += dt;
@@ -359,19 +392,13 @@ function runNode(nodeId) {
   }
 
   if (node.type === "control") {
-    if (node.action === "pan_to_crash") { panToCrash(); runNode(node.next); return; }
+    if (node.action === "jerry_enter") { jerryEnter(node.next); return; }
   }
 
   // Choices
   if (node.type === "choice") { showChoicePanel(node.choices); return; }
 
-  if (node.type === "inner") {
-    S.idlePaused = true;
-    $$(".scene-sprite").forEach(sp => sp.classList.add("dimmed"));
-  } else {
-    S.idlePaused = false;
-    $$(".scene-sprite").forEach(sp => sp.classList.remove("dimmed"));
-  }
+  S.idlePaused = node.type === "inner";
 
   const row = $("#dialogue-row");
   row.classList.remove("hidden");
@@ -463,6 +490,7 @@ function ensureDialogueBoxHeight() {
 }
 
 function advanceScene() {
+  if (S.transitioning) return;
   const node = S.currentNode;
   if (!node) return;
   if (S.typing) { completeType($("#dialogue-text")); return; }
@@ -542,7 +570,6 @@ function initRestart() {
     S.starsOffset = 0;
     S.stationX = -20;
     S.idlePaused = false;
-    syncBars(true);
     $("#choice-panel").classList.add("hidden");
     $("#dialogue-row").classList.add("hidden");
     $("#end-reflection").classList.remove("visible");
@@ -569,11 +596,19 @@ function initInput() {
       e.preventDefault();
       advanceIntro();
     }
-    if (S.screen === "scene" && (e.key === " " || e.key === "Enter")) {
+    if (S.screen === "scene" && S.freeRoam) {
+      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { moveKeys.left = true; e.preventDefault(); }
+      if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { moveKeys.right = true; e.preventDefault(); }
+    }
+    if (S.screen === "scene" && !S.freeRoam && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();
       if (!$("#choice-panel").classList.contains("hidden")) return;
       advanceScene();
     }
+  });
+  document.addEventListener("keyup", e => {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") moveKeys.left = false;
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") moveKeys.right = false;
   });
   $("#dialogue-row").addEventListener("click", () => {
     if (S.settingsOpen) return;
@@ -637,7 +672,6 @@ function initSettings() {
 function init() {
   applyScale();
   initTitle();
-  initBarBlocks();
   initRestart();
   initInput();
   initSettings();

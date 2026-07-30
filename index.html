@@ -43,15 +43,17 @@
     <div id="screen-scene" class="screen">
       <div id="scene-world">
         <img id="scene-bg" src="./assets/background.png" alt="">
-        <div id="scene-sprite-sam" class="scene-sprite" data-char="sam"></div>
+        <div id="scene-sprite-sam" class="scene-sprite facing-left" data-char="sam"></div>
         <div id="scene-sprite-jerry" class="scene-sprite hidden" data-char="jerry"></div>
         <div id="scene-sprite-ester" class="scene-sprite" data-char="ester"></div>
       </div>
       <div id="dialogue-row" class="hidden">
         <div id="dialogue-portrait" class="hidden"></div>
-        <div id="dialogue-box">
+        <div id="dialogue-col">
           <div id="dialogue-speaker"></div>
-          <p id="dialogue-text"></p>
+          <div id="dialogue-box">
+            <p id="dialogue-text"></p>
+          </div>
         </div>
       </div>
       <div id="choice-panel" class="hidden"></div>
@@ -78,7 +80,7 @@
         </label>
         <label class="settings-row">
           <input type="checkbox" id="chk-instant-text">
-          <span>Show text instantly</span>
+          <span>Low motion</span>
         </label>
         <button class="btn btn-purple" id="btn-settings-close">CLOSE</button>
       </div>
