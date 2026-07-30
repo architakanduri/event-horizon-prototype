@@ -129,13 +129,16 @@ button:focus-visible{outline:2px solid var(--yellow);}
 /* === INTRO === */
 #screen-intro{
   background:var(--navy);
-  align-items:center;justify-content:center;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:60px;
   cursor:pointer;
 }
 #screen-intro.active{display:flex;}
 .intro-text{
-  max-width:260px;
-  text-align:center;
+  width:260px;
+  min-height:90px;
+  text-align:left;
   color:var(--yellow);
   font-size:var(--text-body);
   line-height:1.7;
@@ -263,14 +266,14 @@ body.reduce-motion #lab-arrow{animation:none;}
 }
 .scene-sprite.dimmed{opacity:0.75;filter:brightness(0.75);}
 #scene-sprite-sam{
-  width:24px;height:31px;
-  background:url('./assets/sam_idle_1x.png') no-repeat;
-  background-size:48px 31px;
+  width:18px;height:31px;
+  background:url('./assets/sam.png') no-repeat;
+  background-size:18px 31px;
 }
 #scene-sprite-jerry{
-  width:24px;height:31px;
-  background:url('./assets/jerry_idle_1x.png') no-repeat;
-  background-size:48px 31px;
+  width:18px;height:31px;
+  background:url('./assets/jerry.png') no-repeat;
+  background-size:18px 31px;
 }
 #scene-sprite-ester{
   width:18px;height:31px;
@@ -294,8 +297,16 @@ body.reduce-motion #lab-arrow{animation:none;}
   image-rendering:pixelated;
   background-repeat:no-repeat;
 }
-#dialogue-portrait.char-sam{background-image:url('./assets/sam_idle_1x.png');background-size:48px 31px;}
-#dialogue-portrait.char-jerry{background-image:url('./assets/jerry_idle_1x.png');background-size:48px 31px;}
+#dialogue-portrait.char-sam{
+  background-image:url('./assets/sam.png');
+  background-size:18px 31px;
+  width:18px;height:31px;
+}
+#dialogue-portrait.char-jerry{
+  background-image:url('./assets/jerry.png');
+  background-size:18px 31px;
+  width:18px;height:31px;
+}
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-ester{
   background-image:url('./assets/player.png');
@@ -305,9 +316,10 @@ body.reduce-motion #lab-arrow{animation:none;}
 #dialogue-box{
   flex:1;
   padding:4px 6px 5px;
-  font-size:var(--text-body);
+  font-size:calc(var(--text-body) - 1px);
   line-height:1.6;
-  min-height:36px;
+  overflow-y:auto;
+  overflow-x:hidden;
   cursor:pointer;
 }
 #dialogue-box.type-dialogue{background:var(--lyellow);color:var(--navy);}
