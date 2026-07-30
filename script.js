@@ -32,7 +32,11 @@ const SCENE_SCRIPT = [
 
   // Post-crash
   {id:"pa1", type:"inner", text:"It’s just like the samples I used to see a lot in the chemistry lab at school. The only metal to be liquid under room temperature, highly toxic, boiling point at 357°C. And it’s currently making a mess—a highly toxic mess!—on the lab floor.", next:"pa2"},
-  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? I'll fix the mercury leak.", next:"pa2b"},
+  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? I'll fix the mercury leak.", next:"pa2_minigame"},
+
+  // pa2_minigame is a control node — the sensory-overload minigame plays, then dialogue resumes at pa2b
+  {id:"pa2_minigame", type:"control", action:"sensory_minigame", next:"pa2b"},
+
   {id:"pa2b", type:"dialogue", speaker:"ESTER", text:"I’ll write the incident report. Jerry, what’s your surname? I’m putting your name down as the person responsible. I didn’t spend 4 years in college and 2 years in grad school learning nuclear physics to end up in a lab-turned-suicide chamber. And — this was an accident, correct?", next:"pa3"},
   {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That’s what I just said.", next:"pa4"},
   {id:"pa4", type:"inner", text:"Nobody has moved. Sam is looking at the floor.", next:"choice1_inner"},
@@ -316,6 +320,36 @@ function jerryEnter(nextNodeId) {
   }, JERRY_WALK_MS);
 }
 
+function sensoryMinigameMessage(e) {
+  if (!e.data || e.data.source !== "sensory-minigame" || e.data.type !== "complete") return;
+  window.removeEventListener("message", sensoryMinigameMessage);
+  $("#minigame-frame").blur();
+  window.focus();
+  showScreen("scene");
+  sceneAnimTs = performance.now();
+  requestAnimationFrame(sceneAnimLoop);
+  S.transitioning = false;
+  runNode(sensoryMinigameNext);
+}
+
+let sensoryMinigameNext = null;
+
+function startSensoryMinigame(nextNodeId) {
+  // The mercury-cleanup beat hands off to the standalone sensory-overload
+  // minigame (its own document/globals, loaded in an iframe so it can't
+  // collide with this page's own `S`/`$`). It posts a "complete" message
+  // back via postMessage when the player finishes, which resumes the script.
+  S.transitioning = true;
+  sensoryMinigameNext = nextNodeId;
+  $("#dialogue-row").classList.add("hidden");
+  const frame = $("#minigame-frame");
+  frame.src = "./sensory-minigame.html?t=" + Date.now(); // force a fresh load every time
+  showScreen("minigame");
+  window.removeEventListener("message", sensoryMinigameMessage);
+  window.addEventListener("message", sensoryMinigameMessage);
+  frame.addEventListener("load", () => frame.contentWindow.focus(), { once: true });
+}
+
 let sceneAnimTs = 0;
 function sceneAnimLoop(ts) {
   if (S.screen !== "scene") return;
@@ -393,6 +427,7 @@ function runNode(nodeId) {
 
   if (node.type === "control") {
     if (node.action === "jerry_enter") { jerryEnter(node.next); return; }
+    if (node.action === "sensory_minigame") { startSensoryMinigame(node.next); return; }
   }
 
   // Choices
