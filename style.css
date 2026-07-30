@@ -220,7 +220,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   position:absolute;
   image-rendering:pixelated;
   z-index:10;
-  top:118px;
+  top:144px;
 }
 .scene-sprite.dimmed{opacity:0.75;filter:brightness(0.75);}
 .scene-sprite.walking{transition:left 1.3s linear;}
@@ -236,15 +236,18 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
   background-size:18px 31px;
 }
 #scene-sprite-ester{
-  width:18px;height:31px;
+  width:36px;height:62px;
   background:url('./assets/player.png') no-repeat;
-  background-size:18px 31px;
+  background-size:144px 62px;
+  image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
+  top:113px; /* overrides .scene-sprite's top:144px — keeps feet on the same floor line (144+31) at the doubled height */
+  margin-left:-9px; /* half the added width, so she grows symmetrically around the same left-edge movement anchor */
 }
 
 /* Dialogue row: portrait + text box side by side */
 #dialogue-row{
   position:absolute;
-  bottom:29px;left:6px;right:6px;
+  bottom:6px;left:6px;right:6px;
   z-index:50;
   display:flex;
   align-items:flex-end;
@@ -270,12 +273,18 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-ester{
   background-image:url('./assets/player.png');
-  background-size:18px 31px;
-  width:18px;height:31px;
+  background-size:144px 62px;
+  width:36px;height:62px;
+  image-rendering:auto;
+}
+#dialogue-col{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
 }
 #dialogue-box{
-  flex:1;
-  padding:4px 6px 5px;
+  padding:3px 6px 4px;
   font-size:calc(var(--text-body) - 1px);
   line-height:1.6;
   overflow-y:auto;
@@ -288,14 +297,16 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
 #dialogue-speaker{
   font-family:'Arial',monospace;
   font-size:calc(var(--text-body) + 1px);
-  color:var(--purple);
+  color:var(--lyellow);
+  text-shadow:1px 1px 0 var(--navy);
+  padding-left:6px;
   margin-bottom:2px;
 }
 
 /* Choices */
 #choice-panel{
   position:absolute;
-  bottom:29px;left:6px;right:6px;
+  bottom:6px;left:6px;right:6px;
   z-index:55;
   display:flex;flex-direction:column;gap:2px;
 }

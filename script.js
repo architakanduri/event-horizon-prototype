@@ -87,6 +87,7 @@ const S = {
   idleBounce: 0,
   idlePaused: false,
   freeRoam: false,
+  walkFrame: 0,
   playerX: 0,
   // anim
   bhLargeFrame: 0,
@@ -230,6 +231,7 @@ function advanceIntro() {
 
 /* ---- SCENE ---- */
 let sceneIdleBounceTimer = 0;
+let walkAnimTimer = 0;
 
 // Free-roam bounds within the lab.
 const VIEWPORT_WIDTH = 320;
@@ -244,6 +246,7 @@ const PLAYER_MOVE_SPEED = 60; // px/sec
 const JERRY_ENTER_X = SAM_LAB_X + 140; // where Jerry starts, further down the room
 const JERRY_JOIN_X = SAM_LAB_X + 40; // where Jerry ends up, beside Sam and Ester
 const JERRY_WALK_MS = 1300;
+const WALK_FRAME_MS = 130; // ms per leg-cycle frame while Ester is moving
 const moveKeys = { left: false, right: false };
 
 function startScene() {
@@ -260,6 +263,8 @@ function startScene() {
   $("#scene-world").style.left = -S.sceneScrollX + "px";
 
   sceneIdleBounceTimer = 0;
+  walkAnimTimer = 0;
+  S.walkFrame = 0;
   sceneAnimTs = performance.now();
   requestAnimationFrame(sceneAnimLoop);
 }
@@ -310,6 +315,21 @@ function sceneAnimLoop(ts) {
       $("#scene-sprite-ester").style.left = S.playerX + "px";
       S.sceneScrollX = Math.max(0, Math.min(CAM_MAX_SCROLL, S.playerX - VIEWPORT_WIDTH / 2));
       $("#scene-world").style.left = -S.sceneScrollX + "px";
+
+      if (S.settings.reduceMotion) {
+        S.walkFrame = 0;
+      } else {
+        walkAnimTimer += dt;
+        while (walkAnimTimer >= WALK_FRAME_MS) {
+          walkAnimTimer -= WALK_FRAME_MS;
+          S.walkFrame = (S.walkFrame + 1) % 4;
+        }
+      }
+      $("#scene-sprite-ester").style.backgroundPosition = `-${S.walkFrame * 36}px 0`;
+    } else if (S.walkFrame !== 0) {
+      S.walkFrame = 0;
+      walkAnimTimer = 0;
+      $("#scene-sprite-ester").style.backgroundPosition = "0 0";
     }
     if (Math.abs(S.playerX - SAM_LAB_X) <= PROXIMITY_DIST) {
       S.freeRoam = false;
