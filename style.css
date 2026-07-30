@@ -285,7 +285,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 #dialogue-box.type-narration{background:var(--navy);color:var(--yellow);border:1px solid var(--purple);}
 #dialogue-speaker{
   font-family:'Arial',monospace;
-  font-size:4px;
+  font-size:calc(var(--text-body) + 1px);
   color:var(--purple);
   margin-bottom:2px;
 }
