@@ -15,7 +15,7 @@ html,body{
 }
 @font-face{
   font-family:'OpenDyslexic';
-  src:url('./OpenDyslexic-Regular.otf') format('opentype');
+  src:url('./OpenDyslexic-Bold.otf') format('opentype');
   font-display:swap;
 }
 body.dyslexia-font,body.dyslexia-font *{
