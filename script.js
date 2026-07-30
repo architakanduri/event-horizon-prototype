@@ -6,7 +6,7 @@
 
 const INTRO_CARDS = [
   "The universe has gotten a lot busier these days. It barely takes any time to get anywhere, as long as you've got the equipment for it.",
-  "Unfortunately for you, you're stuck where you are.",
+  "Unfortunately for you, Ester, you're stuck where you are.",
   "While fifty years ago, people would have fought tooth and nail to be in your research organization, it’s been exiled to an abandoned space station locked in orbit around a black hole.",
   "This is no situation any reasonable scientist wants to operate in. You don’t really have a choice, though. Your old university decided you were \"uncooperative and a hazard to the scientific community.\”",
   "It seems your only hope is to get this failing research station back to its glory days by fixing the transport ship.",
@@ -87,7 +87,7 @@ const S = {
   typing: false,
   fullText: "",
   transitioning: false,
-  settings: {dyslexia:false, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
+  settings: {dyslexia:true, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
   settingsOpen: false,
   // scene
   sceneScrollX: 0,
