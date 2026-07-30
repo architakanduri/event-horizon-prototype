@@ -13,8 +13,13 @@ html,body{
   background:#000;
   font-family:'Arial',monospace;
 }
+@font-face{
+  font-family:'OpenDyslexic';
+  src:url('./OpenDyslexic-Regular.otf') format('opentype');
+  font-display:swap;
+}
 body.dyslexia-font,body.dyslexia-font *{
-  font-family:'Atkinson Hyperlegible','Segoe UI',Arial,sans-serif!important;
+  font-family:'OpenDyslexic',Arial,sans-serif!important;
 }
 body.text-small #game{--text-body:5px;}
 body.text-large #game{--text-body:8px;}
@@ -124,6 +129,53 @@ button:focus-visible{outline:2px solid var(--yellow);}
 .title-buttons{
   position:absolute;bottom:20px;left:14px;
   display:flex;gap:6px;
+}
+
+/* === PAUSE BUTTON === */
+#btn-pause{
+  position:absolute;top:4px;right:4px;
+  z-index:80;
+  font-size:4px;
+  padding:2px 4px;
+  letter-spacing:1px;
+}
+
+/* === SETTINGS OVERLAY === */
+#settings-overlay{
+  background:rgba(0,0,0,.6);
+  z-index:100;
+}
+#settings-panel{
+  background:var(--navy);
+  border:1px solid var(--purple);
+  padding:10px 12px;
+  width:200px;
+  display:flex;flex-direction:column;
+  gap:7px;
+}
+.settings-title{
+  font-family:'Arial',monospace;
+  font-size:6px;
+  color:var(--lyellow);
+  text-align:center;
+  margin-bottom:2px;
+}
+.settings-row{
+  display:flex;align-items:center;gap:5px;
+  font-family:'Arial',monospace;
+  font-size:5px;
+  color:var(--yellow);
+  cursor:pointer;
+}
+.settings-row input[type="checkbox"]{
+  width:7px;height:7px;
+  accent-color:var(--yellow);
+  cursor:pointer;
+  flex-shrink:0;
+}
+#btn-settings-close{
+  align-self:center;
+  margin-top:4px;
 }
 
 /* === INTRO === */

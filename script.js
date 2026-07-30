@@ -80,6 +80,7 @@ const S = {
   typing: false,
   fullText: "",
   settings: {dyslexia:false, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
+  settingsOpen: false,
   // scene
   sceneScrollX: 0,
   idleBounce: 0,
@@ -189,6 +190,7 @@ function showScreen(name) {
   $$(".screen").forEach(s => s.classList.remove("active"));
   $(`#screen-${name}`).classList.add("active");
   S.screen = name;
+  $("#btn-pause").classList.toggle("hidden", name !== "intro" && name !== "scene");
 }
 
 /* ---- TYPEWRITER ---- */
@@ -225,7 +227,7 @@ function completeType(el) {
 
 /* ---- TITLE SCREEN ---- */
 function initTitle() {
-  $("#btn-start").addEventListener("click", startIntro);
+  $("#btn-start").addEventListener("click", e => { e.stopPropagation(); startIntro(); });
   setTimeout(() => {
     $("#title-text").classList.add("visible");
   }, 100);
@@ -555,9 +557,14 @@ function initRestart() {
 /* ---- GLOBAL INPUT ---- */
 function initInput() {
   document.addEventListener("click", e => {
+    if (S.settingsOpen) return;
     if (S.screen === "intro") advanceIntro();
   });
   document.addEventListener("keydown", e => {
+    if (S.settingsOpen) {
+      if (e.key === "Escape") closeSettings();
+      return;
+    }
     if (S.screen === "intro" && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();
       advanceIntro();
@@ -569,7 +576,60 @@ function initInput() {
     }
   });
   $("#dialogue-row").addEventListener("click", () => {
+    if (S.settingsOpen) return;
     if (S.screen === "scene") advanceScene();
+  });
+}
+
+/* ---- SETTINGS ---- */
+const SETTINGS_STORAGE_KEY = "eventHorizonSettings";
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (raw) Object.assign(S.settings, JSON.parse(raw));
+  } catch (e) { /* localStorage unavailable — fall back to defaults */ }
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(S.settings));
+  } catch (e) { /* localStorage unavailable — settings won't persist */ }
+}
+
+function applySettingsToDOM() {
+  document.body.classList.toggle("dyslexia-font", S.settings.dyslexia);
+  $("#chk-dyslexia").checked = S.settings.dyslexia;
+  $("#chk-instant-text").checked = S.settings.textSpeed === "instant";
+}
+
+function openSettings() {
+  S.settingsOpen = true;
+  $("#settings-overlay").classList.remove("hidden");
+}
+
+function closeSettings() {
+  S.settingsOpen = false;
+  $("#settings-overlay").classList.add("hidden");
+}
+
+function initSettings() {
+  loadSettings();
+  applySettingsToDOM();
+
+  $("#btn-settings").addEventListener("click", openSettings);
+  $("#btn-pause").addEventListener("click", openSettings);
+  $("#btn-settings-close").addEventListener("click", closeSettings);
+
+  $("#chk-dyslexia").addEventListener("change", e => {
+    S.settings.dyslexia = e.target.checked;
+    document.body.classList.toggle("dyslexia-font", S.settings.dyslexia);
+    saveSettings();
+  });
+
+  $("#chk-instant-text").addEventListener("change", e => {
+    S.settings.textSpeed = e.target.checked ? "instant" : "normal";
+    saveSettings();
   });
 }
 
@@ -580,6 +640,7 @@ function init() {
   initBarBlocks();
   initRestart();
   initInput();
+  initSettings();
 
   lastTime = performance.now();
   requestAnimationFrame(titleLoop);
