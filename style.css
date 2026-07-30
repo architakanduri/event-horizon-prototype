@@ -3,7 +3,7 @@
 
 :root{
   --navy:#060a1a;--blue:#12244a;--purple:#6a5cf0;
-  --yellow:#34e6cf;--lyellow:#c8fff2;
+  --yellow:#34e6cf;--lyellow:#c8fff2;--gray:#c7ccd6;
   --px:1;
   --sx:0px;--sy:0px;--bx:0px;--by:0px;
 }
@@ -280,8 +280,8 @@ button:focus-visible{outline:2px solid var(--yellow);}
   overflow-x:hidden;
   cursor:pointer;
 }
-#dialogue-box.type-dialogue{background:var(--lyellow);color:var(--navy);}
-#dialogue-box.type-inner{background:var(--lyellow);color:var(--navy);font-style:italic;}
+#dialogue-box.type-dialogue{background:var(--gray);color:var(--navy);}
+#dialogue-box.type-inner{background:var(--gray);color:var(--navy);font-style:italic;}
 #dialogue-box.type-narration{background:var(--navy);color:var(--yellow);border:1px solid var(--purple);}
 #dialogue-speaker{
   font-family:'Arial',monospace;
