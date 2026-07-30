@@ -21,7 +21,7 @@
       <div class="title-layer title-ui">
         <div id="title-text" class="title-fadein">
           <div class="title-main">EVENT<br>HORIZON</div>
-          <div class="title-sub">Thirty days to keep the lab open.</div>
+          <div class="title-sub">Get this station back to its glory days.</div>
         </div>
         <div class="title-buttons">
           <button class="btn btn-purple" id="btn-start" tabindex="0">START</button>
@@ -40,8 +40,9 @@
       <div id="lab-world">
         <img id="lab-bg" src="./assets/background.png" alt="">
         <div id="lab-blackhole-small"></div>
-        <div id="lab-esther"></div>
-        <div id="lab-prompt" class="hidden">[E] LOOK</div>
+        <div id="lab-ester"></div>
+        <div id="lab-dampener-item"></div>
+        <div id="lab-prompt" class="hidden">[E] ATM. CONTROLS</div>
       </div>
       <div id="lab-footer">
         <div id="lab-objective"></div>
@@ -59,7 +60,7 @@
         <img id="scene-bg" src="./assets/background.png" alt="">
         <div id="scene-sprite-sam" class="scene-sprite" data-char="sam"></div>
         <div id="scene-sprite-jerry" class="scene-sprite hidden" data-char="jerry"></div>
-        <div id="scene-sprite-esther" class="scene-sprite" data-char="esther"></div>
+        <div id="scene-sprite-ester" class="scene-sprite" data-char="ester"></div>
       </div>
       <div id="dialogue-row" class="hidden">
         <div id="dialogue-portrait" class="hidden"></div>
@@ -71,20 +72,55 @@
       <div id="choice-panel" class="hidden"></div>
     </div>
 
-    <!-- ALARM OVERLAY -->
+    <!-- ALARM OVERLAY (kept for quiet-mode fallback) -->
     <div id="alarm-overlay" class="overlay hidden" role="alertdialog" aria-label="Atmospheric Alert">
-      <div class="alarm-box">
-        <div class="alarm-title">ATMOSPHERIC ALERT</div>
-        <div class="alarm-db">96 dB</div>
-        <button class="btn btn-purple choice-btn" data-alarm="ears">
-          Cover your ears and stay
-          <span class="cost">MENTAL -8</span>
-        </button>
-        <button class="btn btn-purple choice-btn" data-alarm="corridor">
-          Step into the corridor and listen from the doorway
-          <span class="cost">SOCIAL -3</span>
-        </button>
+    </div>
+
+    <!-- SCREEN: SENSORY OVERLOAD MINI-GAME -->
+    <div id="screen-sensory" class="screen">
+      <div id="sensory-bg"></div>
+
+      <!-- Phase 1: explanation overlay (shown before alarm begins) -->
+      <div id="sensory-explain" class="soverlay-box">
+        <div class="soverlay-header">ATMOSPHERIC ALERT</div>
+        <div class="soverlay-body" id="sensory-explain-body"></div>
+        <div class="soverlay-hint" id="sensory-explain-hint">[ SPACE ] &nbsp; Continue</div>
       </div>
+
+      <!-- Phase 2: calibration panel (hidden until explanation dismissed) -->
+      <div id="sensory-panel">
+        <div id="sensory-header">REACTOR ALARM</div>
+        <div id="sensory-db">96 dB</div>
+        <div id="sensory-instructions">Calibration zones are shifting. Lock each before overload.</div>
+        <div id="stress-row">
+          <div id="stress-label"><span>STRESS LEVEL</span><span id="stress-val">0%</span></div>
+          <div id="stress-track"><div id="stress-fill"></div></div>
+        </div>
+        <div class="sensory-control" id="ctrl-noise">
+          <div class="ctrl-label">NOISE DAMPENER</div>
+          <div class="ctrl-track">
+            <div class="ctrl-zone" id="noise-zone"></div>
+            <div class="ctrl-handle" id="noise-handle"></div>
+          </div>
+          <div class="ctrl-val" id="noise-val">0%</div>
+        </div>
+        <div class="sensory-control" id="ctrl-light">
+          <div class="ctrl-label">LIGHT FILTER</div>
+          <div class="ctrl-track">
+            <div class="ctrl-zone" id="light-zone"></div>
+            <div class="ctrl-handle" id="light-handle"></div>
+          </div>
+          <div class="ctrl-val" id="light-val">100%</div>
+        </div>
+        <div id="sensory-hint">W RAISE &nbsp; S LOWER &nbsp; SPACE LOCK</div>
+        <div id="sensory-status"></div>
+      </div>
+    </div>
+
+    <!-- Interject lives OUTSIDE #screen-sensory so it never shakes -->
+    <div id="sensory-interject" class="soverlay-box hidden">
+      <div class="soverlay-body" id="sensory-interject-body"></div>
+      <div class="soverlay-hint" id="sensory-interject-hint">[ SPACE ] &nbsp; Put them on</div>
     </div>
 
     <!-- SCREEN: END -->
