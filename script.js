@@ -343,7 +343,8 @@ function startSensoryMinigame(nextNodeId) {
   sensoryMinigameNext = nextNodeId;
   $("#dialogue-row").classList.add("hidden");
   const frame = $("#minigame-frame");
-  frame.src = "./sensory-minigame.html?t=" + Date.now(); // force a fresh load every time
+  const dyslexia = S.settings.dyslexia ? "1" : "0";
+  frame.src = "./sensory-minigame.html?t=" + Date.now() + "&dyslexia=" + dyslexia; // force a fresh load every time
   showScreen("minigame");
   window.removeEventListener("message", sensoryMinigameMessage);
   window.addEventListener("message", sensoryMinigameMessage);

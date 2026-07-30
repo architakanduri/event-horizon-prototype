@@ -12,6 +12,14 @@
   --sx:0px;--sy:0px;--bx:0px;--by:0px;
 }
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Arial',monospace;}
+@font-face{
+  font-family:'OpenDyslexic';
+  src:url('./OpenDyslexic-Bold.otf') format('opentype');
+  font-display:swap;
+}
+body.dyslexia-font,body.dyslexia-font *{
+  font-family:'OpenDyslexic',Arial,sans-serif!important;
+}
 
 #game-wrapper{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
 #game{position:relative;overflow:hidden;width:320px;height:180px;background:#000;}
@@ -237,6 +245,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Ar
 </div>
 <script>
 const $ = s => document.querySelector(s);
+
+document.body.classList.toggle("dyslexia-font", new URLSearchParams(location.search).get("dyslexia") === "1");
 
 /* ---- State ---- */
 const S = {
