@@ -7,14 +7,14 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --navy:#060a1a;--blue:#12244a;--purple:#6a5cf0;
-  --yellow:#34e6cf;--lyellow:#c8fff2;--gray:#c7ccd6;
+  --yellow:#ffc421;--lyellow:#ffda21;
+  --navy:#10067a;--purple:#6b05ab;
   --sx:0px;--sy:0px;--bx:0px;--by:0px;
 }
-html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-family:'Arial',monospace;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Arial',monospace;}
 
 #game-wrapper{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
-#game{position:relative;overflow:hidden;width:320px;height:180px;background:var(--navy);}
+#game{position:relative;overflow:hidden;width:320px;height:180px;background:#000;}
 
 /* Screen */
 #screen-sensory{position:absolute;inset:0;display:block;}
@@ -49,48 +49,65 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
 
 /* Overlay boxes */
 .soverlay-box{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);
-  z-index:20;background:rgba(6,10,26,.97);border:1px solid var(--purple);
-  padding:10px 12px;width:268px;
-  display:flex;flex-direction:column;gap:7px;
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:20;background:rgba(8,2,32,.97);border:1px solid var(--yellow);
+  padding:6px 10px;width:268px;
+  display:flex;flex-direction:column;gap:4px;
   opacity:1;transition:opacity .3s;
 }
 .soverlay-box.hidden{opacity:0;pointer-events:none;display:flex!important;}
-.soverlay-header{font-family:'Arial',monospace;font-size:9px;color:var(--lyellow);letter-spacing:1px;text-align:center;}
-.soverlay-body{font-family:'Arial',monospace;font-size:7px;color:var(--gray);line-height:2;min-height:40px;white-space:pre-wrap;}
-.soverlay-hint{font-family:'Arial',monospace;font-size:6px;color:var(--yellow);display:flex;align-items:center;justify-content:center;gap:5px;opacity:0;transition:opacity .4s;margin-top:2px;}
+.soverlay-header{font-family:'Arial',monospace;font-size:8px;color:var(--yellow);letter-spacing:1px;text-align:center;}
+.soverlay-body{font-family:'Arial',monospace;font-size:7px;color:#ddd;line-height:1.5;white-space:pre-wrap;}
+.soverlay-hint{font-family:'Arial',monospace;font-size:6px;color:var(--yellow);display:flex;align-items:center;justify-content:center;gap:5px;opacity:0;transition:opacity .4s;}
 .soverlay-hint.visible{opacity:1;}
 
 /* Warning overlay */
 #sensory-warning .soverlay-hint{opacity:1;}
 /* Animated space key */
 @keyframes keyBob{
-  0%,100%{transform:translateY(0);box-shadow:0 3px 0 rgba(52,230,207,.5);}
-  50%{transform:translateY(2px);box-shadow:0 1px 0 rgba(52,230,207,.15);}
+  0%,100%{transform:translateY(0);box-shadow:0 3px 0 rgba(255,196,33,.5);}
+  50%{transform:translateY(2px);box-shadow:0 1px 0 rgba(255,196,33,.15);}
 }
 .skey-anim{display:inline-flex!important;vertical-align:middle;animation:keyBob 1.1s ease-in-out infinite;}
-#sensory-key-guide{display:flex;flex-direction:column;gap:5px;padding:5px 2px;border-top:1px solid rgba(52,230,207,.2);}
+#sensory-key-guide{display:flex;flex-direction:column;gap:3px;padding:3px 2px;border-top:1px solid rgba(255,196,33,.2);}
 .skg-row{display:flex;align-items:center;gap:6px;}
 .skg-group{display:flex;flex-direction:column;gap:1px;}
 .skg-keys-row{display:flex;gap:1px;}
+.skg-diagram{display:flex;flex-direction:column;gap:2px;}
+.skg-diagram+.skg-diagram{border-top:1px solid rgba(255,196,33,.12);padding-top:2px;}
+.skg-diag-inner{border:1px solid rgba(255,196,33,.6);padding:2px 4px;display:flex;flex-direction:column;gap:1px;}
+.skg-diag-name{font-family:'Arial',monospace;font-size:4px;color:var(--purple);}
+.skg-diag-track{position:relative;width:100%;height:6px;background:var(--purple);}
+.skg-diag-zone{position:absolute;height:100%;width:32%;left:36%;background:rgba(0,180,0,.25);border-left:1px solid #0a0;border-right:1px solid #0a0;}
+.skg-zone-hit{background:rgba(0,200,0,.45);border-color:#4d4;}
+.skg-diag-handle{position:absolute;width:5px;height:9px;top:-1.5px;background:var(--yellow);}
+.skg-handle-hit{background:#4c4;left:43%;}
+@keyframes slideIntoZone{
+  0%,10%{left:8%;}
+  50%,75%{left:43%;}
+  90%,100%{left:8%;}
+}
+.skg-handle-slide{animation:slideIntoZone 2.8s ease-in-out infinite;}
+.skg-caption{display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
+.skg-caption-text{font-family:'Arial',monospace;font-size:5px;color:rgba(255,255,255,.7);}
 .skey{
-  width:16px;height:16px;
-  border:1px solid rgba(52,230,207,.65);
-  background:rgba(52,230,207,.08);
-  box-shadow:0 1px 0 rgba(52,230,207,.35);
+  width:13px;height:13px;
+  border:1px solid rgba(255,196,33,.65);
+  background:rgba(255,196,33,.08);
+  box-shadow:0 1px 0 rgba(255,196,33,.35);
   font-family:'Arial',monospace;font-size:7px;color:var(--yellow);
   display:flex;align-items:center;justify-content:center;
   border-radius:1px;
 }
-.skey-space{width:90px;height:12px;font-size:6px;}
+.skey-space{width:80px;height:10px;font-size:6px;}
 .skey-dim{opacity:0.28;}
-.skg-or{font-family:'Arial',monospace;font-size:6px;color:rgba(199,204,214,.55);flex-shrink:0;}
-.skg-label{font-family:'Arial',monospace;font-size:6px;color:rgba(199,204,214,.8);}
+.skg-or{font-family:'Arial',monospace;font-size:6px;color:rgba(255,255,255,.4);flex-shrink:0;}
+.skg-label{font-family:'Arial',monospace;font-size:6px;color:rgba(255,255,255,.65);}
 
 /* Interject */
 #sensory-interject{z-index:50;top:44%;transform:translate(-50%,0);transition:box-shadow .8s ease,border-color .8s ease;}
 #sensory-interject .soverlay-body{font-size:9px;line-height:1.8;}
-#sensory-interject.breath-focus{border-color:rgba(52,230,207,.95);box-shadow:0 0 18px rgba(52,230,207,.45);}
+#sensory-interject.breath-focus{border-color:rgba(255,196,33,.95);box-shadow:0 0 18px rgba(255,196,33,.45);}
 
 /* Blur game screen during breath-focus moment */
 #screen-sensory{transition:filter .8s ease;}
@@ -101,11 +118,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   z-index:10;display:flex;flex-direction:column;align-items:center;
   gap:5px;padding:10px;
-  background:rgba(18,36,74,.92);border:2px solid var(--purple);width:276px;
+  background:rgba(16,6,122,.92);border:2px solid var(--yellow);width:276px;
   opacity:0;transition:opacity .45s;pointer-events:none;
 }
 #sensory-panel.visible{opacity:1;pointer-events:auto;}
-#sensory-header{font-family:'Arial',monospace;font-size:9px;color:var(--lyellow);}
+#sensory-header{font-family:'Arial',monospace;font-size:9px;color:var(--yellow);}
 #sensory-db{font-family:'Arial',monospace;font-size:15px;color:var(--lyellow);}
 #sensory-instructions{font-size:6px;color:var(--yellow);text-align:center;max-width:240px;line-height:1.5;}
 
@@ -127,7 +144,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
 .ctrl-zone{position:absolute;height:100%;background:rgba(0,180,0,.25);border-left:1px solid #0a0;border-right:1px solid #0a0;transition:left .1s linear,width .1s linear;}
 .ctrl-handle{position:absolute;width:6px;height:12px;top:-2px;background:var(--yellow);}
 .ctrl-val{font-family:'Arial',monospace;font-size:6px;color:var(--lyellow);text-align:right;width:200px;align-self:center;}
-#sensory-hint{font-family:'Arial',monospace;font-size:5px;color:var(--yellow);opacity:.7;}
 #sensory-status{font-family:'Arial',monospace;font-size:7px;color:#4c4;min-height:8px;text-align:center;}
 #sensory-status.warning{color:#f55;}
 </style>
@@ -143,37 +159,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
         <div class="soverlay-header">CONTENT WARNING</div>
         <div class="soverlay-body">This section simulates sensory overload — flashing lights, noise readings, and screen shake.</div>
         <div id="sensory-key-guide">
-          <div class="skg-row">
-            <div class="skg-group">
-              <div class="skg-keys-row">
-                <div class="skey" style="visibility:hidden"></div>
-                <div class="skey skey-dim">W</div>
-                <div class="skey" style="visibility:hidden"></div>
-              </div>
-              <div class="skg-keys-row">
-                <div class="skey">A</div>
-                <div class="skey skey-dim">S</div>
-                <div class="skey">D</div>
+          <div class="skg-diagram">
+            <div class="skg-diag-inner">
+              <div class="skg-diag-name">NOISE DAMPENER</div>
+              <div class="skg-diag-track">
+                <div class="skg-diag-zone"></div>
+                <div class="skg-diag-handle skg-handle-slide"></div>
               </div>
             </div>
-            <div class="skg-or">or</div>
-            <div class="skg-group">
-              <div class="skg-keys-row">
-                <div class="skey" style="visibility:hidden"></div>
-                <div class="skey skey-dim">↑</div>
-                <div class="skey" style="visibility:hidden"></div>
-              </div>
-              <div class="skg-keys-row">
-                <div class="skey">←</div>
-                <div class="skey skey-dim">↓</div>
-                <div class="skey">→</div>
-              </div>
+            <div class="skg-caption">
+              <span class="skey skey-dim">A</span>
+              <span class="skey">←</span>
+              <span class="skey">→</span>
+              <span class="skey skey-dim">D</span>
+              <span class="skg-caption-text">Move into green zone</span>
             </div>
-            <div class="skg-label">Move the slider</div>
           </div>
-          <div class="skg-row">
-            <div class="skey skey-space">SPACE</div>
-            <div class="skg-label">Press to lock</div>
+          <div class="skg-diagram">
+            <div class="skg-diag-inner">
+              <div class="skg-diag-name">NOISE DAMPENER</div>
+              <div class="skg-diag-track">
+                <div class="skg-diag-zone skg-zone-hit"></div>
+                <div class="skg-diag-handle skg-handle-hit"></div>
+              </div>
+            </div>
+            <div class="skg-caption">
+              <span class="skey skey-space">SPACE</span>
+              <span class="skg-caption-text">Press to lock</span>
+            </div>
           </div>
         </div>
         <div class="soverlay-hint"><span class="skey skey-space skey-anim">SPACE</span>Press to continue</div>
@@ -211,7 +224,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
           <div class="ctrl-val" id="light-val">100%</div>
         </div>
         <div id="sensory-instructions">Calibration zones are shifting. Lock each before overload.</div>
-        <div id="sensory-hint">W A S D &nbsp; ↑ ↓ ← → &nbsp; RAISE / LOWER &nbsp;&nbsp; SPACE LOCK</div>
         <div id="sensory-status"></div>
       </div>
     </div>
