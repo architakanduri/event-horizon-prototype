@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sensory Overload Mini-Game</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --yellow:#ffc421;--lyellow:#ffda21;
+  --navy:#10067a;--purple:#6b05ab;
+  --sx:0px;--sy:0px;--bx:0px;--by:0px;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Arial',monospace;}
+
+#game-wrapper{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+#game{position:relative;overflow:hidden;width:320px;height:180px;background:#000;}
+
+/* Screen */
+#screen-sensory{position:absolute;inset:0;display:block;}
+
+/* Background */
+#sensory-bg{
+  position:absolute;width:116%;height:116%;top:-8%;left:-8%;
+  background:#1a0008;animation:bgFlashIntro 3s infinite;
+}
+@keyframes bgFlashIntro{0%,100%{background:rgba(18,0,7,1);}50%{background:rgba(30,0,10,.85);}}
+@keyframes bgFlash{0%,100%{background:rgba(40,0,12,1);}50%{background:rgba(180,0,40,.85);}}
+@keyframes bgFlashCalm{0%,100%{background:rgba(20,0,8,1);}50%{background:rgba(55,0,18,.75);}}
+
+@keyframes shake{
+  0%,100%{transform:translate(0,0)}
+  15%{transform:translate(calc(var(--sx)*-1),var(--sy))}
+  30%{transform:translate(var(--sx),calc(var(--sy)*-1))}
+  45%{transform:translate(calc(var(--sx)*-.7),calc(var(--sy)*-.8))}
+  60%{transform:translate(var(--sx),var(--sy))}
+  75%{transform:translate(calc(var(--sx)*-.9),0)}
+  90%{transform:translate(calc(var(--sx)*.6),calc(var(--sy)*-.5))}
+}
+@keyframes shake-bg{
+  0%,100%{transform:translate(0,0)}
+  15%{transform:translate(calc(var(--bx)*-1),var(--by))}
+  30%{transform:translate(var(--bx),calc(var(--by)*-1))}
+  45%{transform:translate(calc(var(--bx)*-.7),calc(var(--by)*-.8))}
+  60%{transform:translate(var(--bx),var(--by))}
+  75%{transform:translate(calc(var(--bx)*-.9),0)}
+  90%{transform:translate(calc(var(--bx)*.6),calc(var(--by)*-.5))}
+}
+
+/* Overlay boxes */
+.soverlay-box{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);
+  z-index:20;background:rgba(8,2,32,.97);border:1px solid var(--yellow);
+  padding:10px 12px;width:268px;
+  display:flex;flex-direction:column;gap:7px;
+  opacity:1;transition:opacity .3s;
+}
+.soverlay-box.hidden{opacity:0;pointer-events:none;display:flex!important;}
+.soverlay-header{font-family:'Arial',monospace;font-size:9px;color:var(--yellow);letter-spacing:1px;text-align:center;}
+.soverlay-body{font-family:'Arial',monospace;font-size:7px;color:#ddd;line-height:2;min-height:40px;white-space:pre-wrap;}
+.soverlay-hint{font-family:'Arial',monospace;font-size:6px;color:var(--yellow);display:flex;align-items:center;justify-content:center;gap:5px;opacity:0;transition:opacity .4s;margin-top:2px;}
+.soverlay-hint.visible{opacity:1;}
+
+/* Warning overlay */
+#sensory-warning .soverlay-hint{opacity:1;}
+/* Animated space key */
+@keyframes keyBob{
+  0%,100%{transform:translateY(0);box-shadow:0 3px 0 rgba(255,196,33,.5);}
+  50%{transform:translateY(2px);box-shadow:0 1px 0 rgba(255,196,33,.15);}
+}
+.skey-anim{display:inline-flex!important;vertical-align:middle;animation:keyBob 1.1s ease-in-out infinite;}
+#sensory-key-guide{display:flex;flex-direction:column;gap:5px;padding:5px 2px;border-top:1px solid rgba(255,196,33,.2);}
+.skg-row{display:flex;align-items:center;gap:6px;}
+.skg-group{display:flex;flex-direction:column;gap:1px;}
+.skg-keys-row{display:flex;gap:1px;}
+.skey{
+  width:16px;height:16px;
+  border:1px solid rgba(255,196,33,.65);
+  background:rgba(255,196,33,.08);
+  box-shadow:0 1px 0 rgba(255,196,33,.35);
+  font-family:'Arial',monospace;font-size:7px;color:var(--yellow);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:1px;
+}
+.skey-space{width:90px;height:12px;font-size:6px;}
+.skey-dim{opacity:0.28;}
+.skg-or{font-family:'Arial',monospace;font-size:6px;color:rgba(255,255,255,.4);flex-shrink:0;}
+.skg-label{font-family:'Arial',monospace;font-size:6px;color:rgba(255,255,255,.65);}
+
+/* Interject */
+#sensory-interject{z-index:50;top:44%;transform:translate(-50%,0);transition:box-shadow .8s ease,border-color .8s ease;}
+#sensory-interject .soverlay-body{font-size:9px;line-height:1.8;}
+#sensory-interject.breath-focus{border-color:rgba(255,196,33,.95);box-shadow:0 0 18px rgba(255,196,33,.45);}
+
+/* Blur game screen during breath-focus moment */
+#screen-sensory{transition:filter .8s ease;}
+#screen-sensory.breath-focus{filter:blur(2.5px) brightness(.45);}
+
+/* Calibration panel */
+#sensory-panel{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:10;display:flex;flex-direction:column;align-items:center;
+  gap:5px;padding:10px;
+  background:rgba(16,6,122,.92);border:2px solid var(--yellow);width:276px;
+  opacity:0;transition:opacity .45s;pointer-events:none;
+}
+#sensory-panel.visible{opacity:1;pointer-events:auto;}
+#sensory-header{font-family:'Arial',monospace;font-size:9px;color:var(--yellow);}
+#sensory-db{font-family:'Arial',monospace;font-size:15px;color:var(--lyellow);}
+#sensory-instructions{font-size:6px;color:var(--yellow);text-align:center;max-width:240px;line-height:1.5;}
+
+/* Stress bar */
+#stress-row{width:100%;display:flex;flex-direction:column;gap:3px;padding:3px 4px;}
+#stress-label{font-family:'Arial',monospace;font-size:6px;color:#f55;display:flex;justify-content:space-between;}
+#stress-track{width:200px;height:9px;background:rgba(100,0,0,.4);border:1px solid #600;align-self:center;overflow:hidden;}
+#stress-fill{height:100%;width:0%;background:linear-gradient(90deg,#4c4 0%,#fa0 50%,#f44 100%);background-size:200px 100%;}
+
+/* Slider controls */
+.sensory-control{width:100%;display:flex;flex-direction:column;gap:2px;padding:3px 4px;border:1px solid transparent;}
+.sensory-control.selected{border-color:var(--yellow);}
+.sensory-control.locked{border-color:#4c4;}
+.sensory-control.locked .ctrl-label,.sensory-control.locked .ctrl-val{color:#4c4;}
+.sensory-control.in-range .ctrl-label{color:#4c4;}
+.sensory-control.in-range .ctrl-handle{background:#4c4;}
+.ctrl-label{font-family:'Arial',monospace;font-size:6px;color:var(--purple);}
+.ctrl-track{position:relative;width:200px;height:8px;background:var(--purple);align-self:center;}
+.ctrl-zone{position:absolute;height:100%;background:rgba(0,180,0,.25);border-left:1px solid #0a0;border-right:1px solid #0a0;transition:left .1s linear,width .1s linear;}
+.ctrl-handle{position:absolute;width:6px;height:12px;top:-2px;background:var(--yellow);}
+.ctrl-val{font-family:'Arial',monospace;font-size:6px;color:var(--lyellow);text-align:right;width:200px;align-self:center;}
+#sensory-hint{font-family:'Arial',monospace;font-size:5px;color:var(--yellow);opacity:.7;}
+#sensory-status{font-family:'Arial',monospace;font-size:7px;color:#4c4;min-height:8px;text-align:center;}
+#sensory-status.warning{color:#f55;}
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+  <div id="game">
+    <div id="screen-sensory">
+      <div id="sensory-bg"></div>
+
+      <!-- Phase 0: content warning + mode picker -->
+      <div id="sensory-warning" class="soverlay-box hidden">
+        <div class="soverlay-header">CONTENT WARNING</div>
+        <div class="soverlay-body">This section simulates sensory overload — flashing lights, noise readings, and screen shake.</div>
+        <div id="sensory-key-guide">
+          <div class="skg-row">
+            <div class="skg-group">
+              <div class="skg-keys-row">
+                <div class="skey" style="visibility:hidden"></div>
+                <div class="skey skey-dim">W</div>
+                <div class="skey" style="visibility:hidden"></div>
+              </div>
+              <div class="skg-keys-row">
+                <div class="skey">A</div>
+                <div class="skey skey-dim">S</div>
+                <div class="skey">D</div>
+              </div>
+            </div>
+            <div class="skg-or">or</div>
+            <div class="skg-group">
+              <div class="skg-keys-row">
+                <div class="skey" style="visibility:hidden"></div>
+                <div class="skey skey-dim">↑</div>
+                <div class="skey" style="visibility:hidden"></div>
+              </div>
+              <div class="skg-keys-row">
+                <div class="skey">←</div>
+                <div class="skey skey-dim">↓</div>
+                <div class="skey">→</div>
+              </div>
+            </div>
+            <div class="skg-label">Move the slider</div>
+          </div>
+          <div class="skg-row">
+            <div class="skey skey-space">SPACE</div>
+            <div class="skg-label">Press to lock</div>
+          </div>
+        </div>
+        <div class="soverlay-hint"><span class="skey skey-space skey-anim">SPACE</span>Press to continue</div>
+      </div>
+
+      <!-- Phase 1: explanation -->
+      <div id="sensory-explain" class="soverlay-box hidden">
+        <div class="soverlay-header">ATMOSPHERIC ALERT</div>
+        <div class="soverlay-body" id="sensory-explain-body"></div>
+        <div class="soverlay-hint" id="sensory-explain-hint"><span class="skey skey-space skey-anim">SPACE</span>Continue</div>
+      </div>
+
+      <!-- Phase 2: calibration panel -->
+      <div id="sensory-panel">
+        <div id="sensory-header">REACTOR ALARM</div>
+        <div id="sensory-db">96 dB</div>
+        <div id="stress-row">
+          <div id="stress-label"><span>STRESS LEVEL</span><span id="stress-val">0%</span></div>
+          <div id="stress-track"><div id="stress-fill"></div></div>
+        </div>
+        <div class="sensory-control" id="ctrl-noise">
+          <div class="ctrl-label">NOISE DAMPENER</div>
+          <div class="ctrl-track">
+            <div class="ctrl-zone" id="noise-zone"></div>
+            <div class="ctrl-handle" id="noise-handle"></div>
+          </div>
+          <div class="ctrl-val" id="noise-val">0%</div>
+        </div>
+        <div class="sensory-control" id="ctrl-light">
+          <div class="ctrl-label">LIGHT FILTER</div>
+          <div class="ctrl-track">
+            <div class="ctrl-zone" id="light-zone"></div>
+            <div class="ctrl-handle" id="light-handle"></div>
+          </div>
+          <div class="ctrl-val" id="light-val">100%</div>
+        </div>
+        <div id="sensory-instructions">Calibration zones are shifting. Lock each before overload.</div>
+        <div id="sensory-hint">W A S D &nbsp; ↑ ↓ ← → &nbsp; RAISE / LOWER &nbsp;&nbsp; SPACE LOCK</div>
+        <div id="sensory-status"></div>
+      </div>
+    </div>
+
+    <!-- Interject lives outside #screen-sensory so it never shakes -->
+    <div id="sensory-interject" class="soverlay-box hidden">
+      <div class="soverlay-body" id="sensory-interject-body"></div>
+      <div class="soverlay-hint" id="sensory-interject-hint"></div>
+    </div>
+  </div>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+
+/* ---- State ---- */
+const S = {
+  screen: "sensory",
+  sensoryNoise: 0, sensoryLight: 100,
+  sensoryPhase: 0, sensoryDone: false,
+  sensoryState: "idle",
+  sensoryStress: 0,
+  sensoryInterjectShown: false,
+  sensoryInterjectActive: false,
+  sensoryHasDampeners: false,
+  sensoryUiReady: false,
+  sensoryCalmMode: false,
+};
+
+/* ---- Constants ---- */
+const SENSORY_TRACK_W = 200;
+const SENSORY_STEP    = 6;
+const NOISE_CENTER = 65, NOISE_HALF = 15, NOISE_SWING = 24, NOISE_FREQ = 0.50;
+const LIGHT_CENTER = 50, LIGHT_HALF = 10, LIGHT_SWING = 20, LIGHT_FREQ = 0.44;
+
+const SENSORY_EXPLAIN_TEXT =
+  "A device containing elemental mercury has overturned near the ventilation intake. " +
+  "The atmospheric alarm triggered automatically.\n\n" +
+  "Noise and light readings are approaching hazardous levels. " +
+  "The environmental systems need manual calibration before conditions become unmanageable.";
+
+const SENSORY_INTERJECT_TEXT =
+  "The alarm is deafening.\n\n" +
+  "Your noise-canceling dampeners are on the desk — second drawer.";
+
+/* ---- Module-level vars ---- */
+let sensoryWarningTimer = null;
+let sensoryTypeTimer    = null;
+let sensoryGameActive   = false;
+let sensoryStartTime    = 0;
+let sensoryLastTs       = 0;
+let sensoryCurrentFlashDur = 3;
+let sensoryCurrentNoiseMin, sensoryCurrentNoiseMax;
+let sensoryCurrentLightMin, sensoryCurrentLightMax;
+let noiseDodge = 0;
+let breathPhase = "idle";
+let breathAnimTs = 0;
+let breathStartStress = 80;
+let breathTargetIdx = 0;
+const BREATH_TARGETS  = [16, 0];
+const BREATH_HINTS    = [
+  "Take a deep breath",
+  "One more breath"
+];
+const BREATH_HOLD_MS  = 550;
+let breathHoldActive  = false;
+let breathHoldStart   = 0;
+
+/* ================================================================ */
+function startSensoryGame() {
+  S.sensoryNoise = 0; S.sensoryLight = 100;
+  S.sensoryPhase = 0; S.sensoryDone = false;
+  S.sensoryState = "explain";
+  S.sensoryStress = 0;
+  S.sensoryInterjectShown = false;
+  S.sensoryInterjectActive = false;
+  S.sensoryHasDampeners = false;
+  S.sensoryUiReady = false;
+  S.sensoryCalmMode = false;
+  sensoryGameActive = false;
+  sensoryCurrentFlashDur = 3;
+  noiseDodge = 0;
+  breathPhase = "idle";
+  breathTargetIdx = 0;
+  breathHoldActive = false;
+
+  sensoryCurrentNoiseMin = NOISE_CENTER - NOISE_HALF;
+  sensoryCurrentNoiseMax = NOISE_CENTER + NOISE_HALF;
+  sensoryCurrentLightMin = LIGHT_CENTER - LIGHT_HALF;
+  sensoryCurrentLightMax = LIGHT_CENTER + LIGHT_HALF;
+
+  sensoryResetShake();
+  $("#sensory-interject").classList.add("hidden");
+  $("#sensory-interject-body").textContent = "";
+  $("#sensory-interject-hint").classList.remove("visible");
+
+  $("#sensory-warning").classList.add("hidden");
+  $("#sensory-explain").classList.remove("hidden");
+  $("#sensory-explain-body").textContent = "";
+  $("#sensory-explain-hint").classList.remove("visible");
+  $("#sensory-panel").classList.remove("visible");
+  $("#sensory-bg").style.animation = "bgFlashIntro 3s infinite";
+  S.sensoryUiReady = false;
+  clearTimeout(sensoryTypeTimer);
+  sensoryTypeTimer = setTimeout(() => {
+    sensoryTypeText(
+      $("#sensory-explain-body"),
+      SENSORY_EXPLAIN_TEXT,
+      () => { S.sensoryUiReady = true; $("#sensory-explain-hint").classList.add("visible"); },
+      8, 22
+    );
+  }, 200);
+
+  resetSensoryUI();
+  document.removeEventListener("keydown", sensoryKeyDown);
+  document.addEventListener("keydown", sensoryKeyDown);
+  document.removeEventListener("keyup", sensoryKeyUp);
+  document.addEventListener("keyup", sensoryKeyUp);
+}
+
+function sensoryKeyUp(e) {
+  if (e.key !== " ") return;
+  if (breathHoldActive) {
+    breathHoldActive = false;
+    const hint = $("#sensory-interject-hint");
+    hint.innerHTML = '<span class="skey skey-space skey-anim">SPACE</span>' + BREATH_HINTS[Math.min(breathTargetIdx, BREATH_HINTS.length - 1)];
+  }
+}
+
+function startSensoryCalibration() {
+  S.sensoryState = "calibrate";
+  S.sensoryUiReady = false;
+  $("#sensory-explain").classList.add("hidden");
+
+  sensoryCurrentFlashDur = 1.4;
+  const onsetFlash = S.sensoryCalmMode ? "bgFlashCalm" : "bgFlash";
+  $("#sensory-bg").style.animation = `${onsetFlash} ${sensoryCurrentFlashDur}s infinite`;
+
+  setTimeout(() => { $("#sensory-panel").classList.add("visible"); }, 180);
+
+  sensoryStartTime = performance.now();
+  sensoryLastTs    = sensoryStartTime;
+  sensoryGameActive = true;
+  requestAnimationFrame(sensoryGameLoop);
+}
+
+function triggerSensoryInterject() {
+  S.sensoryInterjectShown  = true;
+  S.sensoryInterjectActive = true;
+  S.sensoryUiReady = false;
+  breathPhase = "idle";
+  $("#sensory-interject").classList.remove("hidden");
+  clearTimeout(sensoryTypeTimer);
+  sensoryTypeText(
+    $("#sensory-interject-body"),
+    SENSORY_INTERJECT_TEXT,
+    () => {
+      breathPhase = "pickup";
+      const hint = $("#sensory-interject-hint");
+      hint.innerHTML = '<span class="skey skey-space skey-anim">SPACE</span>Pick up dampeners';
+      hint.classList.add("visible");
+      S.sensoryUiReady = true;
+    }
+  );
+}
+
+function breathAnimLoop(ts) {
+  if (breathPhase === "idle") return;
+
+  if (breathPhase === "falling1") {
+    const t = Math.min(1, (ts - breathAnimTs) / 3000);
+    S.sensoryStress = breathStartStress - (breathStartStress - 60) * t;
+    if (t >= 1) {
+      S.sensoryStress = 60;
+      breathTargetIdx = 0;
+      breathPhase = "waiting";
+      const hint = $("#sensory-interject-hint");
+      hint.innerHTML = '<span class="skey skey-space skey-anim">SPACE</span>' + BREATH_HINTS[0];
+      hint.classList.add("visible");
+      $("#screen-sensory").classList.add("breath-focus");
+      $("#sensory-interject").classList.add("breath-focus");
+      S.sensoryUiReady = true;
+      return;
+    }
+    requestAnimationFrame(breathAnimLoop);
+    return;
+  }
+
+  if (breathPhase === "falling2") {
+    const target = BREATH_TARGETS[breathTargetIdx];
+    const t = Math.min(1, (ts - breathAnimTs) / 4000);
+    S.sensoryStress = breathStartStress - (breathStartStress - target) * t;
+    if (t >= 1) {
+      S.sensoryStress = target;
+      breathTargetIdx++;
+      if (breathTargetIdx >= BREATH_TARGETS.length) {
+        S.sensoryStress = 0;
+        breathPhase = "idle";
+        finishEquipDampeners();
+        return;
+      }
+      breathPhase = "waiting";
+      const hint = $("#sensory-interject-hint");
+      hint.innerHTML = '<span class="skey skey-space skey-anim">SPACE</span>' + BREATH_HINTS[Math.min(breathTargetIdx, BREATH_HINTS.length - 1)];
+      hint.classList.add("visible");
+      $("#screen-sensory").classList.add("breath-focus");
+      $("#sensory-interject").classList.add("breath-focus");
+      S.sensoryUiReady = true;
+      return;
+    }
+    requestAnimationFrame(breathAnimLoop);
+  }
+}
+
+function runBreathHold() {
+  if (!breathHoldActive) return;
+  const elapsed  = performance.now() - breathHoldStart;
+  const progress = Math.min(1, elapsed / BREATH_HOLD_MS);
+  const filled   = Math.round(progress * 10);
+  const hint     = $("#sensory-interject-hint");
+  hint.textContent = "[ HOLD ] " + "█".repeat(filled) + "░".repeat(10 - filled);
+  if (progress >= 1) {
+    breathHoldActive = false;
+    $("#screen-sensory").classList.remove("breath-focus");
+    $("#sensory-interject").classList.remove("breath-focus");
+    breathStartStress = S.sensoryStress;
+    breathPhase   = "falling2";
+    breathAnimTs  = performance.now();
+    S.sensoryUiReady = false;
+    hint.textContent = "Breathe out...";
+    requestAnimationFrame(breathAnimLoop);
+    return;
+  }
+  requestAnimationFrame(runBreathHold);
+}
+
+function finishEquipDampeners() {
+  S.sensoryHasDampeners    = true;
+  S.sensoryInterjectActive = false;
+  S.sensoryUiReady         = false;
+  $("#screen-sensory").classList.remove("breath-focus");
+  $("#sensory-interject").classList.remove("breath-focus");
+  $("#sensory-interject").classList.add("hidden");
+  $("#sensory-interject-body").textContent = "";
+  $("#sensory-interject-hint").classList.remove("visible");
+  sensoryCurrentFlashDur = 1.8;
+  noiseDodge = 0;
+  sensoryResetShake();
+  sensoryShowStatus("Better. Now calibrate the environmental systems.", false);
+}
+
+/* ---- Game loop ---- */
+function sensoryGameLoop(ts) {
+  if (!sensoryGameActive) return;
+
+  const dt      = Math.min(ts - sensoryLastTs, 50) / 1000;
+  sensoryLastTs = ts;
+  const elapsed = (ts - sensoryStartTime) / 1000;
+
+  if (S.sensoryStress >= 80 && !S.sensoryInterjectShown && !S.sensoryDone) {
+    S.sensoryStress = 80;
+    triggerSensoryInterject();
+  }
+
+  if (!S.sensoryInterjectActive) {
+    const baseRate = S.sensoryCalmMode
+      ? (S.sensoryPhase >= 1 ? 2.5 : 4)
+      : (S.sensoryPhase >= 1 ? 5.5 : 9);
+    const rate = S.sensoryHasDampeners ? 0.8 : baseRate;
+    const cap  = S.sensoryInterjectShown ? 100 : 80;
+    S.sensoryStress = Math.min(cap, S.sensoryStress + rate * dt);
+  }
+
+  const driftRate = 1.8 + S.sensoryStress * 0.09;
+  if (S.sensoryPhase === 0) S.sensoryNoise = Math.max(0,   S.sensoryNoise - driftRate * dt);
+  if (!S.sensoryDone)       S.sensoryLight = Math.min(100, S.sensoryLight + driftRate * dt);
+
+  const oscE     = Math.max(0, elapsed - 4);
+  const speedMul = 1 + (S.sensoryStress / 100) * 0.9;
+  const noiseSin = NOISE_CENTER + Math.sin(oscE * NOISE_FREQ * speedMul) * NOISE_SWING;
+  const lCtr     = LIGHT_CENTER + Math.sin(oscE * LIGHT_FREQ * speedMul + 2.1) * LIGHT_SWING;
+
+  let nCtr = noiseSin;
+  if (S.sensoryPhase === 0 && !S.sensoryHasDampeners && !S.sensoryDone) {
+    const handle = S.sensoryNoise;
+    const aCtr   = noiseSin + noiseDodge;
+    const dist   = handle - aCtr;
+    const flee   = NOISE_HALF + 5;
+    if (Math.abs(dist) < flee) {
+      const rawSafe = handle - Math.sign(dist || 1) * flee;
+      const safeCtr = rawSafe < NOISE_HALF        ? Math.min(100 - NOISE_HALF, handle + flee)
+                    : rawSafe > 100 - NOISE_HALF  ? Math.max(NOISE_HALF,       handle - flee)
+                    : rawSafe;
+      noiseDodge += (safeCtr - aCtr) * Math.min(1, dt * 18);
+    } else {
+      noiseDodge *= Math.max(0, 1 - dt * 4);
+    }
+    nCtr = Math.max(NOISE_HALF, Math.min(100 - NOISE_HALF, noiseSin + noiseDodge));
+  } else {
+    noiseDodge = 0;
+  }
+
+  if (S.sensoryPhase === 0) {
+    sensoryCurrentNoiseMin = nCtr - NOISE_HALF;
+    sensoryCurrentNoiseMax = nCtr + NOISE_HALF;
+  }
+  if (!S.sensoryDone) {
+    sensoryCurrentLightMin = lCtr - LIGHT_HALF;
+    sensoryCurrentLightMax = lCtr + LIGHT_HALF;
+  }
+  updateSensoryZones();
+  renderSensoryStress();
+  applyStressEffects();
+  renderSensory();
+
+  if (S.sensoryStress >= 100 && !S.sensoryDone) {
+    triggerSensoryFail();
+    return;
+  }
+  requestAnimationFrame(sensoryGameLoop);
+}
+
+/* ---- Stress visuals ---- */
+function applyStressEffects() {
+  const s      = S.sensoryStress;
+  const hasDamp = S.sensoryHasDampeners;
+  const root   = document.documentElement;
+  const screen = $("#screen-sensory");
+  const bg     = $("#sensory-bg");
+
+  if (S.sensoryCalmMode) {
+    const d = +(2.5 - (s / 100) * 1.5).toFixed(2);
+    root.style.setProperty("--sx","0px"); root.style.setProperty("--sy","0px");
+    root.style.setProperty("--bx","0px"); root.style.setProperty("--by","0px");
+    screen.style.animation = "none";
+    bg.style.animation = `bgFlashCalm ${d}s infinite`;
+    return;
+  }
+
+  const flashMin = hasDamp ? 0.55 : 0.16;
+  const flashMax = hasDamp ? 2.2  : 1.40;
+  sensoryCurrentFlashDur = +(flashMax - (s / 100) * (flashMax - flashMin)).toFixed(2);
+
+  const threshold = hasDamp ? 42 : 20;
+  const maxPx     = hasDamp ? 1.8 : 4.5;
+  const anim      = hasDamp ? "bgFlashCalm" : "bgFlash";
+
+  if (s < threshold) {
+    root.style.setProperty("--sx","0px"); root.style.setProperty("--sy","0px");
+    root.style.setProperty("--bx","0px"); root.style.setProperty("--by","0px");
+    screen.style.animation = "none";
+    bg.style.animation     = `${anim} ${sensoryCurrentFlashDur}s infinite`;
+    return;
+  }
+  const t       = (s - threshold) / (100 - threshold);
+  const totalPx = maxPx * t;
+  const gamePx  = +(totalPx * 0.38).toFixed(1);
+  const bgPx    = +(totalPx * 0.62).toFixed(1);
+  const spd     = Math.round(500 - t * (hasDamp ? 360 : 445));
+
+  root.style.setProperty("--sx", gamePx + "px");
+  root.style.setProperty("--sy", (gamePx * 0.55).toFixed(1) + "px");
+  root.style.setProperty("--bx", bgPx + "px");
+  root.style.setProperty("--by", (bgPx * 0.55).toFixed(1) + "px");
+  screen.style.animation = `shake ${spd}ms linear infinite`;
+  bg.style.animation     = `${anim} ${sensoryCurrentFlashDur}s infinite, shake-bg ${spd}ms linear infinite`;
+}
+
+function sensoryResetShake() {
+  const root = document.documentElement;
+  root.style.setProperty("--sx","0px"); root.style.setProperty("--sy","0px");
+  root.style.setProperty("--bx","0px"); root.style.setProperty("--by","0px");
+  const screen = $("#screen-sensory");
+  if (screen) screen.style.animation = "none";
+  const bg = $("#sensory-bg");
+  if (bg) {
+    const anim = S.sensoryHasDampeners ? "bgFlashCalm" : "bgFlash";
+    bg.style.animation = `${anim} ${sensoryCurrentFlashDur}s infinite`;
+  }
+}
+
+/* ---- Mode picker ---- */
+function sensorySetMode(calm) {
+  S.sensoryCalmMode = calm;
+  const std = $("#smode-standard"), clm = $("#smode-calm");
+  if (std) std.classList.toggle("selected", !calm);
+  if (clm) clm.classList.toggle("selected", calm);
+}
+
+/* ---- Input ---- */
+function sensoryKeyDown(e) {
+  if (["a","A","d","D"," ","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
+
+  if (S.sensoryState === "warn") {
+    if (e.key === " ") {
+      $("#sensory-warning").classList.add("hidden");
+      startSensoryCalibration();
+    }
+    return;
+  }
+
+  if (e.key === " ") {
+    if (S.sensoryState === "explain" && S.sensoryUiReady) {
+      $("#sensory-explain").classList.add("hidden");
+      $("#sensory-warning").classList.remove("hidden");
+      sensorySetMode(false);
+      S.sensoryState = "warn";
+      S.sensoryUiReady = true;
+      return;
+    }
+    if (S.sensoryInterjectActive && S.sensoryUiReady && breathPhase === "pickup") {
+      if (e.repeat) return;
+      S.sensoryUiReady = false;
+      $("#sensory-interject-hint").classList.remove("visible");
+      breathStartStress = S.sensoryStress;
+      breathPhase  = "falling1";
+      breathAnimTs = performance.now();
+      requestAnimationFrame(breathAnimLoop);
+      return;
+    }
+    if (S.sensoryInterjectActive && S.sensoryUiReady && breathPhase === "waiting") {
+      if (e.repeat || breathHoldActive) return;
+      breathHoldActive = true;
+      breathHoldStart  = performance.now();
+      requestAnimationFrame(runBreathHold);
+      return;
+    }
+    if (S.sensoryState === "calibrate" && !S.sensoryInterjectActive && !S.sensoryDone) {
+      if (S.sensoryPhase === 0) {
+        if (S.sensoryNoise >= sensoryCurrentNoiseMin && S.sensoryNoise <= sensoryCurrentNoiseMax) {
+          S.sensoryPhase = 1;
+          sensoryShowStatus("NOISE DAMPENED — now lock the light filter", false);
+        } else {
+          S.sensoryStress = Math.min(100, S.sensoryStress + 7);
+          sensoryShowWarning("Noise level out of range. Adjust first.");
+        }
+      } else {
+        if (S.sensoryLight >= sensoryCurrentLightMin && S.sensoryLight <= sensoryCurrentLightMax) {
+          triggerSensorySuccess();
+        } else {
+          S.sensoryStress = Math.min(100, S.sensoryStress + 7);
+          sensoryShowWarning("Light level out of range. Adjust first.");
+        }
+      }
+      renderSensory();
+    }
+    if (S.sensoryDone && S.sensoryStress >= 100) { sensoryRetry(); }
+    return;
+  }
+
+  if (S.sensoryState !== "calibrate" || S.sensoryInterjectActive || S.sensoryDone) return;
+  const up = e.key==="d"||e.key==="D"||e.key==="ArrowRight";
+  const dn = e.key==="a"||e.key==="A"||e.key==="ArrowLeft";
+  if (up || dn) {
+    const delta = up ? SENSORY_STEP : -SENSORY_STEP;
+    if (S.sensoryPhase === 0) S.sensoryNoise = Math.min(100, Math.max(0, S.sensoryNoise + delta));
+    else                      S.sensoryLight = Math.min(100, Math.max(0, S.sensoryLight + delta));
+    renderSensory();
+  }
+}
+
+/* ---- Outcomes ---- */
+function triggerSensorySuccess() {
+  S.sensoryDone = true;
+  sensoryGameActive = false;
+  clearTimeout(sensoryWarningTimer);
+  sensoryResetShake();
+  sensoryCurrentFlashDur = 3;
+  $("#sensory-bg").style.animation = "bgFlashCalm 3s infinite";
+  sensoryShowStatus("ENVIRONMENT NORMALIZED", false);
+  renderSensory();
+}
+
+function triggerSensoryFail() {
+  S.sensoryDone = true;
+  sensoryGameActive = false;
+  clearTimeout(sensoryWarningTimer);
+  $("#sensory-interject").classList.add("hidden");
+  if (S.sensoryCalmMode) {
+    sensoryResetShake();
+    $("#sensory-bg").style.animation = "bgFlashCalm 1.4s infinite";
+    const el = $("#sensory-status");
+    el.textContent = "SENSORY OVERLOAD — SPACE to retry";
+    el.className = "warning";
+  } else {
+    const root = document.documentElement;
+    root.style.setProperty("--sx","2px"); root.style.setProperty("--sy","1.1px");
+    root.style.setProperty("--bx","4px"); root.style.setProperty("--by","2.2px");
+    $("#screen-sensory").style.animation = "shake 55ms linear infinite";
+    $("#sensory-bg").style.animation     = "bgFlash .1s infinite, shake-bg 55ms linear infinite";
+    setTimeout(() => {
+      sensoryResetShake();
+      $("#sensory-bg").style.animation = "bgFlash 1.4s infinite";
+      const el = $("#sensory-status");
+      el.textContent = "SENSORY OVERLOAD — SPACE to retry";
+      el.className = "warning";
+    }, 650);
+  }
+}
+
+function sensoryRetry() {
+  S.sensoryNoise = 0; S.sensoryLight = 100;
+  S.sensoryPhase = 0; S.sensoryDone = false;
+  S.sensoryStress = 0;
+  S.sensoryInterjectShown = false;
+  S.sensoryInterjectActive = false;
+  S.sensoryHasDampeners = false;
+  breathPhase = "idle";
+  breathTargetIdx = 0;
+  breathHoldActive = false;
+  noiseDodge = 0;
+  sensoryCurrentFlashDur = 1.4;
+  sensoryCurrentNoiseMin = NOISE_CENTER - NOISE_HALF;
+  sensoryCurrentNoiseMax = NOISE_CENTER + NOISE_HALF;
+  sensoryCurrentLightMin = LIGHT_CENTER - LIGHT_HALF;
+  sensoryCurrentLightMax = LIGHT_CENTER + LIGHT_HALF;
+  $("#sensory-interject").classList.add("hidden");
+  const flashAnim = S.sensoryCalmMode ? "bgFlashCalm" : "bgFlash";
+  $("#sensory-bg").style.animation = `${flashAnim} ${sensoryCurrentFlashDur}s infinite`;
+  resetSensoryUI();
+  sensoryResetShake();
+  sensoryStartTime = performance.now();
+  sensoryLastTs    = sensoryStartTime;
+  sensoryGameActive = true;
+  requestAnimationFrame(sensoryGameLoop);
+}
+
+/* ---- Render helpers ---- */
+function updateSensoryZones() {
+  $("#noise-zone").style.left  = (sensoryCurrentNoiseMin / 100 * SENSORY_TRACK_W) + "px";
+  $("#noise-zone").style.width = ((sensoryCurrentNoiseMax - sensoryCurrentNoiseMin) / 100 * SENSORY_TRACK_W) + "px";
+  $("#light-zone").style.left  = (sensoryCurrentLightMin / 100 * SENSORY_TRACK_W) + "px";
+  $("#light-zone").style.width = ((sensoryCurrentLightMax - sensoryCurrentLightMin) / 100 * SENSORY_TRACK_W) + "px";
+}
+
+function renderSensoryStress() {
+  const pct = Math.round(S.sensoryStress);
+  $("#stress-fill").style.width = pct + "%";
+  $("#stress-val").textContent  = pct + "%";
+  $("#sensory-db").textContent  = Math.round(76 + S.sensoryStress * 0.22) + " dB";
+}
+
+function resetSensoryUI() {
+  clearTimeout(sensoryWarningTimer);
+  sensoryCurrentNoiseMin = NOISE_CENTER - NOISE_HALF;
+  sensoryCurrentNoiseMax = NOISE_CENTER + NOISE_HALF;
+  sensoryCurrentLightMin = LIGHT_CENTER - LIGHT_HALF;
+  sensoryCurrentLightMax = LIGHT_CENTER + LIGHT_HALF;
+  updateSensoryZones();
+  $("#sensory-status").textContent = "";
+  $("#sensory-status").className = "";
+  $("#ctrl-noise").className = "sensory-control";
+  $("#ctrl-light").className = "sensory-control";
+  $("#noise-val").textContent = "0%";
+  $("#light-val").textContent = "100%";
+  $("#stress-fill").style.width = "0%";
+  $("#stress-val").textContent = "0%";
+  $("#sensory-db").textContent = "76 dB";
+  renderSensory();
+}
+
+function renderSensory() {
+  $("#noise-handle").style.left = (S.sensoryNoise / 100 * SENSORY_TRACK_W - 3) + "px";
+  $("#light-handle").style.left = (S.sensoryLight / 100 * SENSORY_TRACK_W - 3) + "px";
+
+  const noiseLocked = S.sensoryPhase >= 1;
+  const lightLocked = S.sensoryDone && S.sensoryStress < 100;
+  $("#noise-val").textContent = noiseLocked ? "LOCKED ✓" : Math.round(S.sensoryNoise) + "%";
+  $("#light-val").textContent = lightLocked ? "LOCKED ✓" : Math.round(S.sensoryLight) + "%";
+
+  $("#ctrl-noise").classList.toggle("selected", S.sensoryPhase === 0);
+  $("#ctrl-noise").classList.toggle("locked",   noiseLocked);
+  $("#ctrl-light").classList.toggle("selected", S.sensoryPhase === 1 && !S.sensoryDone);
+  $("#ctrl-light").classList.toggle("locked",   lightLocked);
+
+  const noiseOk = S.sensoryNoise >= sensoryCurrentNoiseMin && S.sensoryNoise <= sensoryCurrentNoiseMax;
+  const lightOk = S.sensoryLight >= sensoryCurrentLightMin && S.sensoryLight <= sensoryCurrentLightMax;
+  $("#ctrl-noise").classList.toggle("in-range", noiseOk && !noiseLocked);
+  $("#ctrl-light").classList.toggle("in-range", lightOk && !lightLocked);
+}
+
+function sensoryShowStatus(msg, isWarn) {
+  clearTimeout(sensoryWarningTimer);
+  const el = $("#sensory-status");
+  el.textContent = msg;
+  el.className   = isWarn ? "warning" : "";
+  if (isWarn) sensoryWarningTimer = setTimeout(() => { el.textContent = ""; el.className = ""; }, 2000);
+}
+function sensoryShowWarning(msg) { sensoryShowStatus(msg, true); }
+
+function sensoryTypeText(el, text, onDone, charMs, punctMs) {
+  clearTimeout(sensoryTypeTimer);
+  el.textContent = "";
+  const chars = [...text];
+  const cd = charMs  ?? 34;
+  const pd = punctMs ?? 80;
+  let i = 0;
+  function tick() {
+    if (i >= chars.length) { if (onDone) onDone(); return; }
+    const ch = chars[i++];
+    if (ch === "\n" && chars[i] === "\n") {
+      el.appendChild(document.createElement("br"));
+      el.appendChild(document.createElement("br"));
+      i++;
+    } else {
+      el.appendChild(document.createTextNode(ch));
+    }
+    sensoryTypeTimer = setTimeout(tick, (ch==="."||ch===","||ch==="—") ? pd : cd);
+  }
+  tick();
+}
+
+/* ---- Scaling ---- */
+function applyScale() {
+  const g = $("#game");
+  const sx = Math.floor(window.innerWidth / 320);
+  const sy = Math.floor(window.innerHeight / 180);
+  g.style.transform = `scale(${Math.max(1, Math.min(sx, sy))})`;
+  g.style.transformOrigin = "center center";
+}
+window.addEventListener("resize", applyScale);
+applyScale();
+
+/* ---- Boot ---- */
+startSensoryGame();
+</script>
+</body>
+</html>
