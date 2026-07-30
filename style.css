@@ -5,6 +5,7 @@
   --navy:#10067a;--blue:#054fb5;--purple:#6b05ab;
   --yellow:#ffc421;--lyellow:#ffda21;
   --px:1;
+  --sx:0px;--sy:0px;--bx:0px;--by:0px;
 }
 
 html,body{
@@ -508,3 +509,107 @@ body.reduce-motion .title-stars{background-position:0 0!important;}
 body.reduce-motion #title-text{transition:none;opacity:1;}
 body.reduce-motion .end-bar-fill{transition:none;}
 body.reduce-motion #end-reflection{transition:none;}
+
+/* === SENSORY OVERLOAD MINI-GAME === */
+#screen-sensory.active{ display:block; }
+
+/* Background — oversized so shake never reveals edges */
+#sensory-bg{
+  position:absolute;
+  width:116%;height:116%;top:-8%;left:-8%;
+  background:#1a0008;
+  animation:bgFlashIntro 3s infinite;
+}
+@keyframes bgFlashIntro{ 0%,100%{background:rgba(18,0,7,1);} 50%{background:rgba(30,0,10,.85);} }
+@keyframes bgFlash{      0%,100%{background:rgba(40,0,12,1);} 50%{background:rgba(180,0,40,.85);} }
+@keyframes bgFlashCalm{  0%,100%{background:rgba(20,0,8,1);}  50%{background:rgba(55,0,18,.75);} }
+
+/* #screen-sensory shakes at reduced intensity (text readable) */
+@keyframes shake{
+  0%,100%{transform:translate(0,0)}
+  15%{transform:translate(calc(var(--sx)*-1),var(--sy))}
+  30%{transform:translate(var(--sx),calc(var(--sy)*-1))}
+  45%{transform:translate(calc(var(--sx)*-.7),calc(var(--sy)*-.8))}
+  60%{transform:translate(var(--sx),var(--sy))}
+  75%{transform:translate(calc(var(--sx)*-.9),0)}
+  90%{transform:translate(calc(var(--sx)*.6),calc(var(--sy)*-.5))}
+}
+/* #sensory-bg shakes at higher intensity using separate vars */
+@keyframes shake-bg{
+  0%,100%{transform:translate(0,0)}
+  15%{transform:translate(calc(var(--bx)*-1),var(--by))}
+  30%{transform:translate(var(--bx),calc(var(--by)*-1))}
+  45%{transform:translate(calc(var(--bx)*-.7),calc(var(--by)*-.8))}
+  60%{transform:translate(var(--bx),var(--by))}
+  75%{transform:translate(calc(var(--bx)*-.9),0)}
+  90%{transform:translate(calc(var(--bx)*.6),calc(var(--by)*-.5))}
+}
+
+body.reduce-motion #sensory-bg{ animation:none; }
+body.reduce-motion #screen-sensory{ animation:none!important; }
+
+/* Shared overlay box (explain + interject) */
+.soverlay-box{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);
+  z-index:20;background:rgba(8,2,32,.97);border:1px solid var(--yellow);
+  padding:10px 12px;width:268px;
+  display:flex;flex-direction:column;gap:7px;
+  opacity:1;transition:opacity .3s;
+}
+.soverlay-box.hidden{ opacity:0;pointer-events:none;display:flex!important; }
+.soverlay-header{ font-family:'Arial',monospace;font-size:6px;color:var(--yellow);letter-spacing:1px;text-align:center; }
+.soverlay-body{ font-family:'Arial',monospace;font-size:5px;color:#ddd;line-height:2;min-height:40px;white-space:pre-wrap; }
+.soverlay-hint{ font-family:'Arial',monospace;font-size:4px;color:var(--yellow);text-align:center;opacity:0;transition:opacity .4s;margin-top:2px; }
+.soverlay-hint.visible{ opacity:1; }
+
+/* Interject sits outside #screen-sensory — z-index high enough to overlay */
+#sensory-interject{ z-index:50; }
+
+/* Calibration panel (hidden until calibration begins) */
+#sensory-panel{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:10;display:flex;flex-direction:column;align-items:center;
+  gap:5px;padding:10px;
+  background:rgba(16,6,122,.92);border:2px solid var(--yellow);width:276px;
+  opacity:0;transition:opacity .45s;pointer-events:none;
+}
+#sensory-panel.visible{ opacity:1;pointer-events:auto; }
+#sensory-header{ font-family:'Arial',monospace;font-size:7px;color:var(--yellow); }
+#sensory-db{ font-family:'Arial',monospace;font-size:12px;color:var(--lyellow); }
+#sensory-instructions{ font-size:4px;color:var(--yellow);text-align:center;max-width:240px;line-height:1.5; }
+
+/* Stress bar */
+#stress-row{ width:100%;display:flex;flex-direction:column;gap:2px;padding:3px 4px; }
+#stress-label{ font-family:'Arial',monospace;font-size:4px;color:#f55;display:flex;justify-content:space-between; }
+#stress-track{ width:200px;height:5px;background:rgba(100,0,0,.4);border:1px solid #600;align-self:center;overflow:hidden; }
+#stress-fill{ height:100%;width:0%;background:linear-gradient(90deg,#4c4 0%,#fa0 50%,#f44 100%);background-size:200px 100%; }
+
+.sensory-control{ width:100%;display:flex;flex-direction:column;gap:2px;padding:3px 4px;border:1px solid transparent; }
+.sensory-control.selected{ border-color:var(--yellow); }
+.sensory-control.locked{ border-color:#4c4; }
+.sensory-control.locked .ctrl-label,.sensory-control.locked .ctrl-val{ color:#4c4; }
+.sensory-control.in-range .ctrl-label{ color:#4c4; }
+.sensory-control.in-range .ctrl-handle{ background:#4c4; }
+.ctrl-label{ font-family:'Arial',monospace;font-size:4px;color:var(--purple); }
+.ctrl-track{ position:relative;width:200px;height:8px;background:var(--purple);align-self:center; }
+.ctrl-zone{ position:absolute;height:100%;background:rgba(0,180,0,.25);border-left:1px solid #0a0;border-right:1px solid #0a0;transition:left .1s linear,width .1s linear; }
+.ctrl-handle{ position:absolute;width:6px;height:12px;top:-2px;background:var(--yellow); }
+.ctrl-val{ font-family:'Arial',monospace;font-size:4px;color:var(--lyellow);text-align:right;width:200px;align-self:center; }
+#sensory-hint{ font-family:'Arial',monospace;font-size:3px;color:var(--yellow);opacity:.7; }
+#sensory-status{ font-family:'Arial',monospace;font-size:5px;color:#4c4;min-height:8px;text-align:center; }
+#sensory-status.warning{ color:#f55; }
+
+/* Lab interactable item */
+#lab-dampener-item{
+  position:absolute;
+  left:334px;top:94px;
+  width:14px;height:8px;
+  background:#1a0a50;
+  border:1px solid var(--yellow);
+  z-index:5;
+  animation:itemPulse 2.5s ease-in-out infinite;
+}
+@keyframes itemPulse{
+  0%,100%{ box-shadow:0 0 1px var(--yellow); }
+  50%{ box-shadow:0 0 3px var(--yellow); }
+}

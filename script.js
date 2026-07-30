@@ -25,24 +25,21 @@ const SCENE_SCRIPT = [
   // Post-bench: scene resumes here
   {id:"pb1", type:"dialogue", speaker:"SAM", text:"Hey, Jerry, could you grab the\u2014 JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
   {id:"pb2", type:"narration", text:"A crash. Glass on tile. Small pieces rolling outward in four directions.", next:"pb3"},
-  {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I\u2019m sorry \u2014 it wasn\u2019t\u2014 I turned around and my sleeve caught it, it was right on the edge, I didn\u2019t\u2014", next:"pb4"},
+  {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I’m sorry — it wasn’t— I turned around and my sleeve caught it, it was right on the edge, I didn’t—", next:"pb4"},
   {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"alarm"},
 
   {id:"alarm", type:"alarm"},
 
-  // Post-alarm
   {id:"pa1", type:"narration", text:"Mercury on the floor. Small beads rolling into the grout lines, pooling where the tile dips.", next:"pa2"},
   {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry \u2014 vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Sam, seal the door and kill the manifold to three and four. That unit holds about six ounces of elemental mercury and the vent is running. I\u2019ll write the incident report. Jerry, what\u2019s your surname? I\u2019m putting your name down as the person responsible. And \u2014 this was an accident, correct?", next:"pa3"},
   {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That\u2019s what I just said.", next:"pa4"},
   {id:"pa4", type:"narration", text:"He hasn\u2019t moved. Neither has anyone else. Sam is looking at the floor.", next:"choice1_inner"},
 
-  // Inner voice before choice
-  {id:"choice1_inner", type:"inner", text:"You asked a yes-or-no question. He said yes. But he\u2019s frozen, and his voice went tight. People don\u2019t react like that to answering a question correctly.", next:"choice1"},
+  {id:"choice1_inner", type:"inner", text:"You asked a yes-or-no question. He said yes. But he’s frozen, and his voice went tight. People don’t react like that to answering a question correctly.", next:"choice1"},
 
-  // CHOICE 1
   {id:"choice1", type:"choice", choices:[
-    {label:"\u201CWhat\u2019s wrong?\u201D", cost:"SOCIAL +6   CAREER -5   MENTAL -3", stats:{social:6,career:-5,mental:-3}, next:"ba1"},
-    {label:"\u201CPlease. Six ounces of mercury, and the vent is running. We need this contained in the next four minutes.\u201D", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
+    {label:"“What’s wrong?”", cost:"SOCIAL +6   CAREER -5   MENTAL -3", stats:{social:6,career:-5,mental:-3}, next:"ba1"},
+    {label:"“Please. Six ounces of mercury, and the vent is running. We need this contained in the next four minutes.”", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
   ]},
 
   // Branch A
@@ -54,15 +51,13 @@ const SCENE_SCRIPT = [
   {id:"ba6", type:"inner", text:"He\u2019s not angry about the form. He\u2019s angry about the way you said it. You replay the sentence in your head. You can hear the words but you can\u2019t hear what he heard.", next:"ba7"},
   {id:"ba7", type:"narration", text:"The mercury is still on the floor. The vent is still running.", next:"choice2", applyStats:{career:-3}},
 
-  // Branch B
   {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry. Sorry.", next:"bb2"},
   {id:"bb2", type:"narration", text:"He gets the bin. Works fast, works correctly, doesn\u2019t look at anyone. The spill is contained in three minutes forty. The report is filed. Sam says \u201Cnice work\u201D in a tone Ester can\u2019t decode.", next:"bb3", applyStats:{emotional:-3,mental:-4}},
   {id:"bb3", type:"inner", text:"Nice work. Two words. You run them through every filter you have and none of them return a clean result. Was it genuine? Sarcastic? Relieved? All three?", next:"choice2"},
 
-  // CHOICE 2
   {id:"choice2", type:"choice", choices:[
-    {label:"\u201CI wasn\u2019t trying to sentence you. I say things in the order I think of them, and containment came first.\u201D", cost:"SOCIAL +4   EMOTIONAL +3   CAREER -2", stats:{social:4,emotional:3,career:-2}, next:"closing"},
-    {label:"\u201CI\u2019m sorry. I\u2019ll amend the report to \u2018contributing factors \u2014 equipment placement.\u2019\u201D", cost:"SOCIAL +6   CAREER -6   EMOTIONAL -4", stats:{social:6,career:-6,emotional:-4}, next:"closing"},
+    {label:"“I wasn’t trying to sentence you. I say things in the order I think of them, and containment came first.”", cost:"SOCIAL +4   EMOTIONAL +3   CAREER -2", stats:{social:4,emotional:3,career:-2}, next:"closing"},
+    {label:"“I’m sorry. I’ll amend the report to ‘contributing factors — equipment placement.’”", cost:"SOCIAL +6   CAREER -6   EMOTIONAL -4", stats:{social:6,career:-6,emotional:-4}, next:"closing"},
     {label:"Say nothing. File the report as written.", cost:"CAREER +5   SOCIAL -6   EMOTIONAL -5   MENTAL -2", stats:{career:5,social:-6,emotional:-5,mental:-2}, next:"closing"}
   ]},
 
@@ -70,7 +65,7 @@ const SCENE_SCRIPT = [
   {id:"closing", type:"narration", text:"The Director arrives eleven minutes later. She reads the incident report, then looks up. \u201CWho authorised this? This was filed by a visiting student. Visiting students do not have clearance to submit safety documentation.\u201D Nobody answers. Ester hadn\u2019t known she needed authorisation. The form was there, so she filled it in.", next:"end"}
 ];
 
-const REFLECTION_TEXT = "\u201CNobody in that room was being cruel. Two people used the same words to mean different things, in a building that punishes whoever gets blamed.\u201D";
+const REFLECTION_TEXT = "“Nobody in that room was being cruel. Two people used the same words to mean different things, in a building that punishes whoever gets blamed.”";
 const REFLECTION_SUB = "";
 
 /* ---- NODE MAP ---- */
@@ -108,6 +103,18 @@ const S = {
   starsOffset: 0,
   stationX: -20,
   titleAnimStarted: false,
+  // sensory mini-game
+  sensoryNoise: 0,
+  sensoryLight: 100,
+  sensoryPhase: 0,
+  sensoryDone: false,
+  sensoryState: "idle",          // "explain" | "calibrate"
+  sensoryStress: 0,
+  sensoryInterjectShown: false,
+  sensoryInterjectActive: false,
+  sensoryHasDampeners: false,
+  sensoryUiReady: false,
+  sensoryItemTriggered: false,
 };
 
 /* ---- DOM ---- */
@@ -124,7 +131,6 @@ function applyScale() {
   g.style.width = "320px";
   g.style.height = "180px";
   const wrapper = $("#game-wrapper");
-  // center
   wrapper.style.width = "100%";
   wrapper.style.height = "100%";
   wrapper.style.display = "flex";
@@ -175,16 +181,14 @@ function animateBar(stat, delta) {
     label.classList.add("flash");
     setTimeout(() => label.classList.remove("flash"), 300);
   }
-
   const deltaEl = bar.querySelector(".bar-delta");
   if (deltaEl) {
-    deltaEl.textContent = (delta > 0 ? "+" : "\u2212") + Math.abs(delta);
+    deltaEl.textContent = (delta > 0 ? "+" : "−") + Math.abs(delta);
     deltaEl.classList.remove("show");
     void deltaEl.offsetWidth;
     deltaEl.classList.add("show");
     setTimeout(() => deltaEl.classList.remove("show"), 1100);
   }
-
   if (blocks.length === 0) return;
   if (S.settings.reduceMotion) {
     blocks.forEach((b, i) => b.classList.toggle("filled", i < newFilled));
@@ -248,7 +252,6 @@ function completeType(el) {
 /* ---- TITLE SCREEN ---- */
 function initTitle() {
   $("#btn-start").addEventListener("click", startIntro);
-  // Fade in title text after a beat
   setTimeout(() => {
     $("#title-text").classList.add("visible");
   }, 100);
@@ -263,13 +266,11 @@ function titleLoop(ts) {
   const dt = Math.min(ts - lastTime, 50);
   lastTime = ts;
 
-  // Starfield scroll
   if (!S.settings.reduceMotion) {
     S.starsOffset -= 4 * dt / 1000;
     $(".title-stars").style.backgroundPosition = `${S.starsOffset}px 0`;
   }
 
-  // Black hole animation
   bhLargeTimer += dt;
   if (bhLargeTimer >= 180) {
     bhLargeTimer -= 180;
@@ -277,9 +278,8 @@ function titleLoop(ts) {
     $("#title-blackhole").style.backgroundPosition = `-${S.bhLargeFrame * 156}px 0`;
   }
 
-  // Station drift
   if (!S.settings.reduceMotion) {
-    S.stationX += 12 * dt / 1000; // ~12px/sec -> ~26s to cross
+    S.stationX += 12 * dt / 1000;
     if (S.stationX > 340) S.stationX = -20;
     $("#title-station").style.left = S.stationX + "px";
   }
@@ -364,6 +364,21 @@ function labKeyDown(e) {
     e.preventDefault();
   }
   S.keys[e.key] = true;
+
+  // E to interact with the atmospheric controls item
+  if ((e.key === "e" || e.key === "E") && !S.sensoryItemTriggered) {
+    const dx = Math.abs(S.esterX - DAMPENER_ITEM_X);
+    if (dx < 50) {
+      S.sensoryItemTriggered = true;
+      S.benchTriggered = true;
+      S.labActive = false;
+      S.keys = {};
+      document.removeEventListener("keydown", labKeyDown);
+      document.removeEventListener("keyup", labKeyUp);
+      setTimeout(() => startSensoryGame(), 200);
+      return;
+    }
+  }
 }
 function labKeyUp(e) { S.keys[e.key] = false; }
 
@@ -373,7 +388,6 @@ function labLoop(ts) {
   labLastTs = ts;
 
   if (S.labActive) {
-    // Movement
     let dx = 0, dy = 0;
     if (S.keys["ArrowLeft"] || S.keys["a"] || S.keys["A"]) dx = -1;
     if (S.keys["ArrowRight"] || S.keys["d"] || S.keys["D"]) dx = 1;
@@ -414,11 +428,8 @@ function labLoop(ts) {
       setTimeout(() => startSceneDialogue("pb1"), 300);
       return;
     }
-
-    // No object interactions in this simplified lab.
   }
 
-  // Black hole small anim
   bhSmallT += dt;
   if (bhSmallT >= 180) {
     bhSmallT -= 180;
@@ -426,10 +437,7 @@ function labLoop(ts) {
     $("#lab-blackhole-small").style.backgroundPosition = `-${S.bhSmallFrame * 72}px 0`;
   }
 
-  // Proximity check
   updateLabPrompt();
-
-  // Render
   renderLab();
   requestAnimationFrame(labLoop);
 }
@@ -442,18 +450,24 @@ function renderLab() {
   e.style.transform = `translate3d(${S.esterX}px,${S.esterY}px,0)`;
 }
 
+const DAMPENER_ITEM_X = 340;
+
 function updateLabPrompt() {
-  $("#lab-prompt").classList.add("hidden");
+  const promptEl = $("#lab-prompt");
+  const dx = Math.abs(S.esterX - DAMPENER_ITEM_X);
+  if (!S.sensoryItemTriggered && dx < 50) {
+    promptEl.style.left = (DAMPENER_ITEM_X - 24) + "px";
+    promptEl.style.top  = "72px";
+    promptEl.classList.remove("hidden");
+  } else {
+    promptEl.classList.add("hidden");
+  }
   $("#lab-arrow").classList.add("hidden");
 }
 
-function tryExamine() {
-  // No object interactions in the simplified lab.
-}
+function tryExamine() {}
 
-function showLabTextbox(text) {
-  // Interaction removed; this should never be called.
-}
+function showLabTextbox(text) {}
 
 function dismissLabTextbox() {
   if (S.typing) { completeType($("#lab-textbox-text")); return; }
@@ -465,9 +479,7 @@ function updateLabObjective() {
   $("#lab-objective").textContent = "Walk to the far bench.";
 }
 
-function checkLabArrow() {
-  // Arrow not used in the simplified lab.
-}
+function checkLabArrow() {}
 
 /* ---- SCENE ---- */
 let sceneIdleBounceTimer = 0;
@@ -478,13 +490,11 @@ function startSceneDialogue(nodeId) {
 
   const sw = $("#scene-world");
   if (nodeId === "s1") {
-    // Opening: camera on left side, sprites near first bench
     S.sceneScrollX = 20;
     $("#scene-sprite-sam").style.left = "140px";
     $("#scene-sprite-ester").style.left = "180px";
     $("#scene-sprite-jerry").classList.add("hidden");
   } else {
-    // Post-bench: camera on right side
     S.sceneScrollX = 320;
     $("#scene-sprite-sam").style.left = "385px";
     $("#scene-sprite-jerry").style.left = "430px";
@@ -504,14 +514,12 @@ function sceneAnimLoop(ts) {
   const dt = ts - sceneAnimTs;
   sceneAnimTs = ts;
 
-  // Idle bounce NPC sprites + portrait every 520ms
   if (!S.idlePaused && !S.settings.reduceMotion) {
     sceneIdleBounceTimer += dt;
     if (sceneIdleBounceTimer >= 520) {
       sceneIdleBounceTimer -= 520;
       S.idleBounce = 1 - S.idleBounce;
       const frameX = S.idleBounce * 24;
-      // Bounce scene sprites
       $$(".scene-sprite").forEach(sp => {
         if (sp.dataset.char === "ester" || sp.dataset.char === "sam" || sp.dataset.char === "jerry") return;
         if (sp.classList.contains("hidden")) return;
@@ -535,25 +543,20 @@ function runNode(nodeId) {
 
   if (node.applyStats) applyStatBlock(node.applyStats);
 
-  // Show/hide sprites
   if (node.showSprites) {
     $("#scene-sprite-sam").classList.toggle("hidden", !node.showSprites.includes("sam"));
     $("#scene-sprite-jerry").classList.toggle("hidden", !node.showSprites.includes("jerry"));
     $("#scene-sprite-ester").classList.toggle("hidden", !node.showSprites.includes("ester"));
   }
 
-  // Control nodes
   if (node.type === "control") {
     if (node.action === "start_lab") { startLab(); return; }
   }
 
-  // Alarm
   if (node.type === "alarm") { showAlarm(); return; }
 
-  // Choices
   if (node.type === "choice") { showChoicePanel(node.choices); return; }
 
-  // Inner voice — dim sprites
   if (node.type === "inner") {
     S.idlePaused = true;
     $$(".scene-sprite").forEach(sp => sp.classList.add("dimmed"));
@@ -562,7 +565,6 @@ function runNode(nodeId) {
     $$(".scene-sprite").forEach(sp => sp.classList.remove("dimmed"));
   }
 
-  // Show the dialogue row
   const row = $("#dialogue-row");
   row.classList.remove("hidden");
 
@@ -573,9 +575,8 @@ function runNode(nodeId) {
   box.classList.remove("type-dialogue", "type-inner", "type-narration");
   box.classList.add(`type-${node.type}`);
 
-  // Portrait — show the speaker's sprite with idle bounce
   const portrait = $("#dialogue-portrait");
-  portrait.className = ""; // reset classes
+  portrait.className = "";
   portrait.style.backgroundPosition = "0 0";
   if (node.type === "dialogue" && node.speaker) {
     const charName = node.speaker.toLowerCase();
@@ -662,29 +663,452 @@ function advanceScene() {
   }
 }
 
-/* ---- ALARM ---- */
+/* ---- ALARM → triggers sensory mini-game ---- */
 function showAlarm() {
-  const overlay = $("#alarm-overlay");
   if (S.settings.quiet) {
     applyStatBlock({social:-3});
     runNode("pa1");
     return;
   }
-  overlay.classList.remove("hidden");
-  if (!S.settings.reduceMotion) overlay.classList.add("pulse");
-  overlay.querySelectorAll(".choice-btn").forEach(btn => {
-    btn.addEventListener("click", handleAlarm, {once:true});
-  });
+  startSensoryGame();
 }
 
-function handleAlarm(e) {
-  const choice = e.currentTarget.dataset.alarm;
-  if (choice === "ears") applyStatBlock({mental:-8});
-  else applyStatBlock({social:-3});
-  const overlay = $("#alarm-overlay");
-  overlay.classList.add("hidden");
-  overlay.classList.remove("pulse");
-  runNode("pa1");
+/* ---- SENSORY OVERLOAD MINI-GAME ---- */
+const SENSORY_TRACK_W = 200;
+const SENSORY_STEP = 6;
+
+const NOISE_CENTER = 65, NOISE_HALF = 15, NOISE_SWING = 24, NOISE_FREQ = 0.50;
+const LIGHT_CENTER = 50, LIGHT_HALF = 10, LIGHT_SWING = 20, LIGHT_FREQ = 0.44;
+
+const SENSORY_EXPLAIN_TEXT =
+  "A device containing elemental mercury has overturned near the ventilation intake. " +
+  "The atmospheric alarm triggered automatically.\n\n" +
+  "Noise and light readings are approaching hazardous levels. " +
+  "The environmental systems need manual calibration before conditions become unmanageable.";
+
+const SENSORY_INTERJECT_TEXT =
+  "The alarm is deafening.\n\n" +
+  "Your noise-canceling dampeners are on the desk — second drawer.";
+
+let sensoryWarningTimer = null;
+let sensoryTypeTimer   = null;
+let sensoryGameActive  = false;
+let sensoryStartTime   = 0;
+let sensoryLastTs      = 0;
+let sensoryCurrentFlashDur = 3;
+let sensoryCurrentNoiseMin, sensoryCurrentNoiseMax;
+let sensoryCurrentLightMin, sensoryCurrentLightMax;
+
+/* ------------------------------------------------------------------ */
+function startSensoryGame() {
+  // Reset all state
+  S.sensoryNoise = 0; S.sensoryLight = 100;
+  S.sensoryPhase = 0; S.sensoryDone = false;
+  S.sensoryState = "explain";
+  S.sensoryStress = 0;
+  S.sensoryInterjectShown = false;
+  S.sensoryInterjectActive = false;
+  S.sensoryHasDampeners = false;
+  S.sensoryUiReady = false;
+  sensoryGameActive = false;
+  sensoryCurrentFlashDur = 3;
+
+  sensoryCurrentNoiseMin = NOISE_CENTER - NOISE_HALF;
+  sensoryCurrentNoiseMax = NOISE_CENTER + NOISE_HALF;
+  sensoryCurrentLightMin = LIGHT_CENTER - LIGHT_HALF;
+  sensoryCurrentLightMax = LIGHT_CENTER + LIGHT_HALF;
+
+  // Reset shake CSS vars
+  sensoryResetShake();
+
+  // Hide interject
+  $("#sensory-interject").classList.add("hidden");
+  $("#sensory-interject-body").textContent = "";
+  $("#sensory-interject-hint").classList.remove("visible");
+
+  // Show explain overlay, hide calibration panel
+  $("#sensory-explain").classList.remove("hidden");
+  $("#sensory-explain-body").textContent = "";
+  $("#sensory-explain-hint").classList.remove("visible");
+  $("#sensory-panel").classList.remove("visible");
+
+  // Reset bg animation to calm intro flash
+  $("#sensory-bg").style.animation = "bgFlashIntro 3s infinite";
+
+  // Reset sliders and zones
+  resetSensoryUI();
+
+  showScreen("sensory");
+  document.removeEventListener("keydown", sensoryKeyDown);
+  document.addEventListener("keydown", sensoryKeyDown);
+
+  // Typewrite the explanation text (fast)
+  clearTimeout(sensoryTypeTimer);
+  sensoryTypeTimer = setTimeout(() => {
+    sensoryTypeText(
+      $("#sensory-explain-body"),
+      SENSORY_EXPLAIN_TEXT,
+      () => {
+        S.sensoryUiReady = true;
+        $("#sensory-explain-hint").classList.add("visible");
+      },
+      8, 22
+    );
+  }, 400);
+}
+
+function startSensoryCalibration() {
+  S.sensoryState = "calibrate";
+  S.sensoryUiReady = false;
+  $("#sensory-explain").classList.add("hidden");
+
+  // Alarm onset — snap to full chaos
+  sensoryCurrentFlashDur = 1.4;
+  $("#sensory-bg").style.animation = `bgFlash ${sensoryCurrentFlashDur}s infinite`;
+
+  setTimeout(() => { $("#sensory-panel").classList.add("visible"); }, 180);
+
+  sensoryStartTime = performance.now();
+  sensoryLastTs    = sensoryStartTime;
+  sensoryGameActive = true;
+  requestAnimationFrame(sensoryGameLoop);
+}
+
+function triggerSensoryInterject() {
+  S.sensoryInterjectShown  = true;
+  S.sensoryInterjectActive = true;
+  S.sensoryUiReady = false;
+  $("#sensory-interject").classList.remove("hidden");
+  clearTimeout(sensoryTypeTimer);
+  sensoryTypeText(
+    $("#sensory-interject-body"),
+    SENSORY_INTERJECT_TEXT,
+    () => {
+      S.sensoryUiReady = true;
+      $("#sensory-interject-hint").classList.add("visible");
+    }
+  );
+}
+
+function equipSensoryDampeners() {
+  S.sensoryHasDampeners   = true;
+  S.sensoryInterjectActive = false;
+  S.sensoryUiReady = false;
+  S.sensoryStress  = 0;
+  $("#sensory-interject").classList.add("hidden");
+  $("#sensory-interject-body").textContent = "";
+  $("#sensory-interject-hint").classList.remove("visible");
+
+  sensoryCurrentFlashDur = 1.8;
+  sensoryResetShake();
+  sensoryShowStatus("Better. Now calibrate the environmental systems.", false);
+}
+
+/* ------------------------------------------------------------------ */
+function sensoryGameLoop(ts) {
+  if (!sensoryGameActive || S.screen !== "sensory") return;
+
+  const dt      = Math.min(ts - sensoryLastTs, 50) / 1000;
+  sensoryLastTs = ts;
+  const elapsed = (ts - sensoryStartTime) / 1000;
+
+  // Trigger dampener interject at 80% stress (once)
+  if (S.sensoryStress >= 80 && !S.sensoryInterjectShown && !S.sensoryDone) {
+    S.sensoryStress = 80;
+    triggerSensoryInterject();
+  }
+
+  // Stress: frozen while interject is open; slower after dampeners
+  if (!S.sensoryInterjectActive) {
+    const rate = S.sensoryHasDampeners
+      ? 0.8
+      : (S.sensoryPhase >= 1 ? 5.5 : 9);
+    const cap = S.sensoryInterjectShown ? 100 : 80;
+    S.sensoryStress = Math.min(cap, S.sensoryStress + rate * dt);
+  }
+
+  // Value drift — keeps going even during interject
+  const driftRate = 1.8 + S.sensoryStress * 0.09;
+  if (S.sensoryPhase === 0) S.sensoryNoise = Math.max(0,   S.sensoryNoise - driftRate * dt);
+  if (!S.sensoryDone)       S.sensoryLight = Math.min(100, S.sensoryLight + driftRate * dt);
+
+  // Zone oscillation (4 s grace, then speeds with stress)
+  const oscE     = Math.max(0, elapsed - 4);
+  const speedMul = 1 + (S.sensoryStress / 100) * 0.9;
+  const nCtr = NOISE_CENTER + Math.sin(oscE * NOISE_FREQ * speedMul) * NOISE_SWING;
+  const lCtr = LIGHT_CENTER + Math.sin(oscE * LIGHT_FREQ * speedMul + 2.1) * LIGHT_SWING;
+  sensoryCurrentNoiseMin = nCtr - NOISE_HALF;
+  sensoryCurrentNoiseMax = nCtr + NOISE_HALF;
+  sensoryCurrentLightMin = lCtr - LIGHT_HALF;
+  sensoryCurrentLightMax = lCtr + LIGHT_HALF;
+  updateSensoryZones();
+
+  renderSensoryStress();
+  applyStressEffects();
+  renderSensory();
+
+  if (S.sensoryStress >= 100 && !S.sensoryDone) {
+    triggerSensoryFail();
+    return;
+  }
+  requestAnimationFrame(sensoryGameLoop);
+}
+
+/* ------------------------------------------------------------------ */
+function applyStressEffects() {
+  const s = S.sensoryStress;
+  const hasDamp = S.sensoryHasDampeners;
+
+  const flashMin = hasDamp ? 0.55 : 0.16;
+  const flashMax = hasDamp ? 2.2  : 1.40;
+  sensoryCurrentFlashDur = +(flashMax - (s / 100) * (flashMax - flashMin)).toFixed(2);
+
+  const threshold = hasDamp ? 42 : 25;
+  const maxPx     = hasDamp ? 1.8 : 4.5;
+  const root  = document.documentElement;
+  const screen = $("#screen-sensory");
+  const bg    = $("#sensory-bg");
+  const anim  = hasDamp ? "bgFlashCalm" : "bgFlash";
+
+  if (s < threshold) {
+    root.style.setProperty("--sx", "0px"); root.style.setProperty("--sy", "0px");
+    root.style.setProperty("--bx", "0px"); root.style.setProperty("--by", "0px");
+    screen.style.animation = "none";
+    bg.style.animation     = `${anim} ${sensoryCurrentFlashDur}s infinite`;
+    return;
+  }
+  const t      = (s - threshold) / (100 - threshold);
+  const totalPx = maxPx * t;
+  const gamePx  = +(totalPx * 0.38).toFixed(1);
+  const bgPx    = +(totalPx * 0.62).toFixed(1);
+  const spd     = Math.round(500 - t * (hasDamp ? 360 : 445));
+
+  root.style.setProperty("--sx", gamePx + "px");
+  root.style.setProperty("--sy", (gamePx * 0.55).toFixed(1) + "px");
+  root.style.setProperty("--bx", bgPx + "px");
+  root.style.setProperty("--by", (bgPx * 0.55).toFixed(1) + "px");
+
+  screen.style.animation = `shake ${spd}ms linear infinite`;
+  bg.style.animation     = `${anim} ${sensoryCurrentFlashDur}s infinite, shake-bg ${spd}ms linear infinite`;
+}
+
+function sensoryResetShake() {
+  const root = document.documentElement;
+  root.style.setProperty("--sx", "0px"); root.style.setProperty("--sy", "0px");
+  root.style.setProperty("--bx", "0px"); root.style.setProperty("--by", "0px");
+  const screen = $("#screen-sensory");
+  if (screen) screen.style.animation = "none";
+  const bg = $("#sensory-bg");
+  if (bg) {
+    const anim = S.sensoryHasDampeners ? "bgFlashCalm" : "bgFlash";
+    bg.style.animation = `${anim} ${sensoryCurrentFlashDur}s infinite`;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+function sensoryKeyDown(e) {
+  if (S.screen !== "sensory") return;
+  if (["w","W","s","S"," "].includes(e.key)) e.preventDefault();
+
+  if (e.key === " ") {
+    // Phase 1: dismiss explanation → start calibration
+    if (S.sensoryState === "explain" && S.sensoryUiReady) {
+      startSensoryCalibration();
+      return;
+    }
+    // Mid-game interject: equip dampeners
+    if (S.sensoryInterjectActive && S.sensoryUiReady) {
+      equipSensoryDampeners();
+      return;
+    }
+    // Calibration: lock sliders
+    if (S.sensoryState === "calibrate" && !S.sensoryInterjectActive && !S.sensoryDone) {
+      if (S.sensoryPhase === 0) {
+        if (S.sensoryNoise >= sensoryCurrentNoiseMin && S.sensoryNoise <= sensoryCurrentNoiseMax) {
+          S.sensoryPhase = 1;
+          sensoryShowStatus("NOISE DAMPENED — now lock the light filter", false);
+        } else {
+          S.sensoryStress = Math.min(100, S.sensoryStress + 7);
+          sensoryShowWarning("Noise level out of range. Adjust using [W/S] first.");
+        }
+      } else {
+        if (S.sensoryLight >= sensoryCurrentLightMin && S.sensoryLight <= sensoryCurrentLightMax) {
+          triggerSensorySuccess();
+        } else {
+          S.sensoryStress = Math.min(100, S.sensoryStress + 7);
+          sensoryShowWarning("Light level out of range. Adjust using [W/S] first.");
+        }
+      }
+      renderSensory();
+    }
+    // Retry after fail
+    if (S.sensoryDone && S.sensoryStress >= 100) {
+      sensoryRetry();
+    }
+    return;
+  }
+
+  // W/S only during calibration, not while interject open
+  if (S.sensoryState !== "calibrate" || S.sensoryInterjectActive || S.sensoryDone) return;
+  const up = e.key === "w" || e.key === "W";
+  const dn = e.key === "s" || e.key === "S";
+  if (up || dn) {
+    const delta = up ? SENSORY_STEP : -SENSORY_STEP;
+    if (S.sensoryPhase === 0)
+      S.sensoryNoise = Math.min(100, Math.max(0, S.sensoryNoise + delta));
+    else
+      S.sensoryLight = Math.min(100, Math.max(0, S.sensoryLight + delta));
+    renderSensory();
+  }
+}
+
+/* ------------------------------------------------------------------ */
+function triggerSensorySuccess() {
+  S.sensoryDone = true;
+  sensoryGameActive = false;
+  clearTimeout(sensoryWarningTimer);
+  sensoryResetShake();
+  sensoryCurrentFlashDur = 3;
+  $("#sensory-bg").style.animation = "bgFlashCalm 3s infinite";
+  sensoryShowStatus("ENVIRONMENT NORMALIZED", false);
+  renderSensory();
+  applyStatBlock({mental:6, emotional:5});
+  setTimeout(() => {
+    document.removeEventListener("keydown", sensoryKeyDown);
+    showScreen("scene");
+    sceneAnimTs = performance.now();
+    requestAnimationFrame(sceneAnimLoop);
+    runNode("pa1");
+  }, 1500);
+}
+
+function triggerSensoryFail() {
+  S.sensoryDone = true;
+  sensoryGameActive = false;
+  clearTimeout(sensoryWarningTimer);
+  $("#sensory-interject").classList.add("hidden");
+  // Flash at max intensity briefly
+  const root = document.documentElement;
+  root.style.setProperty("--sx", "2px"); root.style.setProperty("--sy", "1.1px");
+  root.style.setProperty("--bx", "4px"); root.style.setProperty("--by", "2.2px");
+  $("#screen-sensory").style.animation    = "shake 55ms linear infinite";
+  $("#sensory-bg").style.animation = "bgFlash .1s infinite, shake-bg 55ms linear infinite";
+  setTimeout(() => {
+    sensoryResetShake();
+    $("#sensory-bg").style.animation = "bgFlash 1.4s infinite";
+    const el = $("#sensory-status");
+    el.textContent = "SENSORY OVERLOAD — SPACE to retry";
+    el.className = "warning";
+  }, 650);
+}
+
+function sensoryRetry() {
+  // Restart just the calibration phase (skip explanation)
+  S.sensoryNoise = 0; S.sensoryLight = 100;
+  S.sensoryPhase = 0; S.sensoryDone = false;
+  S.sensoryStress = 0;
+  S.sensoryInterjectShown = false;
+  S.sensoryInterjectActive = false;
+  S.sensoryHasDampeners = false;
+  sensoryCurrentFlashDur = 1.4;
+  sensoryCurrentNoiseMin = NOISE_CENTER - NOISE_HALF;
+  sensoryCurrentNoiseMax = NOISE_CENTER + NOISE_HALF;
+  sensoryCurrentLightMin = LIGHT_CENTER - LIGHT_HALF;
+  sensoryCurrentLightMax = LIGHT_CENTER + LIGHT_HALF;
+  $("#sensory-interject").classList.add("hidden");
+  $("#sensory-bg").style.animation = `bgFlash ${sensoryCurrentFlashDur}s infinite`;
+  resetSensoryUI();
+  sensoryResetShake();
+  sensoryStartTime = performance.now();
+  sensoryLastTs    = sensoryStartTime;
+  sensoryGameActive = true;
+  requestAnimationFrame(sensoryGameLoop);
+}
+
+/* ------------------------------------------------------------------ */
+function updateSensoryZones() {
+  $("#noise-zone").style.left  = (sensoryCurrentNoiseMin / 100 * SENSORY_TRACK_W) + "px";
+  $("#noise-zone").style.width = ((sensoryCurrentNoiseMax - sensoryCurrentNoiseMin) / 100 * SENSORY_TRACK_W) + "px";
+  $("#light-zone").style.left  = (sensoryCurrentLightMin / 100 * SENSORY_TRACK_W) + "px";
+  $("#light-zone").style.width = ((sensoryCurrentLightMax - sensoryCurrentLightMin) / 100 * SENSORY_TRACK_W) + "px";
+}
+
+function renderSensoryStress() {
+  const pct = Math.round(S.sensoryStress);
+  $("#stress-fill").style.width = pct + "%";
+  $("#stress-val").textContent  = pct + "%";
+  $("#sensory-db").textContent  = Math.round(76 + S.sensoryStress * 0.22) + " dB";
+}
+
+function resetSensoryUI() {
+  clearTimeout(sensoryWarningTimer);
+  sensoryCurrentNoiseMin = NOISE_CENTER - NOISE_HALF;
+  sensoryCurrentNoiseMax = NOISE_CENTER + NOISE_HALF;
+  sensoryCurrentLightMin = LIGHT_CENTER - LIGHT_HALF;
+  sensoryCurrentLightMax = LIGHT_CENTER + LIGHT_HALF;
+  updateSensoryZones();
+  $("#sensory-status").textContent = "";
+  $("#sensory-status").className = "";
+  $("#ctrl-noise").className = "sensory-control";
+  $("#ctrl-light").className = "sensory-control";
+  $("#noise-val").textContent = "0%";
+  $("#light-val").textContent = "100%";
+  $("#stress-fill").style.width = "0%";
+  $("#stress-val").textContent = "0%";
+  $("#sensory-db").textContent = "76 dB";
+  renderSensory();
+}
+
+function renderSensory() {
+  $("#noise-handle").style.left = (S.sensoryNoise / 100 * SENSORY_TRACK_W - 3) + "px";
+  $("#light-handle").style.left = (S.sensoryLight / 100 * SENSORY_TRACK_W - 3) + "px";
+
+  const noiseLocked = S.sensoryPhase >= 1;
+  const lightLocked = S.sensoryDone && S.sensoryStress < 100;
+  $("#noise-val").textContent = noiseLocked ? "LOCKED ✓" : Math.round(S.sensoryNoise) + "%";
+  $("#light-val").textContent = lightLocked ? "LOCKED ✓" : Math.round(S.sensoryLight) + "%";
+
+  $("#ctrl-noise").classList.toggle("selected", S.sensoryPhase === 0);
+  $("#ctrl-noise").classList.toggle("locked",   noiseLocked);
+  $("#ctrl-light").classList.toggle("selected", S.sensoryPhase === 1 && !S.sensoryDone);
+  $("#ctrl-light").classList.toggle("locked",   lightLocked);
+
+  const noiseOk = S.sensoryNoise >= sensoryCurrentNoiseMin && S.sensoryNoise <= sensoryCurrentNoiseMax;
+  const lightOk = S.sensoryLight >= sensoryCurrentLightMin && S.sensoryLight <= sensoryCurrentLightMax;
+  $("#ctrl-noise").classList.toggle("in-range", noiseOk && !noiseLocked);
+  $("#ctrl-light").classList.toggle("in-range", lightOk && !lightLocked);
+}
+
+function sensoryShowStatus(msg, isWarn) {
+  clearTimeout(sensoryWarningTimer);
+  const el = $("#sensory-status");
+  el.textContent = msg;
+  el.className   = isWarn ? "warning" : "";
+  if (isWarn) sensoryWarningTimer = setTimeout(() => { el.textContent = ""; el.className = ""; }, 2000);
+}
+function sensoryShowWarning(msg) { sensoryShowStatus(msg, true); }
+
+/* Typewriter used only by the sensory overlays (supports charMs / punctMs speeds) */
+function sensoryTypeText(el, text, onDone, charMs, punctMs) {
+  clearTimeout(sensoryTypeTimer);
+  el.textContent = "";
+  const chars = [...text];
+  const cd = charMs  ?? 34;
+  const pd = punctMs ?? 80;
+  let i = 0;
+  function tick() {
+    if (i >= chars.length) { if (onDone) onDone(); return; }
+    const ch = chars[i++];
+    if (ch === "\n" && chars[i] === "\n") {
+      el.appendChild(document.createElement("br"));
+      el.appendChild(document.createElement("br"));
+      i++;
+    } else {
+      el.appendChild(document.createTextNode(ch));
+    }
+    sensoryTypeTimer = setTimeout(tick, (ch === "." || ch === "," || ch === "—") ? pd : cd);
+  }
+  tick();
 }
 
 /* ---- CHOICES ---- */
@@ -729,7 +1153,6 @@ function showEnd() {
     barsDiv.appendChild(col);
   });
 
-  // Animate bars up from zero
   setTimeout(() => {
     $$(".end-bar-fill").forEach(f => {
       const stat = f.dataset.stat;
@@ -737,7 +1160,6 @@ function showEnd() {
     });
   }, 100);
 
-  // Show reflection + restart after bars animate
   setTimeout(() => {
     const ref = $("#end-reflection");
     ref.textContent = REFLECTION_TEXT;
@@ -765,6 +1187,27 @@ function initRestart() {
     S.stationX = -20;
     S.labIdleTimer = 0;
     S.idlePaused = false;
+    // sensory mini-game reset
+    document.removeEventListener("keydown", sensoryKeyDown);
+    sensoryGameActive = false;
+    sensoryResetShake();
+    clearTimeout(sensoryTypeTimer);
+    clearTimeout(sensoryWarningTimer);
+    S.sensoryNoise = 0; S.sensoryLight = 100;
+    S.sensoryPhase = 0; S.sensoryDone = false;
+    S.sensoryState = "idle";
+    S.sensoryStress = 0;
+    S.sensoryInterjectShown = false;
+    S.sensoryInterjectActive = false;
+    S.sensoryHasDampeners = false;
+    S.sensoryUiReady = false;
+    S.sensoryItemTriggered = false;
+    $("#sensory-interject").classList.add("hidden");
+    $("#sensory-explain").classList.remove("hidden");
+    $("#sensory-explain-body").textContent = "";
+    $("#sensory-explain-hint").classList.remove("visible");
+    $("#sensory-panel").classList.remove("visible");
+    resetSensoryUI();
     syncBars(true);
     $("#alarm-overlay").classList.add("hidden");
     $("#alarm-overlay").classList.remove("pulse");
@@ -783,7 +1226,6 @@ function initRestart() {
 
 /* ---- GLOBAL INPUT ---- */
 function initInput() {
-  // Intro
   document.addEventListener("click", e => {
     if (S.screen === "intro") advanceIntro();
   });
@@ -792,13 +1234,11 @@ function initInput() {
       e.preventDefault();
       advanceIntro();
     }
-    // Scene advance
     if (S.screen === "scene" && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();
-      if (!$("#choice-panel").classList.contains("hidden")) return; // choices visible
+      if (!$("#choice-panel").classList.contains("hidden")) return;
       advanceScene();
     }
-    // Lab textbox dismiss
     if (S.screen === "lab" && !$("#lab-textbox").classList.contains("hidden")) {
       if (e.key === " " || e.key === "Enter" || e.key === "Escape") {
         e.preventDefault();
@@ -806,11 +1246,9 @@ function initInput() {
       }
     }
   });
-  // Scene click — on the whole dialogue row (portrait + text box)
   $("#dialogue-row").addEventListener("click", () => {
     if (S.screen === "scene") advanceScene();
   });
-  // Lab textbox click
   $("#lab-textbox").addEventListener("click", () => dismissLabTextbox());
 }
 
@@ -822,7 +1260,6 @@ function init() {
   initRestart();
   initInput();
 
-  // Start title animation
   lastTime = performance.now();
   requestAnimationFrame(titleLoop);
 }
