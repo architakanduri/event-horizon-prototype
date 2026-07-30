@@ -32,7 +32,7 @@ const SCENE_SCRIPT = [
 
   // Post-crash
   {id:"pa1", type:"inner", text:"It’s just like the samples I used to see a lot in the chemistry lab at school. The only metal to be liquid under room temperature, highly toxic, boiling point at 357°C. And it’s currently making a mess—a highly toxic mess!—on the lab floor.", next:"pa2"},
-  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? That unit holds about six ounces of elemental mercury and the vent is running! In ten minutes, the mercury you guys were testing will cause irreversible damage. . .", next:"pa2b"},
+  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? I'll fix the mercury leak.", next:"pa2b"},
   {id:"pa2b", type:"dialogue", speaker:"ESTER", text:"I’ll write the incident report. Jerry, what’s your surname? I’m putting your name down as the person responsible. I didn’t spend 4 years in college and 2 years in grad school learning nuclear physics to end up in a lab-turned-suicide chamber. And — this was an accident, correct?", next:"pa3"},
   {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That’s what I just said.", next:"pa4"},
   {id:"pa4", type:"inner", text:"Nobody has moved. Sam is looking at the floor.", next:"choice1_inner"},
@@ -244,7 +244,7 @@ const LAB_MIN_X = 12;
 const LAB_MAX_X = 400;
 const SAM_LAB_X = 380; // Sam waits further into the lab, out of the starting frame
 const PLAYER_START_X = 30;
-const PROXIMITY_DIST = 22; // how close Ester must get to Sam to start s1
+const PROXIMITY_DIST = 45; // how close Ester must get to Sam to start s1
 const PLAYER_MOVE_SPEED = 60; // px/sec
 const JERRY_ENTER_X = SAM_LAB_X + 140; // where Jerry starts, further down the room
 const JERRY_JOIN_X = SAM_LAB_X + 40; // where Jerry ends up, beside Sam and Ester
