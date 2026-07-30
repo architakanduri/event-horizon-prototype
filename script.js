@@ -6,8 +6,11 @@
 
 const INTRO_CARDS = [
   "The universe has gotten a lot busier these days. It barely takes any time to get anywhere, as long as you've got the equipment for it.",
-  "Unfortunately for you, you're stuck where you are. While fifty years ago people would have fought tooth and nail to be in your research organization, it's currently operating—in exile—in the worst of places: an abandoned space station revolving around a black hole.",
-  "This is no situation any reasonable scientist wants to operate in. You don't really have a choice, though. The gubernatorial board of your university seems to have deemed you to be, in their words, \"uncooperative and a hazard to the scientific community\”. It seems your only hope is to get this failing research station back to its glory days."
+  "Unfortunately for you, you're stuck where you are.",
+  "While fifty years ago, people would have fought tooth and nail to be in your research organization, it’s been exiled to an abandoned space station locked in orbit around a black hole.",
+  "This is no situation any reasonable scientist wants to operate in. You don’t really have a choice, though. Your old university decided you were \"uncooperative and a hazard to the scientific community.\”",
+  "It seems your only hope is to get this failing research station back to its glory days by fixing the transport ship.",
+  "To do so, you must work efficiently, while maintaining courteous relationships with your supervisor,  Sam, and coworker, Jerry."
 ];
 
 /* Node types: "dialogue", "inner", "narration", "choice", "control" */
@@ -259,6 +262,7 @@ function startScene() {
   S.freeRoam = true;
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
   $("#scene-sprite-ester").style.left = S.playerX + "px";
+  $("#scene-sprite-ester").classList.remove("facing-left"); // she starts walking right, toward Sam
   $("#scene-sprite-jerry").classList.add("hidden");
   $("#scene-world").style.left = -S.sceneScrollX + "px";
 
@@ -268,6 +272,8 @@ function startScene() {
   sceneAnimTs = performance.now();
   requestAnimationFrame(sceneAnimLoop);
 }
+
+let jerryWalkInterval = null;
 
 function jerryEnter(nextNodeId) {
   // Jerry walks into frame and joins Sam and Ester, rather than the
@@ -279,9 +285,14 @@ function jerryEnter(nextNodeId) {
   $("#dialogue-row").classList.add("hidden");
   jerry.classList.remove("walking");
   jerry.style.left = JERRY_ENTER_X + "px";
+  jerry.style.backgroundPosition = "0 0";
+  jerry.classList.toggle("facing-left", JERRY_JOIN_X < JERRY_ENTER_X); // art faces right natively
   jerry.classList.remove("hidden");
 
   const arrive = () => {
+    clearInterval(jerryWalkInterval);
+    jerryWalkInterval = null;
+    jerry.style.backgroundPosition = "0 0";
     S.transitioning = false;
     runNode(nextNodeId);
   };
@@ -294,6 +305,11 @@ function jerryEnter(nextNodeId) {
   void jerry.offsetWidth; // flush the start position before transitioning
   jerry.classList.add("walking");
   jerry.style.left = JERRY_JOIN_X + "px";
+  let jerryWalkFrame = 0;
+  jerryWalkInterval = setInterval(() => {
+    jerryWalkFrame = (jerryWalkFrame + 1) % 4;
+    jerry.style.backgroundPosition = `-${jerryWalkFrame * 36}px 0`;
+  }, WALK_FRAME_MS);
   setTimeout(() => {
     jerry.classList.remove("walking");
     arrive();
@@ -313,6 +329,7 @@ function sceneAnimLoop(ts) {
     if (dx !== 0) {
       S.playerX = Math.max(LAB_MIN_X, Math.min(LAB_MAX_X, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
       $("#scene-sprite-ester").style.left = S.playerX + "px";
+      $("#scene-sprite-ester").classList.toggle("facing-left", dx < 0); // art faces right natively
       S.sceneScrollX = Math.max(0, Math.min(CAM_MAX_SCROLL, S.playerX - VIEWPORT_WIDTH / 2));
       $("#scene-world").style.left = -S.sceneScrollX + "px";
 
@@ -381,13 +398,7 @@ function runNode(nodeId) {
   // Choices
   if (node.type === "choice") { showChoicePanel(node.choices); return; }
 
-  if (node.type === "inner") {
-    S.idlePaused = true;
-    $$(".scene-sprite").forEach(sp => sp.classList.add("dimmed"));
-  } else {
-    S.idlePaused = false;
-    $$(".scene-sprite").forEach(sp => sp.classList.remove("dimmed"));
-  }
+  S.idlePaused = node.type === "inner";
 
   const row = $("#dialogue-row");
   row.classList.remove("hidden");

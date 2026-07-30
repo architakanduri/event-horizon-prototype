@@ -222,18 +222,24 @@ button:focus-visible{outline:2px solid var(--yellow);}
   z-index:10;
   top:148px;
 }
-.scene-sprite.dimmed{opacity:0.75;filter:brightness(0.75);}
 .scene-sprite.walking{transition:left 1.3s linear;}
 body.reduce-motion .scene-sprite.walking{transition:none;}
+.scene-sprite.facing-left{transform:scaleX(-1);} /* art faces right natively; mirror when walking left */
 #scene-sprite-sam{
-  width:18px;height:31px;
-  background:url('./assets/sam.png') no-repeat;
-  background-size:18px 31px;
+  width:36px;height:62px;
+  background:url('./assets/sam_walk.png') no-repeat;
+  background-size:144px 62px; /* 4-frame walk sheet, 36px per frame */
+  image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
+  top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height, matching Ester */
+  margin-left:-9px; /* half the added width, so he grows symmetrically around the same left-edge anchor */
 }
 #scene-sprite-jerry{
-  width:18px;height:31px;
-  background:url('./assets/jerry.png') no-repeat;
-  background-size:18px 31px;
+  width:36px;height:62px;
+  background:url('./assets/jerry_walk.png') no-repeat;
+  background-size:144px 62px; /* 4-frame walk sheet, 36px per frame */
+  image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
+  top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height, matching Sam/Ester */
+  margin-left:-9px; /* half the added width, so he grows symmetrically around the same left-edge anchor */
 }
 #scene-sprite-ester{
   width:36px;height:62px;
@@ -261,14 +267,16 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
   background-repeat:no-repeat;
 }
 #dialogue-portrait.char-sam{
-  background-image:url('./assets/sam.png');
-  background-size:18px 31px;
-  width:18px;height:31px;
+  background-image:url('./assets/sam_walk.png');
+  background-size:144px 62px; /* 4-frame walk sheet, 36px per frame — frame 0 (neutral pose) shown */
+  width:36px;height:62px;
+  image-rendering:auto;
 }
 #dialogue-portrait.char-jerry{
-  background-image:url('./assets/jerry.png');
-  background-size:18px 31px;
-  width:18px;height:31px;
+  background-image:url('./assets/jerry_walk.png');
+  background-size:144px 62px; /* 4-frame walk sheet, 36px per frame — frame 0 (neutral pose) shown */
+  width:36px;height:62px;
+  image-rendering:auto;
 }
 #dialogue-portrait.char-director{background-image:url('./assets/director_idle_1x.png');background-size:48px 31px;}
 #dialogue-portrait.char-ester{
