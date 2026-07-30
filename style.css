@@ -301,9 +301,9 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
   overflow-x:hidden;
   cursor:pointer;
 }
-#dialogue-box.type-dialogue{background:rgba(199,204,214,0.9);color:var(--navy);}
-#dialogue-box.type-inner{background:rgba(199,204,214,0.9);color:var(--navy);font-style:italic;}
-#dialogue-box.type-narration{background:rgba(6,10,26,0.9);color:var(--yellow);border:1px solid var(--purple);}
+#dialogue-box.type-dialogue{background:rgba(65, 66, 69, 0.5);color:var(--navy);}
+#dialogue-box.type-inner{background:rgba(65, 66, 69, 0.5);color:var(--navy);font-style:italic;}
+#dialogue-box.type-narration{background:rgba(65, 66, 69, 0.5);color:var(--yellow);border:1px solid var(--purple);}
 #dialogue-speaker{
   font-family:'Arial',monospace;
   font-size:calc(var(--text-body) + 1px);
