@@ -89,18 +89,6 @@ const S = {
   starsOffset: 0,
   stationX: -20,
   titleAnimStarted: false,
-  // sensory mini-game
-  sensoryNoise: 0,
-  sensoryLight: 100,
-  sensoryPhase: 0,
-  sensoryDone: false,
-  sensoryState: "idle",          // "explain" | "calibrate"
-  sensoryStress: 0,
-  sensoryInterjectShown: false,
-  sensoryInterjectActive: false,
-  sensoryHasDampeners: false,
-  sensoryUiReady: false,
-  sensoryItemTriggered: false,
 };
 
 /* ---- DOM ---- */
@@ -552,27 +540,6 @@ function initRestart() {
     S.starsOffset = 0;
     S.stationX = -20;
     S.idlePaused = false;
-    // sensory mini-game reset
-    document.removeEventListener("keydown", sensoryKeyDown);
-    sensoryGameActive = false;
-    sensoryResetShake();
-    clearTimeout(sensoryTypeTimer);
-    clearTimeout(sensoryWarningTimer);
-    S.sensoryNoise = 0; S.sensoryLight = 100;
-    S.sensoryPhase = 0; S.sensoryDone = false;
-    S.sensoryState = "idle";
-    S.sensoryStress = 0;
-    S.sensoryInterjectShown = false;
-    S.sensoryInterjectActive = false;
-    S.sensoryHasDampeners = false;
-    S.sensoryUiReady = false;
-    S.sensoryItemTriggered = false;
-    $("#sensory-interject").classList.add("hidden");
-    $("#sensory-explain").classList.remove("hidden");
-    $("#sensory-explain-body").textContent = "";
-    $("#sensory-explain-hint").classList.remove("visible");
-    $("#sensory-panel").classList.remove("visible");
-    resetSensoryUI();
     syncBars(true);
     $("#choice-panel").classList.add("hidden");
     $("#dialogue-row").classList.add("hidden");
