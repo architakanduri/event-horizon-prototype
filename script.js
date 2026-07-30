@@ -23,7 +23,7 @@ const SCENE_SCRIPT = [
   {id:"crash_cut", type:"control", action:"pan_to_crash", next:"pb1"},
 
   {id:"pb1", type:"dialogue", speaker:"SAM", text:"I promise you it’s fine, Ester. Oh, Jerry’s here. Hey, Jerry, can you grab the—JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
-  {id:"pb2", type:"inner", text:"I’ve heard accidents like that before when I was still in my old lab. No matter how many times I happen, I flinch like a rabbit being chased.", next:"pb3"},
+  {id:"pb2", type:"inner", text:"I’ve had accidents like that before when I was still in my old lab. No matter how many times it happens, I flinch like a rabbit being chased.", next:"pb3"},
   {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I’m sorry — it wasn’t— I turned around and my sleeve caught it, it was right on the edge, I didn’t—", next:"pb4"},
   {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"pa1"},
 
