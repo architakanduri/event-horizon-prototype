@@ -37,7 +37,6 @@ const SCENE_SCRIPT = [
   // Inner voice before choice
   {id:"choice1_inner", type:"inner", text:"You asked a yes-or-no question. He said yes. But he froze, and his voice went tight. People don’t react like that to answering a question correctly.", next:"choice1"},
 
-  // CHOICE 1
   {id:"choice1", type:"choice", choices:[
     {label:"“What’s wrong?”", cost:"SOCIAL +6   CAREER -5   MENTAL -3", stats:{social:6,career:-5,mental:-3}, next:"ba1"},
     {label:"“Please, six ounces of mercury, and the vent is running. We need this contained as soon as possible..”", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
@@ -90,6 +89,18 @@ const S = {
   starsOffset: 0,
   stationX: -20,
   titleAnimStarted: false,
+  // sensory mini-game
+  sensoryNoise: 0,
+  sensoryLight: 100,
+  sensoryPhase: 0,
+  sensoryDone: false,
+  sensoryState: "idle",          // "explain" | "calibrate"
+  sensoryStress: 0,
+  sensoryInterjectShown: false,
+  sensoryInterjectActive: false,
+  sensoryHasDampeners: false,
+  sensoryUiReady: false,
+  sensoryItemTriggered: false,
 };
 
 /* ---- DOM ---- */
@@ -106,7 +117,6 @@ function applyScale() {
   g.style.width = "320px";
   g.style.height = "180px";
   const wrapper = $("#game-wrapper");
-  // center
   wrapper.style.width = "100%";
   wrapper.style.height = "100%";
   wrapper.style.display = "flex";
@@ -157,16 +167,14 @@ function animateBar(stat, delta) {
     label.classList.add("flash");
     setTimeout(() => label.classList.remove("flash"), 300);
   }
-
   const deltaEl = bar.querySelector(".bar-delta");
   if (deltaEl) {
-    deltaEl.textContent = (delta > 0 ? "+" : "\u2212") + Math.abs(delta);
+    deltaEl.textContent = (delta > 0 ? "+" : "−") + Math.abs(delta);
     deltaEl.classList.remove("show");
     void deltaEl.offsetWidth;
     deltaEl.classList.add("show");
     setTimeout(() => deltaEl.classList.remove("show"), 1100);
   }
-
   if (blocks.length === 0) return;
   if (S.settings.reduceMotion) {
     blocks.forEach((b, i) => b.classList.toggle("filled", i < newFilled));
@@ -230,7 +238,6 @@ function completeType(el) {
 /* ---- TITLE SCREEN ---- */
 function initTitle() {
   $("#btn-start").addEventListener("click", startIntro);
-  // Fade in title text after a beat
   setTimeout(() => {
     $("#title-text").classList.add("visible");
   }, 100);
@@ -245,13 +252,11 @@ function titleLoop(ts) {
   const dt = Math.min(ts - lastTime, 50);
   lastTime = ts;
 
-  // Starfield scroll
   if (!S.settings.reduceMotion) {
     S.starsOffset -= 4 * dt / 1000;
     $(".title-stars").style.backgroundPosition = `${S.starsOffset}px 0`;
   }
 
-  // Black hole animation
   bhLargeTimer += dt;
   if (bhLargeTimer >= 180) {
     bhLargeTimer -= 180;
@@ -259,9 +264,8 @@ function titleLoop(ts) {
     $("#title-blackhole").style.backgroundPosition = `-${S.bhLargeFrame * 156}px 0`;
   }
 
-  // Station drift
   if (!S.settings.reduceMotion) {
-    S.stationX += 12 * dt / 1000; // ~12px/sec -> ~26s to cross
+    S.stationX += 12 * dt / 1000;
     if (S.stationX > 340) S.stationX = -20;
     $("#title-station").style.left = S.stationX + "px";
   }
@@ -329,14 +333,12 @@ function sceneAnimLoop(ts) {
   const dt = ts - sceneAnimTs;
   sceneAnimTs = ts;
 
-  // Idle bounce NPC sprites + portrait every 520ms
   if (!S.idlePaused && !S.settings.reduceMotion) {
     sceneIdleBounceTimer += dt;
     if (sceneIdleBounceTimer >= 520) {
       sceneIdleBounceTimer -= 520;
       S.idleBounce = 1 - S.idleBounce;
       const frameX = S.idleBounce * 24;
-      // Bounce scene sprites
       $$(".scene-sprite").forEach(sp => {
         if (sp.dataset.char === "ester" || sp.dataset.char === "sam" || sp.dataset.char === "jerry") return;
         if (sp.classList.contains("hidden")) return;
@@ -360,14 +362,12 @@ function runNode(nodeId) {
 
   if (node.applyStats) applyStatBlock(node.applyStats);
 
-  // Show/hide sprites
   if (node.showSprites) {
     $("#scene-sprite-sam").classList.toggle("hidden", !node.showSprites.includes("sam"));
     $("#scene-sprite-jerry").classList.toggle("hidden", !node.showSprites.includes("jerry"));
     $("#scene-sprite-ester").classList.toggle("hidden", !node.showSprites.includes("ester"));
   }
 
-  // Control nodes
   if (node.type === "control") {
     if (node.action === "pan_to_crash") { panToCrash(); runNode(node.next); return; }
   }
@@ -375,7 +375,6 @@ function runNode(nodeId) {
   // Choices
   if (node.type === "choice") { showChoicePanel(node.choices); return; }
 
-  // Inner voice — dim sprites
   if (node.type === "inner") {
     S.idlePaused = true;
     $$(".scene-sprite").forEach(sp => sp.classList.add("dimmed"));
@@ -384,7 +383,6 @@ function runNode(nodeId) {
     $$(".scene-sprite").forEach(sp => sp.classList.remove("dimmed"));
   }
 
-  // Show the dialogue row
   const row = $("#dialogue-row");
   row.classList.remove("hidden");
 
@@ -395,9 +393,8 @@ function runNode(nodeId) {
   box.classList.remove("type-dialogue", "type-inner", "type-narration");
   box.classList.add(`type-${node.type}`);
 
-  // Portrait — show the speaker's sprite with idle bounce
   const portrait = $("#dialogue-portrait");
-  portrait.className = ""; // reset classes
+  portrait.className = "";
   portrait.style.backgroundPosition = "0 0";
   if (node.type === "dialogue" && node.speaker) {
     const charName = node.speaker.toLowerCase();
@@ -528,7 +525,6 @@ function showEnd() {
     barsDiv.appendChild(col);
   });
 
-  // Animate bars up from zero
   setTimeout(() => {
     $$(".end-bar-fill").forEach(f => {
       const stat = f.dataset.stat;
@@ -536,7 +532,6 @@ function showEnd() {
     });
   }, 100);
 
-  // Show reflection + restart after bars animate
   setTimeout(() => {
     const ref = $("#end-reflection");
     ref.textContent = REFLECTION_TEXT;
@@ -557,6 +552,27 @@ function initRestart() {
     S.starsOffset = 0;
     S.stationX = -20;
     S.idlePaused = false;
+    // sensory mini-game reset
+    document.removeEventListener("keydown", sensoryKeyDown);
+    sensoryGameActive = false;
+    sensoryResetShake();
+    clearTimeout(sensoryTypeTimer);
+    clearTimeout(sensoryWarningTimer);
+    S.sensoryNoise = 0; S.sensoryLight = 100;
+    S.sensoryPhase = 0; S.sensoryDone = false;
+    S.sensoryState = "idle";
+    S.sensoryStress = 0;
+    S.sensoryInterjectShown = false;
+    S.sensoryInterjectActive = false;
+    S.sensoryHasDampeners = false;
+    S.sensoryUiReady = false;
+    S.sensoryItemTriggered = false;
+    $("#sensory-interject").classList.add("hidden");
+    $("#sensory-explain").classList.remove("hidden");
+    $("#sensory-explain-body").textContent = "";
+    $("#sensory-explain-hint").classList.remove("visible");
+    $("#sensory-panel").classList.remove("visible");
+    resetSensoryUI();
     syncBars(true);
     $("#choice-panel").classList.add("hidden");
     $("#dialogue-row").classList.add("hidden");
@@ -571,7 +587,6 @@ function initRestart() {
 
 /* ---- GLOBAL INPUT ---- */
 function initInput() {
-  // Intro
   document.addEventListener("click", e => {
     if (S.screen === "intro") advanceIntro();
   });
@@ -580,14 +595,12 @@ function initInput() {
       e.preventDefault();
       advanceIntro();
     }
-    // Scene advance
     if (S.screen === "scene" && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();
-      if (!$("#choice-panel").classList.contains("hidden")) return; // choices visible
+      if (!$("#choice-panel").classList.contains("hidden")) return;
       advanceScene();
     }
   });
-  // Scene click — on the whole dialogue row (portrait + text box)
   $("#dialogue-row").addEventListener("click", () => {
     if (S.screen === "scene") advanceScene();
   });
@@ -601,7 +614,6 @@ function init() {
   initRestart();
   initInput();
 
-  // Start title animation
   lastTime = performance.now();
   requestAnimationFrame(titleLoop);
 }
