@@ -25,6 +25,7 @@
         </div>
         <div class="title-buttons">
           <button class="btn btn-purple" id="btn-start" tabindex="0">START</button>
+          <button class="btn btn-purple" id="btn-settings" tabindex="0">SETTINGS</button>
         </div>
       </div>
     </div>
@@ -34,6 +35,9 @@
       <div id="intro-text" class="intro-text"></div>
       <div id="intro-counter" class="intro-counter"></div>
     </div>
+
+    <!-- PAUSE BUTTON (visible during intro / scene) -->
+    <button id="btn-pause" class="btn btn-purple hidden" tabindex="0" aria-label="Pause / Settings">II</button>
 
     <!-- SCREEN: SCENE -->
     <div id="screen-scene" class="screen">
@@ -61,6 +65,22 @@
         <div class="end-buttons hidden" id="end-buttons">
           <button class="btn btn-purple" id="btn-restart">RESTART</button>
         </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS OVERLAY -->
+    <div id="settings-overlay" class="overlay hidden">
+      <div id="settings-panel">
+        <div class="settings-title">SETTINGS</div>
+        <label class="settings-row">
+          <input type="checkbox" id="chk-dyslexia">
+          <span>Dyslexic-friendly font</span>
+        </label>
+        <label class="settings-row">
+          <input type="checkbox" id="chk-instant-text">
+          <span>Show text instantly</span>
+        </label>
+        <button class="btn btn-purple" id="btn-settings-close">CLOSE</button>
       </div>
     </div>
 
