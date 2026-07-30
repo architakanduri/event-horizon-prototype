@@ -10,67 +10,60 @@ const INTRO_CARDS = [
   "This is no situation any reasonable scientist wants to operate in. You don't really have a choice, though. The gubernatorial board of your university seems to have deemed you to be, in their words, \"uncooperative and a hazard to the scientific community\”. It seems your only hope is to get this failing research station back to its glory days."
 ];
 
-/* Node types: "dialogue", "inner", "narration", "choice", "alarm", "control" */
+/* Node types: "dialogue", "inner", "narration", "choice", "control" */
 const SCENE_SCRIPT = [
-  {id:"s1", type:"dialogue", speaker:"SAM", text:"Alright. Your name’s Ester, right? I’m your supervisor because I’m technically your senior here, but don’t come to me with complaints later because I can’t help with the higher-ups. Oh yeah, you’re technically a \"visiting student\" even though you’re still going to be working. Questions?", next:"s2", showSprites:["sam","ester"]},
+  {id:"s1", type:"dialogue", speaker:"SAM", text:"Alright. Your name’s Ester? I’m your supervisor because I’m technically your senior here, but don’t come to me with complaints later because I can’t help with the higher-ups. Oh yeah, you’re technically a “visiting student” even though you’re still going to be working. Questions?", next:"s2", showSprites:["sam","ester"]},
   {id:"s2", type:"dialogue", speaker:"ESTER", text:"Yes. I’m concerned about how the terminal system is bolted in close proximity to the atmospheric monitoring devices. The venting should cause some issues, right? Do you have a fume hood anywhere?", next:"s3"},
   {id:"s3", type:"dialogue", speaker:"SAM", text:"…Yes?", next:"s4"},
   {id:"s4", type:"dialogue", speaker:"ESTER", text:"And there shouldn’t be a device containing high mercury haphazardly arranged in this room.", next:"s5"},
-  {id:"s5", type:"dialogue", speaker:"SAM", text:"It’s been there eight months.", next:"s6"},
-  {id:"s6", type:"dialogue", speaker:"ESTER", text:"But that doesn’t decrease the health risk, it just means you’ve been in close range to danger for longer!", next:"lab_explore"},
+  {id:"s5", type:"dialogue", speaker:"SAM", text:"It’s been there for eight months.", next:"s6"},
+  {id:"s6", type:"dialogue", speaker:"ESTER", text:"But that doesn’t decrease the health risk, it just means you’ve been in close range to danger for longer!", next:"crash_cut"},
 
-  // lab_explore is a control node — starts the lab screen
-  {id:"lab_explore", type:"control", action:"start_lab"},
+  // crash_cut is a control node — pans the camera to the crash before pb1 shows
+  {id:"crash_cut", type:"control", action:"pan_to_crash", next:"pb1"},
 
-  // Post-bench: scene resumes here
-  {id:"pb1", type:"dialogue", speaker:"SAM", text:"Hey, Jerry, could you grab the\u2014 JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
-  {id:"pb2", type:"narration", text:"A crash. Glass on tile. Small pieces rolling outward in four directions.", next:"pb3"},
-  {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I\u2019m sorry \u2014 it wasn\u2019t\u2014 I turned around and my sleeve caught it, it was right on the edge, I didn\u2019t\u2014", next:"pb4"},
-  {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"alarm"},
+  {id:"pb1", type:"dialogue", speaker:"SAM", text:"I promise you it’s fine, Ester. Oh, Jerry’s here. Hey, Jerry, can you grab the—JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
+  {id:"pb2", type:"inner", text:"I’ve heard accidents like that before when I was still in my old lab. No matter how many times I happen, I flinch like a rabbit being chased.", next:"pb3"},
+  {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I’m sorry — it wasn’t— I turned around and my sleeve caught it, it was right on the edge, I didn’t—", next:"pb4"},
+  {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"pa1"},
 
-  {id:"alarm", type:"alarm"},
-
-  // Post-alarm
-  {id:"pa1", type:"narration", text:"Mercury on the floor. Small beads rolling into the grout lines, pooling where the tile dips.", next:"pa2"},
-  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry \u2014 vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Sam, seal the door and kill the manifold to three and four. That unit holds about six ounces of elemental mercury and the vent is running. I\u2019ll write the incident report. Jerry, what\u2019s your surname? I\u2019m putting your name down as the person responsible. And \u2014 this was an accident, correct?", next:"pa3"},
-  {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That\u2019s what I just said.", next:"pa4"},
-  {id:"pa4", type:"narration", text:"He hasn\u2019t moved. Neither has anyone else. Sam is looking at the floor.", next:"choice1_inner"},
+  // Post-crash
+  {id:"pa1", type:"inner", text:"It’s just like the samples I used to see a lot in the chemistry lab at school. The only metal to be liquid under room temperature, highly toxic, boiling point at 357°C. And it’s currently making a mess—a highly toxic mess!—on the lab floor.", next:"pa2"},
+  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? That unit holds about six ounces of elemental mercury and the vent is running! In ten minutes, the mercury you guys were testing will cause irreversible damage. . .", next:"pa2b"},
+  {id:"pa2b", type:"dialogue", speaker:"ESTER", text:"I’ll write the incident report. Jerry, what’s your surname? I’m putting your name down as the person responsible. I didn’t spend 4 years in college and 2 years in grad school learning nuclear physics to end up in a lab-turned-suicide chamber. And — this was an accident, correct?", next:"pa3"},
+  {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That’s what I just said.", next:"pa4"},
+  {id:"pa4", type:"inner", text:"Nobody has moved. Sam is looking at the floor.", next:"choice1_inner"},
 
   // Inner voice before choice
-  {id:"choice1_inner", type:"inner", text:"You asked a yes-or-no question. He said yes. But he\u2019s frozen, and his voice went tight. People don\u2019t react like that to answering a question correctly.", next:"choice1"},
+  {id:"choice1_inner", type:"inner", text:"You asked a yes-or-no question. He said yes. But he froze, and his voice went tight. People don’t react like that to answering a question correctly.", next:"choice1"},
 
   // CHOICE 1
   {id:"choice1", type:"choice", choices:[
-    {label:"\u201CWhat\u2019s wrong?\u201D", cost:"SOCIAL +6   CAREER -5   MENTAL -3", stats:{social:6,career:-5,mental:-3}, next:"ba1"},
-    {label:"\u201CPlease. Six ounces of mercury, and the vent is running. We need this contained in the next four minutes.\u201D", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
+    {label:"“What’s wrong?”", cost:"SOCIAL +6   CAREER -5   MENTAL -3", stats:{social:6,career:-5,mental:-3}, next:"ba1"},
+    {label:"“Please, six ounces of mercury, and the vent is running. We need this contained as soon as possible..”", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
   ]},
 
-  // Branch A
-  {id:"ba1", type:"dialogue", speaker:"JERRY", text:"What\u2019s wrong? I\u2019ve worked here eleven years. I\u2019ve never seen you before in my life and your first act is to put my name in an incident report in front of two witnesses. What did I ever do to you?", next:"ba2"},
-  {id:"ba2", type:"dialogue", speaker:"ESTER", text:"I\u2019ve never seen you before either. I don\u2019t hold any vendetta against you. I don\u2019t know you well enough to.", next:"ba3"},
-  {id:"ba3", type:"dialogue", speaker:"JERRY", text:"Then why are you being so accusatory?", next:"ba4"},
-  {id:"ba4", type:"dialogue", speaker:"ESTER", text:"Your sleeve caught the device. That\u2019s the sequence of events. The form has a field labelled \u201Cperson responsible\u201D and it doesn\u2019t have a field for anything else.", next:"ba5"},
-  {id:"ba5", type:"dialogue", speaker:"JERRY", text:"We could have sorted out whose name goes where later. It\u2019s the way you said it. \u201CWhat\u2019s your surname, I\u2019m putting you down as responsible.\u201D A first-week student. Like you were reading out a sentence.", next:"ba6"},
-  {id:"ba6", type:"inner", text:"He\u2019s not angry about the form. He\u2019s angry about the way you said it. You replay the sentence in your head. You can hear the words but you can\u2019t hear what he heard.", next:"ba7"},
-  {id:"ba7", type:"narration", text:"The mercury is still on the floor. The vent is still running.", next:"choice2", applyStats:{career:-3}},
+  // Branch A — "What's wrong?"
+  {id:"ba1", type:"dialogue", speaker:"JERRY", text:"“What’s wrong”? I barely even know who you are, and all you want to do is accuse me and get me in trouble by writing me down on the incident report!", next:"ba2"},
+  {id:"ba2", type:"dialogue", speaker:"ESTER", text:"I don’t know you very well either, and I’m not trying to get you in trouble.", next:"ba3"},
+  {id:"ba3", type:"dialogue", speaker:"JERRY", text:"Then why are you singling me out??", next:"ba4"},
+  {id:"ba4", type:"dialogue", speaker:"ESTER", text:"Your sleeve got caught on the device. That’s the truth. The incident form has a field labelled “person responsible” and it doesn’t have a field for anything else.", next:"ba5"},
+  {id:"ba5", type:"dialogue", speaker:"JERRY", text:"We could have sorted out whose name goes where later. It’s the way you said it. “What’s your surname, I’m putting you down as responsible.” You’ve barely even been here for a week. It’s like you were reading out a prison sentence! God!", next:"ba6"},
+  {id:"ba6", type:"inner", text:"Oh—he was angry about the form. I stare down at the liquid from the machine, pooling on the floor, then back at him. Jerry was as clearly frustrated as he could have possibly been; he was making some complicated wringing motions with his hands, blinking away tears. . .", next:"ba7"},
+  {id:"ba7", type:"dialogue", speaker:"ESTER", text:"I wasn’t trying to sentence you. I say things in the order I think of them, and when I saw the mercury that was the only thing I could think about.", next:"ba8", applyStats:{social:4,emotional:3,career:-2}},
+  {id:"ba8", type:"dialogue", speaker:"JERRY", text:"Makes sense. I shouldn’t have lost my temper. Sorry.", next:"ba9"},
+  {id:"ba9", type:"dialogue", speaker:"ESTER", text:"I’m sorry too. But—again about the mercury, can we all get this cleaned up together? Quickly!", next:"ba10"},
+  {id:"ba10", type:"dialogue", speaker:"JERRY", text:"OK, OK. Sam! Done with the door? Come here!", next:"ba11"},
+  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences.", next:"end"},
 
-  // Branch B
-  {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry. Sorry.", next:"bb2"},
-  {id:"bb2", type:"narration", text:"He gets the bin. Works fast, works correctly, doesn\u2019t look at anyone. The spill is contained in three minutes forty. The report is filed. Sam says \u201Cnice work\u201D in a tone Ester can\u2019t decode.", next:"bb3", applyStats:{emotional:-3,mental:-4}},
-  {id:"bb3", type:"inner", text:"Nice work. Two words. You run them through every filter you have and none of them return a clean result. Was it genuine? Sarcastic? Relieved? All three?", next:"choice2"},
-
-  // CHOICE 2
-  {id:"choice2", type:"choice", choices:[
-    {label:"\u201CI wasn\u2019t trying to sentence you. I say things in the order I think of them, and containment came first.\u201D", cost:"SOCIAL +4   EMOTIONAL +3   CAREER -2", stats:{social:4,emotional:3,career:-2}, next:"closing"},
-    {label:"\u201CI\u2019m sorry. I\u2019ll amend the report to \u2018contributing factors \u2014 equipment placement.\u2019\u201D", cost:"SOCIAL +6   CAREER -6   EMOTIONAL -4", stats:{social:6,career:-6,emotional:-4}, next:"closing"},
-    {label:"Say nothing. File the report as written.", cost:"CAREER +5   SOCIAL -6   EMOTIONAL -5   MENTAL -2", stats:{career:5,social:-6,emotional:-5,mental:-2}, next:"closing"}
-  ]},
-
-  // Closing
-  {id:"closing", type:"narration", text:"The Director arrives eleven minutes later. She reads the incident report, then looks up. \u201CWho authorised this? This was filed by a visiting student. Visiting students do not have clearance to submit safety documentation.\u201D Nobody answers. Ester hadn\u2019t known she needed authorisation. The form was there, so she filled it in.", next:"end"}
+  // Branch B — "Please, six ounces of mercury..."
+  {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry, sorry. . .", next:"bb2"},
+  {id:"bb2", type:"inner", text:"He went for the bin, as fast as possible, and I still couldn’t tell what that expression on his face was supposed to mean. It was the correct decision, no? “I’m putting your name down as the person responsible,” was that too harsh? I could never tell. This sort of mistake, the one only I couldn’t see, was happening again.", next:"bb3"},
+  {id:"bb3", type:"dialogue", speaker:"SAM", text:"I, uh— nice work, Ester. Quick thinking. Yeah.", next:"bb4"},
+  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam’s making the same face as Jerry. But no matter what they think of me, I still go ahead and fill in the form.", next:"end"}
 ];
 
-const REFLECTION_TEXT = "\u201CNobody in that room was being cruel. Two people used the same words to mean different things, in a building that punishes whoever gets blamed.\u201D";
+const REFLECTION_TEXT = "END OF SCENARIO";
 const REFLECTION_SUB = "";
 
 /* ---- NODE MAP ---- */
@@ -84,20 +77,10 @@ const S = {
   introIdx: 0,
   introTyping: false,
   introFullText: "",
-  benchTriggered: false,
   currentNode: null,
   typing: false,
   fullText: "",
-  settings: {quiet:false, dyslexia:false, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
-  // lab
-  esterX: 140, esterY: 116,
-  esterDir: 2, // 0=down,1=left,2=right,3=up
-  esterFrame: 0,
-  esterMoving: false,
-  camX: 0,
-  keys: {},
-  labActive: false,
-  labIdleTimer: 0,
+  settings: {dyslexia:false, textSize:"medium", reduceMotion:false, textSpeed:"normal"},
   // scene
   sceneScrollX: 0,
   idleBounce: 0,
@@ -310,155 +293,6 @@ function advanceIntro() {
   }
 }
 
-/* ---- LAB ---- */
-const ESTER_W = 24, ESTER_H = 30;
-const LAB_W = 640, VIEW_W = 320, VIEW_H = 180;
-const FOOTER_H = 28;
-// Walkable area: top of blue floor tiles to just above the footer
-// Footer top = 180 - 28 = 152. Ester bottom must be ≤ 152 → top ≤ 122.
-const FLOOR_TOP = 88;
-const FLOOR_BOT = 122; // Ester's feet at 152, flush above footer
-const ESTER_SPEED = 60; // px/sec in world coords
-
-// Bench collision zones matching lab_room_wide.png (640x180).
-// The benches sit on the floor. Collision uses a narrow vertical band
-// (y=102-114) so Ester can walk in front of the benches (y ≥ 114)
-// or behind them near the wall (y < 102, navigating through gaps).
-const BENCHES = [
-  {x1:56, x2:118, y1:102, y2:114},
-  {x1:182,x2:244, y1:102, y2:114},
-  {x1:308,x2:370, y1:102, y2:114},
-  {x1:434,x2:496, y1:102, y2:114},
-  {x1:540,x2:602, y1:102, y2:114},
-];
-
-let labLastTs = 0;
-let flickerTimer = 0, flickerNext = 6000;
-
-function startLab() {
-  showScreen("lab");
-  showBars();
-  S.labActive = true;
-  S.benchTriggered = false;
-  S.esterX = 140;
-  S.esterY = 116;
-  S.esterDir = 2;
-  S.esterFrame = 0;
-  S.camX = 0;
-  S.keys = {};
-  S.labIdleTimer = 0;
-  updateLabObjective();
-  renderLab();
-  labLastTs = performance.now();
-  document.addEventListener("keydown", labKeyDown);
-  document.addEventListener("keyup", labKeyUp);
-  requestAnimationFrame(labLoop);
-}
-
-function labKeyDown(e) {
-  if (!S.labActive) return;
-  const moveKeys = ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","w","W","a","A","s","S","d","D"];
-  if (moveKeys.includes(e.key) || e.key === " " || e.key === "e" || e.key === "E") {
-    e.preventDefault();
-  }
-  S.keys[e.key] = true;
-}
-function labKeyUp(e) { S.keys[e.key] = false; }
-
-function labLoop(ts) {
-  if (S.screen !== "lab") return;
-  const dt = Math.min(ts - labLastTs, 50);
-  labLastTs = ts;
-
-  if (S.labActive) {
-    // Movement
-    let dx = 0, dy = 0;
-    if (S.keys["ArrowLeft"] || S.keys["a"] || S.keys["A"]) dx = -1;
-    if (S.keys["ArrowRight"] || S.keys["d"] || S.keys["D"]) dx = 1;
-    if (S.keys["ArrowUp"] || S.keys["w"] || S.keys["W"]) dy = -1;
-    if (S.keys["ArrowDown"] || S.keys["s"] || S.keys["S"]) dy = 1;
-
-    S.esterMoving = dx !== 0 || dy !== 0;
-
-    if (S.esterMoving) {
-      S.labIdleTimer = 0;
-      if (dx < 0) S.esterDir = 1;
-      else if (dx > 0) S.esterDir = 2;
-      else if (dy < 0) S.esterDir = 3;
-      else if (dy > 0) S.esterDir = 0;
-
-      let nx = S.esterX + dx * ESTER_SPEED * dt / 1000;
-      let ny = S.esterY + dy * ESTER_SPEED * dt / 1000;
-      nx = Math.max(4, Math.min(LAB_W - ESTER_W - 4, nx));
-      ny = Math.max(FLOOR_TOP, Math.min(FLOOR_BOT, ny));
-
-      // Move freely without bench collision blocking.
-      S.esterX = nx;
-      S.esterY = ny;
-    } else {
-      S.labIdleTimer += dt;
-    }
-
-    // Camera follows Ester directly to avoid jitter from easing + rounding.
-    S.camX = Math.max(0, Math.min(LAB_W - VIEW_W, S.esterX - VIEW_W / 2 + ESTER_W / 2));
-
-    // Check bench trigger — walk near far-right bench (world x~500+)
-    if (!S.benchTriggered && S.esterX > 500 && S.esterX < 560) {
-      S.benchTriggered = true;
-      S.labActive = false;
-      S.keys = {};
-      document.removeEventListener("keydown", labKeyDown);
-      document.removeEventListener("keyup", labKeyUp);
-      setTimeout(() => startSceneDialogue("pb1"), 300);
-      return;
-    }
-
-    // No object interactions in this simplified lab.
-  }
-
-  // Proximity check
-  updateLabPrompt();
-
-  // Render
-  renderLab();
-  requestAnimationFrame(labLoop);
-}
-
-function renderLab() {
-  const world = $("#lab-world");
-  world.style.transform = `translate3d(${-S.camX}px,0,0)`;
-
-  const e = $("#lab-ester");
-  e.style.transform = `translate3d(${S.esterX}px,${S.esterY}px,0)`;
-}
-
-function updateLabPrompt() {
-  $("#lab-prompt").classList.add("hidden");
-  $("#lab-arrow").classList.add("hidden");
-}
-
-function tryExamine() {
-  // No object interactions in the simplified lab.
-}
-
-function showLabTextbox(text) {
-  // Interaction removed; this should never be called.
-}
-
-function dismissLabTextbox() {
-  if (S.typing) { completeType($("#lab-textbox-text")); return; }
-  $("#lab-textbox").classList.add("hidden");
-  S.labActive = true;
-}
-
-function updateLabObjective() {
-  $("#lab-objective").textContent = "Walk to the far bench.";
-}
-
-function checkLabArrow() {
-  // Arrow not used in the simplified lab.
-}
-
 /* ---- SCENE ---- */
 let sceneIdleBounceTimer = 0;
 
@@ -466,26 +300,27 @@ function startSceneDialogue(nodeId) {
   showScreen("scene");
   showBars();
 
-  const sw = $("#scene-world");
-  if (nodeId === "s1") {
-    // Opening: camera on left side, sprites near first bench
-    S.sceneScrollX = 20;
-    $("#scene-sprite-sam").style.left = "140px";
-    $("#scene-sprite-ester").style.left = "180px";
-    $("#scene-sprite-jerry").classList.add("hidden");
-  } else {
-    // Post-bench: camera on right side
-    S.sceneScrollX = 320;
-    $("#scene-sprite-sam").style.left = "385px";
-    $("#scene-sprite-jerry").style.left = "430px";
-    $("#scene-sprite-ester").style.left = "465px";
-  }
-  sw.style.left = -S.sceneScrollX + "px";
+  // Opening: camera on left side, sprites near first bench
+  S.sceneScrollX = 20;
+  $("#scene-sprite-sam").style.left = "140px";
+  $("#scene-sprite-ester").style.left = "180px";
+  $("#scene-sprite-jerry").classList.add("hidden");
+  $("#scene-world").style.left = -S.sceneScrollX + "px";
 
   sceneIdleBounceTimer = 0;
   sceneAnimTs = performance.now();
   requestAnimationFrame(sceneAnimLoop);
   runNode(nodeId);
+}
+
+function panToCrash() {
+  // Cut the camera to the right side of the room where Jerry is, right
+  // before his dialogue starts.
+  S.sceneScrollX = 320;
+  $("#scene-sprite-sam").style.left = "385px";
+  $("#scene-sprite-jerry").style.left = "430px";
+  $("#scene-sprite-ester").style.left = "465px";
+  $("#scene-world").style.left = -S.sceneScrollX + "px";
 }
 
 let sceneAnimTs = 0;
@@ -534,11 +369,8 @@ function runNode(nodeId) {
 
   // Control nodes
   if (node.type === "control") {
-    if (node.action === "start_lab") { startLab(); return; }
+    if (node.action === "pan_to_crash") { panToCrash(); runNode(node.next); return; }
   }
-
-  // Alarm
-  if (node.type === "alarm") { showAlarm(); return; }
 
   // Choices
   if (node.type === "choice") { showChoicePanel(node.choices); return; }
@@ -634,9 +466,11 @@ function measureMaxDialogueBoxHeight() {
   return Math.max(dialogueHeight, captionHeight);
 }
 
+const DIALOGUE_BOX_EXTRA_HEIGHT = 12; // headroom above the tightest fit, added upward
+
 function ensureDialogueBoxHeight() {
   if (dialogueBoxFixedHeight == null) {
-    dialogueBoxFixedHeight = measureMaxDialogueBoxHeight();
+    dialogueBoxFixedHeight = measureMaxDialogueBoxHeight() + DIALOGUE_BOX_EXTRA_HEIGHT;
   }
   $("#dialogue-box").style.height = dialogueBoxFixedHeight + "px";
 }
@@ -650,31 +484,6 @@ function advanceScene() {
   } else {
     showEnd();
   }
-}
-
-/* ---- ALARM ---- */
-function showAlarm() {
-  const overlay = $("#alarm-overlay");
-  if (S.settings.quiet) {
-    applyStatBlock({social:-3});
-    runNode("pa1");
-    return;
-  }
-  overlay.classList.remove("hidden");
-  if (!S.settings.reduceMotion) overlay.classList.add("pulse");
-  overlay.querySelectorAll(".choice-btn").forEach(btn => {
-    btn.addEventListener("click", handleAlarm, {once:true});
-  });
-}
-
-function handleAlarm(e) {
-  const choice = e.currentTarget.dataset.alarm;
-  if (choice === "ears") applyStatBlock({mental:-8});
-  else applyStatBlock({social:-3});
-  const overlay = $("#alarm-overlay");
-  overlay.classList.add("hidden");
-  overlay.classList.remove("pulse");
-  runNode("pa1");
 }
 
 /* ---- CHOICES ---- */
@@ -742,28 +551,18 @@ function initRestart() {
   $("#btn-restart").addEventListener("click", () => {
     S.stats = {social:60, career:60, emotional:60, mental:60};
     S.introIdx = 0;
-    S.labSeen = {};
-    S.benchTriggered = false;
     S.currentNode = null;
     S.typing = false;
-    S.keys = {};
-    S.labActive = false;
-    S.allExamined = false;
     S.bhLargeFrame = 0;
     S.starsOffset = 0;
     S.stationX = -20;
-    S.labIdleTimer = 0;
     S.idlePaused = false;
     syncBars(true);
-    $("#alarm-overlay").classList.add("hidden");
-    $("#alarm-overlay").classList.remove("pulse");
     $("#choice-panel").classList.add("hidden");
     $("#dialogue-row").classList.add("hidden");
     $("#end-reflection").classList.remove("visible");
     $("#end-reflection").classList.add("hidden");
     $("#end-buttons").classList.add("hidden");
-    $("#lab-textbox").classList.add("hidden");
-    $("#lab-arrow").classList.add("hidden");
     showScreen("title");
     lastTime = performance.now();
     requestAnimationFrame(titleLoop);
@@ -787,20 +586,11 @@ function initInput() {
       if (!$("#choice-panel").classList.contains("hidden")) return; // choices visible
       advanceScene();
     }
-    // Lab textbox dismiss
-    if (S.screen === "lab" && !$("#lab-textbox").classList.contains("hidden")) {
-      if (e.key === " " || e.key === "Enter" || e.key === "Escape") {
-        e.preventDefault();
-        dismissLabTextbox();
-      }
-    }
   });
   // Scene click — on the whole dialogue row (portrait + text box)
   $("#dialogue-row").addEventListener("click", () => {
     if (S.screen === "scene") advanceScene();
   });
-  // Lab textbox click
-  $("#lab-textbox").addEventListener("click", () => dismissLabTextbox());
 }
 
 /* ---- INIT ---- */
