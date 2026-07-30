@@ -213,14 +213,14 @@ button:focus-visible{outline:2px solid var(--yellow);}
   overflow:hidden;
 }
 #scene-bg{
-  position:absolute;top:-60px;left:0;
-  width:853.33px;height:240px; /* 1.33x zoom, undistorted; shifted up so only the bottom 75% shows */
+  position:absolute;top:0;left:0;
+  width:640px;height:180px;
 }
 .scene-sprite{
   position:absolute;
   image-rendering:pixelated;
   z-index:10;
-  top:148px;
+  top:144px;
 }
 .scene-sprite.dimmed{opacity:0.75;filter:brightness(0.75);}
 .scene-sprite.walking{transition:left 1.3s linear;}
@@ -240,7 +240,7 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
   background:url('./assets/player.png') no-repeat;
   background-size:144px 62px;
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
-  top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height */
+  top:113px; /* overrides .scene-sprite's top:144px — keeps feet on the same floor line (144+31) at the doubled height */
   margin-left:-9px; /* half the added width, so she grows symmetrically around the same left-edge movement anchor */
 }
 
