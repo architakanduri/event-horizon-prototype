@@ -104,7 +104,6 @@ const S = {
   idlePaused: false,
   // anim
   bhLargeFrame: 0,
-  bhSmallFrame: 0,
   starsOffset: 0,
   stationX: -20,
   titleAnimStarted: false,
@@ -256,7 +255,7 @@ function initTitle() {
 
 /* ---- TITLE ANIMATION LOOP ---- */
 let lastTime = 0;
-let bhLargeTimer = 0, bhSmallTimer = 0, starsTimer = 0, stationTimer = 0;
+let bhLargeTimer = 0, starsTimer = 0, stationTimer = 0;
 
 function titleLoop(ts) {
   if (S.screen !== "title") return;
@@ -334,7 +333,6 @@ const BENCHES = [
 ];
 
 let labLastTs = 0;
-let bhSmallT = 0;
 let flickerTimer = 0, flickerNext = 6000;
 
 function startLab() {
@@ -416,14 +414,6 @@ function labLoop(ts) {
     }
 
     // No object interactions in this simplified lab.
-  }
-
-  // Black hole small anim
-  bhSmallT += dt;
-  if (bhSmallT >= 180) {
-    bhSmallT -= 180;
-    S.bhSmallFrame = (S.bhSmallFrame + 1) % 4;
-    $("#lab-blackhole-small").style.backgroundPosition = `-${S.bhSmallFrame * 72}px 0`;
   }
 
   // Proximity check
@@ -760,7 +750,6 @@ function initRestart() {
     S.labActive = false;
     S.allExamined = false;
     S.bhLargeFrame = 0;
-    S.bhSmallFrame = 0;
     S.starsOffset = 0;
     S.stationX = -20;
     S.labIdleTimer = 0;

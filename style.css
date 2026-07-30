@@ -164,15 +164,6 @@ button:focus-visible{outline:2px solid var(--yellow);}
   position:absolute;top:0;left:0;
   width:640px;height:180px;
 }
-#lab-blackhole-small{
-  position:absolute;
-  width:72px;height:32px;
-  left:256px;top:34px;
-  background:url('./assets/blackhole_small.png') no-repeat;
-  background-size:288px 32px;
-  image-rendering:pixelated;
-  z-index:1;
-}
 #lab-ester{
   position:absolute;
   width:18px;height:31px;
