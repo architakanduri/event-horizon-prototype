@@ -15,29 +15,39 @@ const INTRO_CARDS = [
 
 /* Node types: "dialogue", "inner", "narration", "choice", "control" */
 const SCENE_SCRIPT = [
-  {id:"s1", type:"dialogue", speaker:"SAM", text:"Alright. Your name’s Ester? I’m your supervisor because I’m technically your senior here, but don’t come to me with complaints later because I can’t help with the higher-ups. Oh yeah, you’re technically a “visiting student” even though you’re still going to be working. Questions?", next:"s2", showSprites:["sam","ester"]},
+  {id:"s1", type:"dialogue", speaker:"SAM", text:"I’m Sam.", next:"s1_inner1", showSprites:["sam","ester"]},
+  {id:"s1_inner1", type:"inner", text:"In the corner of my eye, I see a safety hazard: the terminal system.", next:"s1b"},
+  {id:"s1b", type:"dialogue", speaker:"SAM", text:"I’m your supervisor because technically, I’m your senior here. But don’t come to me with complaints later, because I can’t help with the higher-ups.", next:"s1_inner2"},
+  {id:"s1_inner2", type:"inner", text:"The way it’s set up is a safety hazard.", next:"s1c"},
+  {id:"s1c", type:"dialogue", speaker:"SAM", text:"Oh yeah. You and Jerry are technically a “visiting student,” even though you’re still going to be working. Questions?", next:"s1_choice"},
+
+  {id:"s1_choice", type:"choice", choices:[
+    {label:"Prioritize the crew’s safety and ask about the terminal system.", next:"s2"},
+    {label:"Ignore what might be a disaster.", next:"crash_cut"}
+  ]},
+
   {id:"s2", type:"dialogue", speaker:"ESTER", text:"Yes. I’m concerned about how the terminal system is bolted in close proximity to the atmospheric monitoring devices. The venting should cause some issues, right? Do you have a fume hood anywhere?", next:"s3"},
   {id:"s3", type:"dialogue", speaker:"SAM", text:"…Yes?", next:"s4"},
   {id:"s4", type:"dialogue", speaker:"ESTER", text:"And there shouldn’t be a device containing high mercury haphazardly arranged in this room.", next:"s5"},
   {id:"s5", type:"dialogue", speaker:"SAM", text:"It’s been there for eight months.", next:"s6"},
-  {id:"s6", type:"dialogue", speaker:"ESTER", text:"But that doesn’t decrease the health risk, it just means you’ve been in close range to danger for longer!", next:"crash_cut"},
+  {id:"s6", type:"dialogue", speaker:"ESTER", text:"But that doesn’t decrease the health risk. It just means you’ve been in close range to danger for longer!", next:"crash_cut"},
 
   // crash_cut is a control node — Jerry walks into frame as pb1 plays, no camera cut
   {id:"crash_cut", type:"control", action:"jerry_enter", next:"pb1"},
 
-  {id:"pb1", type:"dialogue", speaker:"SAM", text:"I promise you it’s fine, Ester. Oh, Jerry’s here. Hey, Jerry, can you grab the—JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
-  {id:"pb2", type:"inner", text:"I’ve had accidents like that before when I was still in my old lab. No matter how many times it happens, I flinch like a rabbit being chased.", next:"pb3"},
+  {id:"pb1", type:"dialogue", speaker:"SAM", text:"It’s fine, Ester. Oh, Jerry’s here. Hey, Jerry, can you grab the—JERRY!", next:"pb2", showSprites:["sam","jerry","ester"]},
+  {id:"pb2", type:"inner", text:"I’ve heard accidents like that before when I was still in my old lab. No matter how many times it happens, I flinch like a rabbit being chased.", next:"pb3"},
   {id:"pb3", type:"dialogue", speaker:"JERRY", text:"I’m sorry — it wasn’t— I turned around and my sleeve caught it, it was right on the edge, I didn’t—", next:"pb4"},
   {id:"pb4", type:"dialogue", speaker:"SAM", text:"Oh, God.", next:"pa1"},
 
   // Post-crash
-  {id:"pa1", type:"inner", text:"It’s just like the samples I used to see a lot in the chemistry lab at school. The only metal to be liquid under room temperature, highly toxic, boiling point at 357°C. And it’s currently making a mess—a highly toxic mess!—on the lab floor.", next:"pa2"},
-  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? I'll fix the mercury leak.", next:"pa2_minigame"},
+  {id:"pa1", type:"inner", text:"It’s just like the samples I used to see in the chemistry lab at school. The only metal to be liquid under room temperature, highly toxic, boiling point at 357°C. And it’s currently making a mess—a highly toxic mess—on the lab floor.", next:"pa2"},
+  {id:"pa2", type:"dialogue", speaker:"ESTER", text:"Everyone, stop walking. Jerry — vacuum and a disposable sharps bin, the largest rigid one in the cabinet, not the bag. Could you seal the door, Sam? I'll fix the mercury leak.", next:"pa2_minigame"},
 
   // pa2_minigame is a control node — the sensory-overload minigame plays, then dialogue resumes at pa2b
   {id:"pa2_minigame", type:"control", action:"sensory_minigame", next:"pa2b"},
 
-  {id:"pa2b", type:"dialogue", speaker:"ESTER", text:"I’ll write the incident report. Jerry, what’s your surname? I’m putting your name down as the person responsible. I didn’t spend 4 years in college and 2 years in grad school learning nuclear physics to end up in a lab-turned-suicide chamber. And — this was an accident, correct?", next:"pa3"},
+  {id:"pa2b", type:"dialogue", speaker:"ESTER", text:"I’ll write the incident report. Jerry, what’s your surname? I’m putting your name down as the person responsible. I don’t want us to be in a lab-turned-suicide chamber. And — this was an accident, correct?", next:"pa3"},
   {id:"pa3", type:"dialogue", speaker:"JERRY", text:"Of course it was an accident. That’s what I just said.", next:"pa4"},
   {id:"pa4", type:"inner", text:"Nobody has moved. Sam is looking at the floor.", next:"choice1_inner"},
 
@@ -46,27 +56,27 @@ const SCENE_SCRIPT = [
 
   {id:"choice1", type:"choice", choices:[
     {label:"“What’s wrong?”", cost:"SOCIAL +6   CAREER -5   MENTAL -3", stats:{social:6,career:-5,mental:-3}, next:"ba1"},
-    {label:"“Please, six ounces of mercury, and the vent is running. We need this contained as soon as possible..”", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
+    {label:"“There’s six ounces of mercury, and the vent is running. We need this contained as soon as possible!”", cost:"CAREER +6   SOCIAL -5   EMOTIONAL -3", stats:{career:6,social:-5,emotional:-3}, next:"bb1"}
   ]},
 
   // Branch A — "What's wrong?"
-  {id:"ba1", type:"dialogue", speaker:"JERRY", text:"“What’s wrong”? I barely even know who you are, and all you want to do is accuse me and get me in trouble by writing me down on the incident report!", next:"ba2"},
-  {id:"ba2", type:"dialogue", speaker:"ESTER", text:"I don’t know you very well either, and I’m not trying to get you in trouble.", next:"ba3"},
+  {id:"ba1", type:"dialogue", speaker:"JERRY", text:"Are you serious? I barely even know who you are! All you want to do is accuse me! And you’re trying to get me in trouble by writing me up in the incident report!", next:"ba2"},
+  {id:"ba2", type:"dialogue", speaker:"ESTER", text:"I don’t know you very well either. I’m not trying to get you in trouble.", next:"ba3"},
   {id:"ba3", type:"dialogue", speaker:"JERRY", text:"Then why are you singling me out??", next:"ba4"},
   {id:"ba4", type:"dialogue", speaker:"ESTER", text:"Your sleeve got caught on the device. That’s the truth. The incident form has a field labelled “person responsible” and it doesn’t have a field for anything else.", next:"ba5"},
   {id:"ba5", type:"dialogue", speaker:"JERRY", text:"We could have sorted out whose name goes where later. It’s the way you said it. “What’s your surname, I’m putting you down as responsible.” You’ve barely even been here for a week. It’s like you were reading out a prison sentence! God!", next:"ba6"},
-  {id:"ba6", type:"inner", text:"Oh—he was angry about the form. I stare down at the liquid from the machine, pooling on the floor, then back at him. Jerry was as clearly frustrated as he could have possibly been; he was making some complicated wringing motions with his hands, blinking away tears. . .", next:"ba7"},
-  {id:"ba7", type:"dialogue", speaker:"ESTER", text:"I wasn’t trying to sentence you. I say things in the order I think of them, and when I saw the mercury that was the only thing I could think about.", next:"ba8", applyStats:{social:4,emotional:3,career:-2}},
-  {id:"ba8", type:"dialogue", speaker:"JERRY", text:"Makes sense. I shouldn’t have lost my temper. Sorry.", next:"ba9"},
-  {id:"ba9", type:"dialogue", speaker:"ESTER", text:"I’m sorry too. But—again about the mercury, can we all get this cleaned up together? Quickly!", next:"ba10"},
+  {id:"ba6", type:"inner", text:"Oh. He was angry about the form. I stare down at the liquid from the machine, pooling on the floor, then back at him. Jerry was as clearly frustrated as he could have possibly been; he was fidgeting uncomfortably.", next:"ba7"},
+  {id:"ba7", type:"dialogue", speaker:"ESTER", text:"I wasn’t trying to sentence you. I say things in the order I think of them, and when I saw the mercury, that was the only thing I could think about.", next:"ba8", applyStats:{social:4,emotional:3,career:-2}},
+  {id:"ba8", type:"dialogue", speaker:"JERRY", text:"I guess that makes sense. I shouldn’t have lost my temper. Sorry.", next:"ba9"},
+  {id:"ba9", type:"dialogue", speaker:"ESTER", text:"I’m sorry, too. But—again about the mercury, can we all get this cleaned up together? Quickly!", next:"ba10"},
   {id:"ba10", type:"dialogue", speaker:"JERRY", text:"OK, OK. Sam! Done with the door? Come here!", next:"ba11"},
-  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences.", next:"end"},
+  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences… The accident has created a major inconvenience for the crew, but at least you’ve repaired your relationship with Jerry.", next:"end"},
 
-  // Branch B — "Please, six ounces of mercury..."
+  // Branch B — "There's six ounces of mercury..."
   {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry, sorry. . .", next:"bb2"},
-  {id:"bb2", type:"inner", text:"He went for the bin, as fast as possible, and I still couldn’t tell what that expression on his face was supposed to mean. It was the correct decision, no? “I’m putting your name down as the person responsible,” was that too harsh? I could never tell. This sort of mistake, the one only I couldn’t see, was happening again.", next:"bb3"},
-  {id:"bb3", type:"dialogue", speaker:"SAM", text:"I, uh— nice work, Ester. Quick thinking. Yeah.", next:"bb4"},
-  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam’s making the same face as Jerry. But no matter what they think of me, I still go ahead and fill in the form.", next:"end"}
+  {id:"bb2", type:"inner", text:"He went for the bin, as fast as possible, and I still couldn’t tell what that expression on his face was supposed to mean. Did I make the correct decision? “I’m putting your name down as the person responsible.” Was that too harsh? I could never tell. This sort of mistake — the one only I couldn’t see — was happening again.", next:"bb3"},
+  {id:"bb3", type:"dialogue", speaker:"SAM", text:"I, uh— nice work, Ester. Quick thinking. Yeah…", next:"bb4"},
+  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam is making the same face as Jerry. Ignoring what they might think of me, I still go ahead and fill in the form. You successfully resolved the toxic spill in the lab. However, a sense of awkwardness has emerged between you and Jerry…", next:"end"}
 ];
 
 const REFLECTION_TEXT = "END OF SCENARIO";
