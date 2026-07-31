@@ -205,6 +205,16 @@ button:focus-visible{outline:2px solid var(--yellow);}
   color:var(--lyellow);
 }
 
+/* === RECAP (scene-ending summary beats) === */
+#screen-recap{
+  background:var(--navy);
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:60px;
+  cursor:pointer;
+}
+#screen-recap.active{display:flex;}
+
 /* === SCENE === */
 #screen-scene.active{display:block;}
 #scene-world{
