@@ -70,13 +70,118 @@ const SCENE_SCRIPT = [
   {id:"ba8", type:"dialogue", speaker:"JERRY", text:"I guess that makes sense. I shouldn’t have lost my temper. Sorry.", next:"ba9"},
   {id:"ba9", type:"dialogue", speaker:"ESTER", text:"I’m sorry, too. But—again about the mercury, can we all get this cleaned up together? Quickly!", next:"ba10"},
   {id:"ba10", type:"dialogue", speaker:"JERRY", text:"OK, OK. Sam! Done with the door? Come here!", next:"ba11"},
-  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences… The accident has created a major inconvenience for the crew, but at least you’ve repaired your relationship with Jerry.", next:"end"},
+  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences… The accident has created a major inconvenience for the crew, but at least you’ve repaired your relationship with Jerry.", next:"sc2_open_inner"},
 
   // Branch B — "There's six ounces of mercury..."
   {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry, sorry. . .", next:"bb2"},
   {id:"bb2", type:"inner", text:"He went for the bin, as fast as possible, and I still couldn’t tell what that expression on his face was supposed to mean. Did I make the correct decision? “I’m putting your name down as the person responsible.” Was that too harsh? I could never tell. This sort of mistake — the one only I couldn’t see — was happening again.", next:"bb3"},
   {id:"bb3", type:"dialogue", speaker:"SAM", text:"I, uh— nice work, Ester. Quick thinking. Yeah…", next:"bb4"},
-  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam is making the same face as Jerry. Ignoring what they might think of me, I still go ahead and fill in the form. You successfully resolved the toxic spill in the lab. However, a sense of awkwardness has emerged between you and Jerry…", next:"end"}
+  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam is making the same face as Jerry. Ignoring what they might think of me, I still go ahead and fill in the form. You successfully resolved the toxic spill in the lab. However, a sense of awkwardness has emerged between you and Jerry…", next:"sc2_open_inner"},
+
+  /* ============================================================
+     SCENE 2 — Day 2: The Black Hole
+     ============================================================ */
+
+  {id:"sc2_open_inner", type:"inner", text:"It’s my second day as a rookie. As I’m measuring some mercury samples, something else catches my eye.", next:"sc2_1", showSprites:["sam","jerry","ester"]},
+  {id:"sc2_1", type:"dialogue", speaker:"ESTER", text:"Sam, come over here right now. Why are we currently floating so close over a black hole?", next:"sc2_2"},
+  {id:"sc2_2", type:"dialogue", speaker:"JERRY", text:"Yeah, Sam… Why didn’t you tell us right away that we were floating over a black hole?", next:"sc2_3"},
+  {id:"sc2_3", type:"dialogue", speaker:"SAM", text:"This just gives this space station an identifiable location for people to be able to visit us.", next:"sc2_4"},
+  {id:"sc2_4", type:"dialogue", speaker:"ESTER", text:"But won’t we eventually get sucked into the black hole? Why not just set up some kind of base on Mars?", next:"sc2_5"},
+  {id:"sc2_5", type:"dialogue", speaker:"SAM", text:"We have a special engine below our feet that keeps us suspended above the black hole. Stop whining or I’ll push you into the black hole myself.", next:"sc2_choice1"},
+
+  {id:"sc2_choice1", type:"choice", choices:[
+    {label:"Prioritize the crew’s safety.", next:"sc2_insist1"},
+    {label:"Ignore it — the dynamic is already awkward enough.", next:"sc2_woosh"}
+  ]},
+
+  {id:"sc2_insist1", type:"dialogue", speaker:"ESTER", text:"I’m serious! I don’t care if we have an engine that knocks elephants off their feet! We shouldn’t be over a black hole!", next:"sc2_insist2"},
+  {id:"sc2_insist2", type:"dialogue", speaker:"SAM", text:"How did you even get into grad scho—", next:"sc2_woosh"},
+
+  {id:"sc2_woosh", type:"narration", text:"Woosh. A sudden whoosh sounds out from underneath the station.", next:"sc2_wait"},
+  {id:"sc2_wait", type:"dialogue", speaker:"SAM", text:"Wait, what was that?", next:"sc2_6"},
+  {id:"sc2_6", type:"dialogue", speaker:"ESTER", text:"This doesn’t sound good… I’ll check the cameras around the ship.", next:"sc2_inner2"},
+  {id:"sc2_inner2", type:"inner", text:"Sam’s expression has not changed whatsoever… Doesn’t he even care about our safety? Whatever, I won’t die because of someone else’s lack of awareness.", next:"sc2_7"},
+  {id:"sc2_7", type:"dialogue", speaker:"ESTER", text:"This is serious, an engine at the bottom of our ship is falling down! Is that the engine that’s supposed to keep us afloat?", next:"sc2_8"},
+  {id:"sc2_8", type:"dialogue", speaker:"SAM", text:"Yeah, I’m leaving…", next:"sc2_sam_exit"},
+  {id:"sc2_sam_exit", type:"narration", text:"Sam jumps into the only escape pod and leaves the space station.", next:"sc2_9", showSprites:["jerry","ester"]},
+  {id:"sc2_9", type:"dialogue", speaker:"ESTER", text:"What are you doing?", next:"sc2_inner3"},
+  {id:"sc2_inner3", type:"inner", text:"Why is he leaving us so abruptly? Anyways, we have no time — we’re on track to being swallowed by the black hole. Our only option is to construct a new engine from scratch…", next:"sc2_10"},
+  {id:"sc2_10", type:"dialogue", speaker:"ESTER", text:"Jerry, come here!", next:"sc2_11"},
+  {id:"sc2_11", type:"dialogue", speaker:"JERRY", text:"What’s going on?", next:"sc2_12"},
+  {id:"sc2_12", type:"dialogue", speaker:"ESTER", text:"We are floating over a black hole right now, and an engine on our ship has just fallen off! As a result, we will eventually be sucked into the black hole.", next:"sc2_13"},
+  {id:"sc2_13", type:"dialogue", speaker:"JERRY", text:"Are you serious?!", next:"sc2_choice2"},
+
+  {id:"sc2_choice2", type:"choice", choices:[
+    {label:"“Let’s stay calm and take a breather.”", next:"sc2_opt1_1"},
+    {label:"“We have to create a new engine right now!”", next:"sc2_opt2_1"}
+  ]},
+
+  /* ---- Option 1: calm / empathize ---- */
+  {id:"sc2_opt1_1", type:"dialogue", speaker:"JERRY", text:"How can I stay calm knowing that we’re going to be sucked into a black hole?", next:"sc2_opt1_2"},
+  {id:"sc2_opt1_2", type:"dialogue", speaker:"ESTER", text:"I know we’re in danger, and I understand how you feel, but please, take a deep breath!", next:"sc2_opt1_3"},
+  {id:"sc2_opt1_3", type:"dialogue", speaker:"JERRY", text:"I’m trying, but I can’t stop panicking!", next:"sc2_opt1_4"},
+  {id:"sc2_opt1_4", type:"dialogue", speaker:"ESTER", text:"You are a chemical specialist, right? I saw a periodic table on the cover of your notebook. Sorry, I tend to focus on details more than others since I’m autistic.", next:"sc2_opt1_5"},
+  {id:"sc2_opt1_5", type:"dialogue", speaker:"JERRY", text:"Yes…", next:"sc2_opt1_choice"},
+
+  {id:"sc2_opt1_choice", type:"choice", choices:[
+    {label:"“I know a lot of autistic people, but I always have trouble understanding them. What’s it like for you?”", next:"sc2_opt1_autism1"},
+    {label:"Move on without asking further.", next:"sc2_opt1_merge"}
+  ]},
+
+  {id:"sc2_opt1_autism1", type:"dialogue", speaker:"ESTER", text:"Like you addressed, lots of people tend to misunderstand me because I am autistic. I have been excluded from social groups throughout my life because people say that I’m academically incompetent, not able to understand sarcasm or hidden agendas, and that I miss the big picture because I pay attention to every detail. Speaking of attention to detail, sorry about being so nosy about your profession, I know a lot of people like to keep that stuff private…", next:"sc2_opt1_autism2"},
+  {id:"sc2_opt1_autism2", type:"dialogue", speaker:"JERRY", text:"Actually, I feel quite the opposite. I’m super passionate about chemistry, and out of my time here at the space station, you are the first person who’s acknowledged this. I find it hard to contribute to everyone else’s conversations, since they’re all physicists. Wow — out of all things, being excluded from social groups is the last thing I expected to have in common with you…", next:"sc2_opt1_autism3"},
+  {id:"sc2_opt1_autism3", type:"dialogue", speaker:"ESTER", text:"I feel the same. It’s actually really cool for me to talk with someone who has that same experience but is neurotypical.", next:"sc2_opt1_autism4"},
+  {id:"sc2_opt1_autism4", type:"dialogue", speaker:"JERRY", text:"It’s my pleasure. Thanks for listening without judging.", next:"sc2_opt1_merge"},
+
+  {id:"sc2_opt1_merge", type:"dialogue", speaker:"ESTER", text:"What are some of the scariest accidents you had in the lab?", next:"sc2_opt1_m2"},
+  {id:"sc2_opt1_m2", type:"dialogue", speaker:"JERRY", text:"I don’t know why you asked, but there was one time when I was trying to condense carbon monoxide and spilled the container, and the gas evaporated and began to spread around the lab. The door was also locked and there was no way for it to escape. I thought I was going to die.", next:"sc2_opt1_m3"},
+  {id:"sc2_opt1_m3", type:"dialogue", speaker:"ESTER", text:"But you’re speaking to me right now, right? So how did you save yourself?", next:"sc2_opt1_m4"},
+  {id:"sc2_opt1_m4", type:"dialogue", speaker:"JERRY", text:"I opened the fridge and spread ice everywhere in the lab I could — walls, floor, you name it. I was half-conscious for part of it, but finally it got cold enough for the gas to sink to the bottom and condense, which gave me enough time to get help before it warmed up again and rose.", next:"sc2_opt1_m5"},
+  {id:"sc2_opt1_m5", type:"dialogue", speaker:"ESTER", text:"You see, even in a situation where you were about to die, you didn’t give up, even when half-conscious! How is this any different! We can’t give up in trying to survive, and even if we die, we’ll have put up a good fight.", next:"sc2_opt1_m6"},
+  {id:"sc2_opt1_m6", type:"dialogue", speaker:"JERRY", text:"You’re right. Thanks for calming me down so much, I appreciate it.", next:"sc2_opt1_m7"},
+  {id:"sc2_opt1_m7", type:"dialogue", speaker:"ESTER", text:"We have to make a new engine, which should take two hours individually. But if we work together, we might be able to finish before the hour passes.", next:"sc2_opt1_m8"},
+  {id:"sc2_opt1_m8", type:"dialogue", speaker:"JERRY", text:"I don’t know how to make an engine.", next:"sc2_opt1_m9"},
+  {id:"sc2_opt1_m9", type:"dialogue", speaker:"ESTER", text:"I know enough calculus and physics to construct a new engine! It’s hard, but I can outline what we basically need to do. Just pay attention and communicate, and we’ll be fine.", next:"sc2_opt1_m10"},
+  {id:"sc2_opt1_m10", type:"dialogue", speaker:"JERRY", text:"Okay, sure. Anything to get out of here!", next:"sc2_opt1_m11"},
+  {id:"sc2_opt1_m11", type:"inner", text:"Jerry is taking on my instructions really well… We might actually have a chance to get out!", next:"sc2_opt1_m12"},
+  {id:"sc2_opt1_m12", type:"narration", text:"One hour later…", next:"sc2_opt1_m13"},
+  {id:"sc2_opt1_m13", type:"dialogue", speaker:"ESTER", text:"Great job Jerry! You picked up my instructions perfectly! We just need to screw this part in so we can attach the engine to the bottom of the ship.", next:"sc2_opt1_m14"},
+  {id:"sc2_opt1_m14", type:"dialogue", speaker:"JERRY", text:"Done! I’ll put on my spacesuit and attach it outside. I’m quick with getting ready — I’ll get it done in five minutes!", next:"sc2_opt1_m15"},
+  {id:"sc2_opt1_m15", type:"dialogue", speaker:"ESTER", text:"Jerry, great job! Thanks for working so hard and helping me quickly fix the engine!", next:"sc2_opt1_m16"},
+  {id:"sc2_opt1_m16", type:"dialogue", speaker:"JERRY", text:"I should be thanking you… We wouldn’t have been able to build this without your knowledge and your skill in instructing me so well.", next:"sc2_opt1_end"},
+  {id:"sc2_opt1_end", type:"inner", text:"After five minutes, Jerry attached the engine to the spaceship. It turned out to be even stronger than the suction of the black hole, and we managed to maneuver the space station far away. We went to get some dehydrated fruit from a kitchen cabinet, and alongside the packet of fruit, found a supply box. Jerry and I have become more comfortable working as a team, despite our many differences. Knowing that we both don’t give up easily, I feel I can better understand why he makes decisions, which makes working with him in the future seem less daunting.", next:"end"},
+
+  /* ---- Option 2: force it / reconcile later ---- */
+  {id:"sc2_opt2_1", type:"dialogue", speaker:"JERRY", text:"Geez, I am going to fix it right now. You don’t have to be so harsh. I don’t know how to fix an engine, though.", next:"sc2_opt2_2"},
+  {id:"sc2_opt2_2", type:"dialogue", speaker:"ESTER", text:"I know calculus and physics, which shouldn’t be too hard to translate into building an engine, so stop talking.", next:"sc2_opt2_3"},
+  {id:"sc2_opt2_3", type:"dialogue", speaker:"JERRY", text:"Oh! If you know so much, why don’t you do it yourself?", next:"sc2_opt2_4"},
+  {id:"sc2_opt2_4", type:"dialogue", speaker:"ESTER", text:"Fine!", next:"sc2_opt2_skip"},
+  {id:"sc2_opt2_skip", type:"narration", text:"One hour later…", next:"sc2_opt2_5"},
+  {id:"sc2_opt2_5", type:"inner", text:"I shouldn’t have lashed out at Jerry like that. He also wants to survive, and I shouldn’t have made him feel useless and powerless right now, when we need all the resources we can get to escape the black hole. I should talk to him.", next:"sc2_opt2_approach"},
+  {id:"sc2_opt2_approach", type:"narration", text:"Ester comes up to Jerry.", next:"sc2_opt2_6"},
+  {id:"sc2_opt2_6", type:"dialogue", speaker:"ESTER", text:"Jerry, I know that you are frustrated with how I behaved earlier, and rightfully so. I’m sorry for lashing out. I understand that you were just stressed about staying alive. Also, because I’m autistic, lots of people have misunderstood me, so it feels terrible to have to misunderstand someone else while being so disrespectful.", next:"sc2_opt2_choice"},
+
+  {id:"sc2_opt2_choice", type:"choice", choices:[
+    {label:"“I know a lot of autistic people, but I always have trouble understanding them. What’s it like for you?”", next:"sc2_opt2_autism1"},
+    {label:"Move on without asking further.", next:"sc2_opt2_merge"}
+  ]},
+
+  {id:"sc2_opt2_autism1", type:"dialogue", speaker:"ESTER", text:"Yeah, I often get quite stressed when something goes wrong with something I value, so I often lashed out during my childhood when, for example, my school routines were suddenly changed.", next:"sc2_opt2_autism2"},
+  {id:"sc2_opt2_autism2", type:"dialogue", speaker:"JERRY", text:"What about the changed routines annoyed you so much?", next:"sc2_opt2_autism3"},
+  {id:"sc2_opt2_autism3", type:"dialogue", speaker:"ESTER", text:"I like to work with structured routines in order to best ensure that tasks get done.", next:"sc2_opt2_autism4"},
+  {id:"sc2_opt2_autism4", type:"dialogue", speaker:"JERRY", text:"I actually just realised… that’s been really helpful for finishing our work at the space station. We’re able to finish our routines about twice as quickly!", next:"sc2_opt2_autism5"},
+  {id:"sc2_opt2_autism5", type:"dialogue", speaker:"ESTER", text:"Since I never explicitly mentioned that I work best when I have concrete plans, everyone thought I was just a bad person who enjoyed annoying others. To be honest, I feel the school just exiled me here because they didn’t want me to lash out anymore — not because I was incompetent by any means. As a result of my experience at school, I even began to sometimes doubt whether I would be able to interact with other people and be part of a community.", next:"sc2_opt2_autism6"},
+  {id:"sc2_opt2_autism6", type:"dialogue", speaker:"JERRY", text:"While I definitely don’t think it was nice of you to lash out, I am glad you told me that. I’ve also lashed out quite a bit among my previous coworkers on Earth, because we put so much work into our experiments that if anything goes wrong, I get very frustrated — especially considering that I want these experiments to have results that genuinely help people. My ex-coworkers also thought I just enjoyed annoying them, because I never straight-up said how mentally invested I was in these experiments. That’s why I was so panicked when we first met and the mercury spilled everywhere.", next:"sc2_opt2_autism7"},
+  {id:"sc2_opt2_autism7", type:"dialogue", speaker:"ESTER", text:"Really? I should have known. Looking back, our introduction was quite interesting in how I got to see that side of you right away.", next:"sc2_opt2_autism8"},
+  {id:"sc2_opt2_autism8", type:"dialogue", speaker:"JERRY", text:"I’m glad we can actually relate to that — in us both feeling very strongly about topics we are passionate about.", next:"sc2_opt2_merge"},
+
+  {id:"sc2_opt2_merge", type:"dialogue", speaker:"ESTER", text:"I think we both have the same goal. However, if we want to survive, we must work together to build the engine. I can quickly go over how to build it so you can understand the construction process. Would you be willing to help me?", next:"sc2_opt2_m2"},
+  {id:"sc2_opt2_m2", type:"dialogue", speaker:"JERRY", text:"I appreciate your apology… Thanks for being so considerate of how I was thinking. I’m also sorry for leaving you so quickly. I’m ready to help you now.", next:"sc2_opt2_m3"},
+  {id:"sc2_opt2_m3", type:"dialogue", speaker:"ESTER", text:"Great! Let’s get started!", next:"sc2_opt2_timeskip"},
+  {id:"sc2_opt2_timeskip", type:"narration", text:"45 minutes and 59 seconds later…", next:"sc2_opt2_m4"},
+  {id:"sc2_opt2_m4", type:"dialogue", speaker:"ESTER", text:"We made it out just in time! Jerry, thank you for coming back… literally and figuratively. I couldn’t have done it without your help.", next:"sc2_opt2_m5"},
+  {id:"sc2_opt2_m5", type:"dialogue", speaker:"JERRY", text:"Same with you. Your skills got us here!", next:"sc2_opt2_end"},
+  {id:"sc2_opt2_end", type:"inner", text:"I’m glad I managed to reconcile with Jerry. Although we still aren’t friends, it’s a relief to be able to better understand him and his emotions so we can work together. Jerry and I have become more comfortable with each other, despite our many differences. Now knowing that he is more similar to me than I expected — in the way that we both feel and act strongly about what we heavily value — I feel I can better understand why he makes decisions, which makes working with him in the future seem less daunting.", next:"end"}
 ];
 
 const REFLECTION_TEXT = "END OF SCENARIO";
@@ -449,8 +554,6 @@ function runNode(nodeId) {
   const row = $("#dialogue-row");
   row.classList.remove("hidden");
 
-  ensureDialogueBoxHeight();
-
   // Dialogue / inner / narration
   const box = $("#dialogue-box");
   box.classList.remove("type-dialogue", "type-inner", "type-narration");
@@ -476,63 +579,22 @@ function runNode(nodeId) {
     speakerEl.style.display = "none";
   }
 
+  fitDialogueBoxToText(node.text);
   typeText($("#dialogue-text"), node.text);
 }
 
-/* Lock the dialogue box to a single fixed height, sized to the longest
-   line in the script, so it no longer grows/shrinks per line. Measured
-   from the real DOM once so it stays correct if lines are edited later. */
-let dialogueBoxFixedHeight = null;
-
-function measureMaxDialogueBoxHeight() {
+/* Size the box to this line's full text before the typewriter starts,
+   so it snaps to the right height once per line instead of growing/
+   jumping line-by-line as characters are revealed. */
+function fitDialogueBoxToText(text) {
   const box = $("#dialogue-box");
-  const portrait = $("#dialogue-portrait");
   const textEl = $("#dialogue-text");
-
-  const dialogueTexts = SCENE_SCRIPT.filter(n => n.type === "dialogue" && n.text).map(n => n.text);
-  const captionTexts = SCENE_SCRIPT.filter(n => (n.type === "inner" || n.type === "narration") && n.text).map(n => n.text);
-  const longestDialogue = dialogueTexts.reduce((a, b) => (b.length > a.length ? b : a), "");
-  const longestCaption = captionTexts.reduce((a, b) => (b.length > a.length ? b : a), "");
-
-  const prev = {
-    boxHeight: box.style.height,
-    boxOverflow: box.style.overflow,
-    boxClass: box.className,
-    portraitClass: portrait.className,
-    text: textEl.textContent,
-  };
+  const prevText = textEl.textContent;
 
   box.style.height = "auto";
-  box.style.overflow = "visible";
-
-  // Widest text, narrowest box: a speaker line (portrait eats into the width).
-  box.className = "type-dialogue";
-  portrait.className = "char-sam";
-  textEl.textContent = longestDialogue;
-  const dialogueHeight = box.scrollHeight;
-
-  // Narration/inner: no portrait, full-width box.
-  box.className = "type-narration";
-  portrait.className = "hidden";
-  textEl.textContent = longestCaption;
-  const captionHeight = box.scrollHeight;
-
-  box.className = prev.boxClass;
-  portrait.className = prev.portraitClass;
-  textEl.textContent = prev.text;
-  box.style.height = prev.boxHeight;
-  box.style.overflow = prev.boxOverflow;
-
-  return Math.max(dialogueHeight, captionHeight);
-}
-
-const DIALOGUE_BOX_EXTRA_HEIGHT = 12; // headroom above the tightest fit, added upward
-
-function ensureDialogueBoxHeight() {
-  if (dialogueBoxFixedHeight == null) {
-    dialogueBoxFixedHeight = measureMaxDialogueBoxHeight() + DIALOGUE_BOX_EXTRA_HEIGHT;
-  }
-  $("#dialogue-box").style.height = dialogueBoxFixedHeight + "px";
+  textEl.textContent = text;
+  box.style.height = box.scrollHeight + "px";
+  textEl.textContent = prevText;
 }
 
 function advanceScene() {
