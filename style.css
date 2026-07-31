@@ -97,16 +97,12 @@ button:focus-visible{outline:2px solid var(--yellow);}
   image-rendering:pixelated;
 }
 #title-station{
-  width:14px;height:8px;
-  background:var(--blue);
+  width:42px;height:24px;
   position:absolute;
-  top:76px;
-  image-rendering:pixelated;
-}
-#title-station::after{
-  content:'';position:absolute;
-  top:3px;left:0;right:0;height:1px;
-  background:var(--lyellow);
+  top:68px;
+  background:url('./assets/ship.png') no-repeat;
+  background-size:contain;
+  image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
 }
 .title-ui{
   display:flex;flex-direction:column;

@@ -218,7 +218,7 @@ const S = {
   // anim
   bhLargeFrame: 0,
   starsOffset: 0,
-  stationX: -20,
+  stationX: -50,
   titleAnimStarted: false,
 };
 
@@ -323,8 +323,8 @@ function titleLoop(ts) {
   }
 
   if (!S.settings.reduceMotion) {
-    S.stationX += 12 * dt / 1000;
-    if (S.stationX > 340) S.stationX = -20;
+    S.stationX += 6 * dt / 1000;
+    if (S.stationX > 340) S.stationX = -50;
     $("#title-station").style.left = S.stationX + "px";
   }
 
@@ -705,7 +705,7 @@ function initRestart() {
     S.typing = false;
     S.bhLargeFrame = 0;
     S.starsOffset = 0;
-    S.stationX = -20;
+    S.stationX = -50;
     S.idlePaused = false;
     $("#choice-panel").classList.add("hidden");
     $("#dialogue-row").classList.add("hidden");
