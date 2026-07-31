@@ -84,11 +84,11 @@ button:focus-visible{outline:2px solid var(--yellow);}
   background-size:320px 180px;
   image-rendering:pixelated;
 }
-.title-stars{
+/* .title-stars{
   background:url('./assets/starfield_tile.png') repeat-x;
   background-size:640px 180px;
   image-rendering:pixelated;
-}
+} */
 #title-blackhole{
   width:156px;height:68px;
   left:158px;top:50px;
