@@ -297,9 +297,13 @@ body.reduce-motion .scene-sprite.walking{transition:none;}
   padding:3px 6px 4px;
   font-size:calc(var(--text-body) - 1px);
   line-height:1.6;
+  border-radius:8px;
   overflow-y:auto;
   overflow-x:hidden;
   cursor:pointer;
+  backdrop-filter:blur(6px) saturate(1.1);
+  -webkit-backdrop-filter:blur(6px) saturate(1.1);
+  box-shadow:0 2px 10px rgba(0,0,0,0.35);
 }
 #dialogue-box.type-dialogue{background:rgba(65, 66, 69, 0.5);color:var(--navy);}
 #dialogue-box.type-inner{background:rgba(65, 66, 69, 0.5);color:var(--navy);font-style:italic;}
