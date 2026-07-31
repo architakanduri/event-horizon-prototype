@@ -70,13 +70,15 @@ const SCENE_SCRIPT = [
   {id:"ba8", type:"dialogue", speaker:"JERRY", text:"I guess that makes sense. I shouldn’t have lost my temper. Sorry.", next:"ba9"},
   {id:"ba9", type:"dialogue", speaker:"ESTER", text:"I’m sorry, too. But—again about the mercury, can we all get this cleaned up together? Quickly!", next:"ba10"},
   {id:"ba10", type:"dialogue", speaker:"JERRY", text:"OK, OK. Sam! Done with the door? Come here!", next:"ba11"},
-  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences… The accident has created a major inconvenience for the crew, but at least you’ve repaired your relationship with Jerry.", next:"sc2_open_inner"},
+  {id:"ba11", type:"inner", text:"In the end, it still took too long to clean up the mercury. I completed the report, in the end, only with a dash in the place where “Person Responsible” was supposed to be. The room had to be sealed off though. Objectively a disaster for our resources, but Jerry dodged the consequences…", next:"ba11_recap"},
+  {id:"ba11_recap", type:"recap", text:"The accident has created a major inconvenience for the crew, but at least you’ve repaired your relationship with Jerry.", next:"sc2_open_inner"},
 
   // Branch B — "There's six ounces of mercury..."
   {id:"bb1", type:"dialogue", speaker:"JERRY", text:"Right. Yes. Sorry, sorry. . .", next:"bb2"},
   {id:"bb2", type:"inner", text:"He went for the bin, as fast as possible, and I still couldn’t tell what that expression on his face was supposed to mean. Did I make the correct decision? “I’m putting your name down as the person responsible.” Was that too harsh? I could never tell. This sort of mistake — the one only I couldn’t see — was happening again.", next:"bb3"},
   {id:"bb3", type:"dialogue", speaker:"SAM", text:"I, uh— nice work, Ester. Quick thinking. Yeah…", next:"bb4"},
-  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam is making the same face as Jerry. Ignoring what they might think of me, I still go ahead and fill in the form. You successfully resolved the toxic spill in the lab. However, a sense of awkwardness has emerged between you and Jerry…", next:"sc2_open_inner"},
+  {id:"bb4", type:"inner", text:"The words make sense, but what Sam means doesn't. Sam is making the same face as Jerry. Ignoring what they might think of me, I still go ahead and fill in the form.", next:"bb4_recap"},
+  {id:"bb4_recap", type:"recap", text:"You successfully resolved the toxic spill in the lab. However, a sense of awkwardness has emerged between you and Jerry…", next:"sc2_open_inner"},
 
   /* ============================================================
      SCENE 2 — Day 2: The Black Hole
@@ -149,7 +151,8 @@ const SCENE_SCRIPT = [
   {id:"sc2_opt1_m14", type:"dialogue", speaker:"JERRY", text:"Done! I’ll put on my spacesuit and attach it outside. I’m quick with getting ready — I’ll get it done in five minutes!", next:"sc2_opt1_m15"},
   {id:"sc2_opt1_m15", type:"dialogue", speaker:"ESTER", text:"Jerry, great job! Thanks for working so hard and helping me quickly fix the engine!", next:"sc2_opt1_m16"},
   {id:"sc2_opt1_m16", type:"dialogue", speaker:"JERRY", text:"I should be thanking you… We wouldn’t have been able to build this without your knowledge and your skill in instructing me so well.", next:"sc2_opt1_end"},
-  {id:"sc2_opt1_end", type:"inner", text:"After five minutes, Jerry attached the engine to the spaceship. It turned out to be even stronger than the suction of the black hole, and we managed to maneuver the space station far away. We went to get some dehydrated fruit from a kitchen cabinet, and alongside the packet of fruit, found a supply box. Jerry and I have become more comfortable working as a team, despite our many differences. Knowing that we both don’t give up easily, I feel I can better understand why he makes decisions, which makes working with him in the future seem less daunting.", next:"end"},
+  {id:"sc2_opt1_end", type:"inner", text:"After five minutes, Jerry attached the engine to the spaceship. It turned out to be even stronger than the suction of the black hole, and we managed to maneuver the space station far away. We went to get some dehydrated fruit from a kitchen cabinet, and alongside the packet of fruit, found a supply box.", next:"sc2_opt1_recap"},
+  {id:"sc2_opt1_recap", type:"recap", text:"Jerry and I have become more comfortable working as a team, despite our many differences. Knowing that we both don’t give up easily, I feel I can better understand why he makes decisions, which makes working with him in the future seem less daunting.", next:"end"},
 
   /* ---- Option 2: force it / reconcile later ---- */
   {id:"sc2_opt2_1", type:"dialogue", speaker:"JERRY", text:"Geez, I am going to fix it right now. You don’t have to be so harsh. I don’t know how to fix an engine, though.", next:"sc2_opt2_2"},
@@ -181,7 +184,8 @@ const SCENE_SCRIPT = [
   {id:"sc2_opt2_timeskip", type:"narration", text:"45 minutes and 59 seconds later…", next:"sc2_opt2_m4"},
   {id:"sc2_opt2_m4", type:"dialogue", speaker:"ESTER", text:"We made it out just in time! Jerry, thank you for coming back… literally and figuratively. I couldn’t have done it without your help.", next:"sc2_opt2_m5"},
   {id:"sc2_opt2_m5", type:"dialogue", speaker:"JERRY", text:"Same with you. Your skills got us here!", next:"sc2_opt2_end"},
-  {id:"sc2_opt2_end", type:"inner", text:"I’m glad I managed to reconcile with Jerry. Although we still aren’t friends, it’s a relief to be able to better understand him and his emotions so we can work together. Jerry and I have become more comfortable with each other, despite our many differences. Now knowing that he is more similar to me than I expected — in the way that we both feel and act strongly about what we heavily value — I feel I can better understand why he makes decisions, which makes working with him in the future seem less daunting.", next:"end"}
+  {id:"sc2_opt2_end", type:"inner", text:"I’m glad I managed to reconcile with Jerry. Although we still aren’t friends, it’s a relief to be able to better understand him and his emotions so we can work together.", next:"sc2_opt2_recap"},
+  {id:"sc2_opt2_recap", type:"recap", text:"Jerry and I have become more comfortable with each other, despite our many differences. Now knowing that he is more similar to me than I expected — in the way that we both feel and act strongly about what we heavily value — I feel I can better understand why he makes decisions, which makes working with him in the future seem less daunting.", next:"end"}
 ];
 
 const REFLECTION_TEXT = "END OF SCENARIO";
@@ -214,7 +218,7 @@ const S = {
   // anim
   bhLargeFrame: 0,
   starsOffset: 0,
-  stationX: -20,
+  stationX: -50,
   titleAnimStarted: false,
 };
 
@@ -319,8 +323,8 @@ function titleLoop(ts) {
   }
 
   if (!S.settings.reduceMotion) {
-    S.stationX += 12 * dt / 1000;
-    if (S.stationX > 340) S.stationX = -20;
+    S.stationX += 6 * dt / 1000;
+    if (S.stationX > 340) S.stationX = -50;
     $("#title-station").style.left = S.stationX + "px";
   }
 
@@ -549,6 +553,9 @@ function runNode(nodeId) {
   // Choices
   if (node.type === "choice") { showChoicePanel(node.choices); return; }
 
+  // Scene-ending recap beats — presented like the intro cards, full-screen and on their own
+  if (node.type === "recap") { runRecapNode(node); return; }
+
   S.idlePaused = node.type === "inner";
 
   const row = $("#dialogue-row");
@@ -603,6 +610,28 @@ function advanceScene() {
   if (!node) return;
   if (S.typing) { completeType($("#dialogue-text")); return; }
   if (node.next) {
+    runNode(node.next);
+  } else {
+    showEnd();
+  }
+}
+
+/* ---- RECAP (scene-ending summary beats, styled like the intro cards) ---- */
+function runRecapNode(node) {
+  S.idlePaused = true;
+  $("#dialogue-row").classList.add("hidden");
+  showScreen("recap");
+  typeText($("#recap-text"), node.text);
+}
+
+function advanceRecap() {
+  const el = $("#recap-text");
+  if (S.typing) { completeType(el); return; }
+  const node = S.currentNode;
+  if (node.next) {
+    showScreen("scene");
+    sceneAnimTs = performance.now();
+    requestAnimationFrame(sceneAnimLoop);
     runNode(node.next);
   } else {
     showEnd();
@@ -676,7 +705,7 @@ function initRestart() {
     S.typing = false;
     S.bhLargeFrame = 0;
     S.starsOffset = 0;
-    S.stationX = -20;
+    S.stationX = -50;
     S.idlePaused = false;
     $("#choice-panel").classList.add("hidden");
     $("#dialogue-row").classList.add("hidden");
@@ -694,6 +723,7 @@ function initInput() {
   document.addEventListener("click", e => {
     if (S.settingsOpen) return;
     if (S.screen === "intro") advanceIntro();
+    if (S.screen === "recap") advanceRecap();
   });
   document.addEventListener("keydown", e => {
     if (S.settingsOpen) {
@@ -703,6 +733,10 @@ function initInput() {
     if (S.screen === "intro" && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();
       advanceIntro();
+    }
+    if (S.screen === "recap" && (e.key === " " || e.key === "Enter")) {
+      e.preventDefault();
+      advanceRecap();
     }
     if (S.screen === "scene" && S.freeRoam) {
       if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { moveKeys.left = true; e.preventDefault(); }
