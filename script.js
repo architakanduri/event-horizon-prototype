@@ -19,7 +19,7 @@ const SCENE_SCRIPT = [
   {id:"s1_inner1", type:"inner", text:"In the corner of my eye, I see a safety hazard: the terminal system.", next:"s1b"},
   {id:"s1b", type:"dialogue", speaker:"SAM", text:"I’m your supervisor because technically, I’m your senior here. But don’t come to me with complaints later, because I can’t help with the higher-ups.", next:"s1_inner2"},
   {id:"s1_inner2", type:"inner", text:"The way it’s set up is a safety hazard.", next:"s1c"},
-  {id:"s1c", type:"dialogue", speaker:"SAM", text:"Oh yeah. You and Jerry are technically a “visiting student,” even though you’re still going to be working. Questions?", next:"s1_choice"},
+  {id:"s1c", type:"dialogue", speaker:"SAM", text:"Oh yeah. You and Jerry are technically “visiting students,” even though you’re still going to be working. Questions?", next:"s1_choice"},
 
   {id:"s1_choice", type:"choice", choices:[
     {label:"Prioritize the crew’s safety and ask about the terminal system.", next:"s2"},
