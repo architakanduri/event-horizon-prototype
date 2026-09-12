@@ -47,6 +47,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   image-rendering:pixelated;
 }
 .btn-purple{
+  align-self:center;
   background:var(--purple);color:var(--lyellow);
 }
 .btn-purple:hover,.btn-purple:focus-visible{
