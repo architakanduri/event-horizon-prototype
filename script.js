@@ -336,7 +336,7 @@ const SCENE_SCRIPT = [
   // the higher-x side) — matching targetX to Cameron's actual x:200 spot means Ester stops PROXIMITY_DIST (45px) short
   // of her, the same gap Sam gets by default in scene 1, rather than the old targetX:160 which put that stopping edge
   // at just 205 — 5px from Cameron, i.e. basically on top of her.
-  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:1605, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-placeholder"], find:"Cameron"},
+  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:2126.49 /* LAB_MAX_X — duplicated as a literal since this array is defined before that const */, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-bg"], find:"Cameron"},
 
   // autoAdvanceMs: Ester's greeting plays on its own once she's close enough to Cameron, instead of needing an extra
   // space/click right after the walk-up.
@@ -908,20 +908,23 @@ function advanceIntro() {
 /* ---- SCENE ---- */
 let walkAnimTimer = 0;
 
-// Free-roam bounds across the station. World x 0–320 is the aerospace-
-// engineering placeholder area (revealed in Scene 4), 320–1205 is the main
-// room (every scene now opens here), and 1205+ is the nuclear lab —
-// everything lab-related below is shifted accordingly to make room for it.
+// Free-roam bounds across the station. World x 0–841.49 is the aerospace-
+// engineering room (revealed in Scene 4; its width matches its background
+// art scaled to fill the viewport height undistorted, so it scrolls like
+// the other rooms instead of being cropped to fit in one screen),
+// 841.49–1726.49 is the main room (every scene now opens here), and
+// 1726.49+ is the nuclear lab — everything lab-related below is shifted
+// accordingly to make room for it.
 const VIEWPORT_WIDTH = 320;
-const WORLD_WIDTH = 1845;
-const MAIN_ROOM_X = 320; // world x where the main room begins (aerospace boundary)
-const LAB_ROOM_X = 1205; // world x where the lab/nuclear room's background begins
-const MAIN_MIN_X = 340; // a little inset from the aerospace-side wall
-const MAIN_MAX_X = 1185; // a little inset from the lab-side wall
-const MAIN_START_X = 650; // every scene spawns Ester here, in the main room
-const LAB_MIN_X = 1217;
-const LAB_MAX_X = 1605;
-const SAM_LAB_X = 1585; // Sam waits further into the lab, out of the starting frame
+const WORLD_WIDTH = 2366.49;
+const MAIN_ROOM_X = 841.49; // world x where the main room begins (aerospace boundary)
+const LAB_ROOM_X = 1726.49; // world x where the lab/nuclear room's background begins
+const MAIN_MIN_X = 861.49; // a little inset from the aerospace-side wall
+const MAIN_MAX_X = 1706.49; // a little inset from the lab-side wall
+const MAIN_START_X = 1171.49; // every scene spawns Ester here, in the main room
+const LAB_MIN_X = 1738.49;
+const LAB_MAX_X = 2126.49;
+const SAM_LAB_X = 2106.49; // Sam waits further into the lab, out of the starting frame
 const PROXIMITY_DIST = 45; // how close Ester must get to a target to trigger the next node
 const PLAYER_MOVE_SPEED = 60; // px/sec
 const JERRY_ENTER_X = SAM_LAB_X + 140; // where Jerry starts, further down the room
@@ -949,8 +952,9 @@ function roomIndexForX(x) {
 }
 
 // Clamps the camera to stay within one room's own span so it never shows
-// two rooms' art at once. Rooms no wider than the viewport (e.g. aerospace)
-// simply don't scroll.
+// two rooms' art at once. A room no wider than the viewport simply doesn't
+// scroll (all three rooms are wider than the viewport now, but the check
+// stays generic in case a future room isn't).
 function clampScrollForRoom(roomIdx, x) {
   const room = ROOMS[roomIdx];
   const roomWidth = room.max - room.min;
@@ -1404,10 +1408,10 @@ const SCENES = [
   { num:5, entry:"sc5_open", start() {
     showScreen("scene");
     // Scene 5 always opens in the aerospace department, but the "hidden" class
-    // on #aerospace-placeholder is only removed at runtime when sc4_walk_to_aerospace
+    // on #aerospace-bg is only removed at runtime when sc4_walk_to_aerospace
     // actually plays — it isn't restored on reload/resume. Force it revealed here
     // so it's actually visible in the aerospace room rather than an empty box.
-    $("#aerospace-placeholder").classList.remove("hidden");
+    $("#aerospace-bg").classList.remove("hidden");
     resetSceneStage({ cameraX:160 }); // nobody's on screen yet — sc5_cut_aerospace places Ester/Jerry itself
     sceneAnimTs = performance.now();
     requestAnimationFrame(sceneAnimLoop);

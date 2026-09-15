@@ -378,7 +378,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 #screen-scene.active{display:block;}
 #scene-world{
   position:absolute;
-  width:1845px;height:180px; /* aerospace (0-320) + main room (320-1205) + lab/nuclear (1205-1845) */
+  width:2366.49px;height:180px; /* aerospace (0-841.49) + main room (841.49-1726.49) + lab/nuclear (1726.49-2366.49) */
   top:0;left:0;
   overflow:hidden;
 }
@@ -387,12 +387,12 @@ button:focus-visible{outline:2px solid var(--yellow);}
      staircase on a mezzanine. Ground level (where the sprites walk) is the
      lower band with the radiation crate/desk/stairs, so the crop is shifted
      up to that floor line rather than the mezzanine door's threshold. */
-  position:absolute;top:-185px;left:320px;
+  position:absolute;top:-185px;left:841.49px;
   width:885px;height:370px; /* scale kept consistent with the mezzanine door's height against the character sprites */
   image-rendering:auto;
 }
 #scene-bg{
-  position:absolute;top:-60px;left:1205px; /* right after the main room, so world x 1205+ (nuclear/lab) has no main-room art behind it */
+  position:absolute;top:-60px;left:1726.49px; /* right after the main room, so world x 1726.49+ (nuclear/lab) has no main-room art behind it */
   width:853.33px;height:240px; /* 1.33x zoom, undistorted; shifted up so only the bottom 75% shows */
   image-rendering:auto;
 }
@@ -408,15 +408,23 @@ button:focus-visible{outline:2px solid var(--yellow);}
   z-index:50;
 }
 #room-fade.visible{opacity:1;}
-#aerospace-placeholder{
-  position:absolute;left:10px;top:8px;
-  width:300px;height:164px;
-  border:1px dashed var(--yellow);
-  background:rgba(106,92,240,0.12);
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:10px;
-  font-family:'Karla',Arial,sans-serif;font-size:5px;line-height:1.6;
-  color:var(--yellow);opacity:.85;
+#aerospace-bg{
+  /* Source (aerospaceRoom.png, 7550x3062) is two stacked floor illustrations,
+     not one continuous room — the ground floor (where sprites walk) is the
+     bottom panel, split from the top panel by a divider at source y=1447.
+     Scaled (0.1115x, undistorted) so the ground floor alone is exactly
+     180px tall — the full viewport height, with zero left/right crop — and
+     shifted up so the divider (source y=1447) lands at y:0, clipped out of
+     view by #scene-world's overflow:hidden. This makes the room's own
+     world-space span 841.49px wide (matching the full scaled image width)
+     instead of the fixed 320px viewport, so — like #scene-main-bg/#scene-bg
+     above — it scrolls: the camera pans across it as Ester walks, the same
+     way it already did for those two rooms, rather than cropping the art
+     itself down to viewport width. Bottom edge lands at top:179px
+     (=117+62), the character sprites' feet line. */
+  position:absolute;left:0;top:-161.28px;
+  width:841.49px;height:341.28px;
+  image-rendering:auto;
 }
 .scene-sprite{
   position:absolute;

@@ -115,9 +115,11 @@
       <!-- SCREEN: SCENE -->
       <div id="screen-scene" class="screen">
         <div id="scene-world">
-          <!-- Placeholder for the aerospace engineering department (Scene 4) — no art yet, west of the lab.
-             Hidden until Scene 4 reveals it, so it can't peek into view during earlier scenes' camera pans. -->
-          <div id="aerospace-placeholder" class="hidden">AEROSPACE ENGINEERING<br>(placeholder art)</div>
+          <!-- Aerospace engineering department (Scene 4), west of the lab. Hidden until
+             Scene 4 reveals it, so it can't peek into view during earlier scenes' camera pans.
+             Uses the unmodified source art (see #aerospace-bg in style.css for the zoom/crop
+             that isolates the ground floor), same as #scene-main-bg and #scene-bg below. -->
+          <img id="aerospace-bg" class="hidden" src="./assets/aerospaceRoom.png" alt="">
           <img id="scene-main-bg" src="./assets/main_area_bg.png" alt="">
           <img id="scene-bg" src="./assets/background.png" alt="">
           <div id="scene-sprite-sam" class="scene-sprite facing-left" data-char="sam"></div>
