@@ -1033,7 +1033,7 @@ function startScene() {
   showScreen("scene");
   $("#dialogue-row").classList.add("hidden");
   $("#choice-panel").classList.add("hidden");
-  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/player.png')";
+  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/player.png')";
   showOnlySprites(["sam", "ester"]);
 
   // Opening: Ester starts in the main room and walks east into the lab. Sam
@@ -1053,7 +1053,7 @@ function startAstroScene() {
   showScreen("scene");
   $("#dialogue-row").classList.add("hidden");
   $("#choice-panel").classList.add("hidden");
-  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/astro.png')";
+  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/astro.png')";
   showOnlySprites(["sam", "ester"]);
   startFreeRoam(MAIN_START_X, MAIN_MIN_X, LAB_MAX_X, SAM_LAB_X, "astro_inner1", true, "Sam");
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
@@ -1068,7 +1068,7 @@ function startNinaScene() {
   showScreen("scene");
   $("#dialogue-row").classList.add("hidden");
   $("#choice-panel").classList.add("hidden");
-  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/nina.png')";
+  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/nina.png')";
   showOnlySprites(["sam", "ester"]);
   startFreeRoam(MAIN_START_X, MAIN_MIN_X, LAB_MAX_X, SAM_LAB_X, "nina_inner1", true, "Sam");
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";

@@ -73,12 +73,12 @@ button:focus-visible{outline:2px solid var(--yellow);}
 /* === TITLE === */
 .title-layer{position:absolute;inset:0;}
 .title-bg{
-  background:url('./assets/title_bg.png') no-repeat;
+  background:url('./assets/ui/title_bg.png') no-repeat;
   background-size:320px 180px;
   image-rendering:pixelated;
 }
 /* .title-stars{
-  background:url('./assets/starfield_tile.png') repeat-x;
+  background:url('./assets/ui/starfield_tile.png') repeat-x;
   background-size:640px 180px;
   image-rendering:pixelated;
 } */
@@ -86,7 +86,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   width:42px;height:24px;
   position:absolute;
   top:68px;
-  background:url('./assets/ship.png') no-repeat;
+  background:url('./assets/ui/ship.png') no-repeat;
   background-size:contain;
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
 }
@@ -360,9 +360,9 @@ button:focus-visible{outline:2px solid var(--yellow);}
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown */
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
 }
-.character-portrait.char-ester{background-image:url('./assets/player.png');}
-.character-portrait.char-astro{background-image:url('./assets/astro.png');}
-.character-portrait.char-nina{background-image:url('./assets/nina.png');}
+.character-portrait.char-ester{background-image:url('./assets/characters/player.png');}
+.character-portrait.char-astro{background-image:url('./assets/characters/astro.png');}
+.character-portrait.char-nina{background-image:url('./assets/characters/nina.png');}
 .character-info{
   display:flex;flex-direction:column;gap:1px;
   min-width:0;
@@ -409,7 +409,9 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #room-fade.visible{opacity:1;}
 #aerospace-bg{
-  /* Source (aerospaceRoom.png, 7550x3062) is two stacked floor illustrations,
+  /* Source art (originally aerospaceRoom.png, 7550x3062; assets/rooms/aerospace_room.jpg
+     is a resized/recompressed export of the same full image, nothing spatially cropped
+     out of the file) is two stacked floor illustrations,
      not one continuous room — the ground floor (where sprites walk) is the
      bottom panel, split from the top panel by a divider at source y=1447.
      Scaled (0.1115x, undistorted) so the ground floor alone is exactly
@@ -436,7 +438,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 .scene-sprite.facing-left{transform:scaleX(-1);} /* art faces right natively; mirror when walking left */
 #scene-sprite-sam{
   width:36px;height:62px;
-  background:url('./assets/sam_walk.png') no-repeat;
+  background:url('./assets/characters/sam_walk.png') no-repeat;
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame */
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
   top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height, matching Ester */
@@ -444,7 +446,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-sprite-jerry{
   width:36px;height:62px;
-  background:url('./assets/jerry_walk.png') no-repeat;
+  background:url('./assets/characters/jerry_walk.png') no-repeat;
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame */
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
   top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height, matching Sam/Ester */
@@ -452,7 +454,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-sprite-cameron{
   width:36px;height:62px;
-  background:url('./assets/cameron.png') no-repeat;
+  background:url('./assets/characters/cameron.png') no-repeat;
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown, since Cameron never walks on screen */
   image-rendering:auto;
   top:117px; /* keeps feet on the same floor line as Sam/Jerry/Ester */
@@ -460,7 +462,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-sprite-ester{
   width:36px;height:62px;
-  background:url('./assets/player.png') no-repeat;
+  background:url('./assets/characters/player.png') no-repeat;
   background-size:144px 62px;
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
   top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height */
@@ -503,49 +505,49 @@ button:focus-visible{outline:2px solid var(--yellow);}
   background-repeat:no-repeat;
 }
 #dialogue-portrait.char-sam{
-  background-image:url('./assets/sam_walk.png');
+  background-image:url('./assets/characters/sam_walk.png');
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-jerry{
-  background-image:url('./assets/jerry_walk.png');
+  background-image:url('./assets/characters/jerry_walk.png');
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-ester{
-  background-image:url('./assets/player.png');
+  background-image:url('./assets/characters/player.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-astro{
-  background-image:url('./assets/astro.png');
+  background-image:url('./assets/characters/astro.png');
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-nina{
-  background-image:url('./assets/nina.png');
+  background-image:url('./assets/characters/nina.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-cameron{
-  background-image:url('./assets/cameron.png');
+  background-image:url('./assets/characters/cameron.png');
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-judith{
-  background-image:url('./assets/judith.png');
+  background-image:url('./assets/characters/judith.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-noor{
-  background-image:url('./assets/noor.png');
+  background-image:url('./assets/characters/noor.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;

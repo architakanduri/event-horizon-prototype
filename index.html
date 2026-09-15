@@ -25,9 +25,9 @@
      initially-hidden #screen-scene, so browsers won't fetch them until that
      screen becomes active. Preload them up front so they're already cached
      by the time gameplay starts, instead of popping in mid-scene. -->
-  <link rel="preload" as="image" href="./assets/sam_walk.png">
-  <link rel="preload" as="image" href="./assets/jerry_walk.png">
-  <link rel="preload" as="image" href="./assets/player.png">
+  <link rel="preload" as="image" href="./assets/characters/sam_walk.png">
+  <link rel="preload" as="image" href="./assets/characters/jerry_walk.png">
+  <link rel="preload" as="image" href="./assets/characters/player.png">
 </head>
 
 <body>
@@ -117,11 +117,13 @@
         <div id="scene-world">
           <!-- Aerospace engineering department (Scene 4), west of the lab. Hidden until
              Scene 4 reveals it, so it can't peek into view during earlier scenes' camera pans.
-             Uses the unmodified source art (see #aerospace-bg in style.css for the zoom/crop
-             that isolates the ground floor), same as #scene-main-bg and #scene-bg below. -->
-          <img id="aerospace-bg" class="hidden" src="./assets/aerospaceRoom.png" alt="">
-          <img id="scene-main-bg" src="./assets/mainRoom_compressed.jpg" alt="">
-          <img id="scene-bg" src="./assets/nuclearRoom_compressed.jpg" alt="">
+             aerospace_room.jpg is a resized/recompressed export of the full source art (full
+             content, nothing spatially cropped out of the file) — see #aerospace-bg in style.css
+             for the CSS zoom/position that isolates the ground floor, same as #scene-main-bg and
+             #scene-bg below. -->
+          <img id="aerospace-bg" class="hidden" src="./assets/rooms/aerospace_room.jpg" alt="">
+          <img id="scene-main-bg" src="./assets/rooms/main_room.jpg" alt="">
+          <img id="scene-bg" src="./assets/rooms/nuclear_room.jpg" alt="">
           <div id="scene-sprite-sam" class="scene-sprite facing-left" data-char="sam"></div>
           <div id="scene-sprite-jerry" class="scene-sprite hidden" data-char="jerry"></div>
           <div id="scene-sprite-ester" class="scene-sprite" data-char="ester"></div>
@@ -192,7 +194,7 @@
       <div id="map-overlay" class="overlay hidden">
         <div id="map-panel">
           <div class="settings-title">STATION MAP</div>
-          <img id="map-image" src="./assets/map.png" alt="Map of the research station">
+          <img id="map-image" src="./assets/ui/map.png" alt="Map of the research station">
           <button class="btn btn-purple" id="btn-map-close">CLOSE</button>
         </div>
       </div>
