@@ -926,11 +926,16 @@ const LAB_MIN_X = 1738.49;
 const LAB_MAX_X = 2126.49;
 const SAM_LAB_X = 2106.49; // Sam waits further into the lab, out of the starting frame
 const PROXIMITY_DIST = 45; // how close Ester must get to a target to trigger the next node
-const PLAYER_MOVE_SPEED = 60; // px/sec
+// DEV_UNLOCK_ALL (?unlockall) also speeds up walking — rooms can be 800+px
+// wide now, and at normal speed that's a lot of holding-the-arrow-key just
+// to get somewhere while testing. Leg-cycle frame rate scales down to match
+// so she doesn't visually slide/skate at the higher speed.
+const DEV_MOVE_SPEED_MULTIPLIER = 6;
+const PLAYER_MOVE_SPEED = DEV_UNLOCK_ALL ? 60 * DEV_MOVE_SPEED_MULTIPLIER : 60; // px/sec
 const JERRY_ENTER_X = SAM_LAB_X + 140; // where Jerry starts, further down the room
 const JERRY_JOIN_X = SAM_LAB_X + 40; // where Jerry ends up, beside Sam and Ester
 const JERRY_WALK_MS = 1300;
-const WALK_FRAME_MS = 130; // ms per leg-cycle frame while Ester is moving
+const WALK_FRAME_MS = DEV_UNLOCK_ALL ? 130 / DEV_MOVE_SPEED_MULTIPLIER : 130; // ms per leg-cycle frame while Ester is moving
 const moveKeys = { left: false, right: false };
 
 // The station's three rooms, as world-x spans matching where each room's
