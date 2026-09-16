@@ -336,7 +336,7 @@ const SCENE_SCRIPT = [
   // the higher-x side) — matching targetX to Cameron's actual x:200 spot means Ester stops PROXIMITY_DIST (45px) short
   // of her, the same gap Sam gets by default in scene 1, rather than the old targetX:160 which put that stopping edge
   // at just 205 — 5px from Cameron, i.e. basically on top of her.
-  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:2126.49 /* LAB_MAX_X — duplicated as a literal since this array is defined before that const */, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-bg"], find:"Cameron"},
+  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:2126.49 /* LAB_MAX_X — duplicated as a literal since this array is defined before that const */, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-bg","aero-door-unlocked"], find:"Cameron"},
 
   // autoAdvanceMs: Ester's greeting plays on its own once she's close enough to Cameron, instead of needing an extra
   // space/click right after the walk-up.
@@ -1012,13 +1012,66 @@ function tryUseLift() {
   beginFloorTransition(S.mainFloor === 0 ? 1 : 0);
 }
 
+// The double doors to the aerospace department, added on the main room's
+// mezzanine (#scene-main-bg.floor2) — replacing the plain painted door
+// already there in main_room.jpg (the "aerospace room" doorway, same wall
+// panel — hence the exact same bottom:0 floor-line convention as the lift).
+// Bounds measured directly off assets/rooms/main_room.jpg the same way as
+// the lift's own panel: the door's outer frame runs native x 2166-2887,
+// y 1279 (top, under the "aerospace room" sign) to 1954.5 (the mezzanine's
+// own floor line, same divider used for #scene-main-bg.floor2's own top).
+// AERO_DOOR_HEIGHT is that span converted to world px (native * 0.125);
+// AERO_DOOR_WIDTH comes from the door art's own aspect ratio instead of the
+// frame's measured width, so it isn't stretched (the two are within ~2px of
+// each other anyway).
+const AERO_DOOR_X = 1157.3; // 841.49 + 2526.5 (frame x-center) * 0.125
+const AERO_DOOR_ASPECT = 1225 / 1120; // aero_door_closed/open.png's own width:height ratio
+const AERO_DOOR_HEIGHT = (1954.5 - 1279) * 0.125; // ≈84.44
+const AERO_DOOR_WIDTH = AERO_DOOR_HEIGHT * AERO_DOOR_ASPECT; // ≈92.36
+const AERO_DOOR_DIST = 45; // how close Ester must be, either to open the door visually or to actually use it with E
+// Where Ester lands just inside the aerospace room's own edge when she goes
+// through the door, and the matching spot on that side she has to return to
+// in order to use it again in reverse (see tryUseAeroDoor) — there's no
+// visual door on the aerospace side, just this same invisible footprint.
+const AERO_ENTRY_X = MAIN_ROOM_X - ROOM_STEP_IN;
+
+const aeroDoorUnlockedEl = $("#aero-door-unlocked"); // never rendered — a plain flag, revealed alongside #aerospace-bg
+[$("#aero-door-closed"), $("#aero-door-open")].forEach(el => {
+  el.style.left = (AERO_DOOR_X - AERO_DOOR_WIDTH / 2) + "px";
+  el.style.width = AERO_DOOR_WIDTH + "px";
+  el.style.height = AERO_DOOR_HEIGHT + "px";
+});
+
+// Going through the aerospace door is an explicit action (E), exactly like
+// the lift, from either side. Unlike the lift, it's a room change — see
+// beginRoomTransition's fade-cut — and it stays unusable (the door itself
+// reads as locked — see updateInteractables) until sc4_walk_to_aerospace
+// reveals #aero-door-unlocked, matching how #aerospace-bg used to gate the
+// old edge-crossing.
+function tryUseAeroDoor() {
+  if (!S.freeRoam || S.roomTransitioning) return;
+  if (aeroDoorUnlockedEl.classList.contains("hidden")) return;
+  if (S.currentRoom === MAIN_ROOM_INDEX && S.mainFloor === 1) {
+    if (Math.abs(S.playerX - AERO_DOOR_X) > AERO_DOOR_DIST) return;
+    beginRoomTransition(AERO_ENTRY_X, 0, true, resetMainFloor); // leaving the main room — reset its floor state for next time
+  } else if (S.currentRoom === 0) {
+    if (Math.abs(S.playerX - AERO_ENTRY_X) > AERO_DOOR_DIST) return;
+    beginRoomTransition(AERO_DOOR_X, MAIN_ROOM_INDEX, false, () => {
+      S.mainFloor = 1; // arriving via the door lands her straight on the mezzanine
+      $("#scene-main-bg").classList.add("floor2");
+    });
+  }
+}
+
 // Checks whether Ester (moving in direction dx, currently in room
 // S.currentRoom) has reached the edge of her current room at x. Returns
 // {room, x} to transition to if so — landing a little past the new room's
 // own edge — or null if she hasn't reached one yet. The freeRoamMinX/MaxX
-// check lets some story beats (e.g. before Scene 4 reveals the aerospace
-// department) deliberately keep the walkable range short of the edge, so
-// that room can't be entered early even though the edge itself is reachable.
+// check lets a story beat deliberately keep the walkable range short of an
+// edge, so that room can't be entered early even though the edge itself is
+// reachable. (The main/aerospace edge is additionally blocked outright, in
+// sceneAnimLoop's own movement clamp — see tryUseAeroDoor for how that room
+// is actually reached instead.)
 function roomCrossing(x, dx) {
   if (dx > 0 && S.currentRoom < ROOMS.length - 1) {
     const nextRoom = ROOMS[S.currentRoom + 1];
@@ -1053,9 +1106,15 @@ function clampScrollForRoom(roomIdx, x) {
 let freeRoamMinX = MAIN_MIN_X, freeRoamMaxX = LAB_MAX_X, freeRoamTargetX = SAM_LAB_X, freeRoamNextNode = "s1", freeRoamFind = "Sam";
 
 // Which of the station's three named areas a world-x position falls in —
-// used to label the walk hint below.
+// used to label the walk hint below. Aerospace is labeled as the main
+// room's mezzanine rather than its own name, since that's the only way to
+// actually reach it now (the lift, then the door — see tryUseAeroDoor) —
+// walking to this edge no longer gets you there. Both the destination (still
+// x < MAIN_ROOM_X once inside aerospace) and Ester's own current position
+// share this same label either way, which is what keeps the hint's
+// hide-once-arrived check below working.
 function zoneNameForX(x) {
-  if (x < MAIN_ROOM_X) return "Aerospace Engineering";
+  if (x < MAIN_ROOM_X) return "the Main Room's 2nd floor";
   if (x < LAB_MIN_X) return "the Main Room";
   return "the Nuclear Lab";
 }
@@ -1074,15 +1133,32 @@ function updateWalkHint() {
   $("#walk-hint-text").textContent = "Go to " + destZone + (freeRoamFind ? " to find " + freeRoamFind : "");
 }
 
-// Shows "Press E to use the lift" only while Ester is free-roaming and
-// standing on the lift's own footprint (LIFT_MIN_X/MAX_X) — otherwise
-// pressing E there either does nothing (tryUseLift) or isn't even listened
-// for (the keydown handler in initInput gates on S.freeRoam too). Independent
-// of which floor she's currently on, since the footprint works the same from
-// either side.
-function updateLiftHint() {
-  const onLift = S.freeRoam && S.currentRoom === MAIN_ROOM_INDEX && S.playerX >= LIFT_MIN_X && S.playerX <= LIFT_MAX_X;
-  $("#lift-hint").classList.toggle("hidden", !onLift);
+// Updates everything tied to Ester's proximity to an interactable (the lift,
+// the aerospace door): the door's own closed/open art (a passive visual cue,
+// independent of S.freeRoam — it should still swap even mid-dialogue) — the
+// closed door always shows on the mezzanine, reading as locked, until
+// sc4_walk_to_aerospace reveals #aero-door-unlocked, at which point getting
+// close swaps in the open image instead — and the shared "Press E to ..."
+// hint (gated on S.freeRoam, same as the E keydown handler in initInput —
+// pressing E does nothing when it's hidden).
+function updateInteractables() {
+  const onMezzanine = S.currentRoom === MAIN_ROOM_INDEX && S.mainFloor === 1;
+  const doorUnlocked = !aeroDoorUnlockedEl.classList.contains("hidden");
+  const showOpenDoor = onMezzanine && doorUnlocked && Math.abs(S.playerX - AERO_DOOR_X) <= AERO_DOOR_DIST;
+  $("#aero-door-closed").classList.toggle("hidden", !onMezzanine || showOpenDoor);
+  $("#aero-door-open").classList.toggle("hidden", !showOpenDoor);
+
+  const hint = $("#interact-hint");
+  if (!S.freeRoam) { hint.classList.add("hidden"); return; }
+
+  const onLift = S.currentRoom === MAIN_ROOM_INDEX && S.playerX >= LIFT_MIN_X && S.playerX <= LIFT_MAX_X;
+  const onAeroDoor = showOpenDoor;
+  const onAeroReturn = doorUnlocked && S.currentRoom === 0 && Math.abs(S.playerX - AERO_ENTRY_X) <= AERO_DOOR_DIST;
+
+  hint.classList.toggle("hidden", !(onLift || onAeroDoor || onAeroReturn));
+  if (onLift) $("#interact-hint-text").textContent = "to use the lift";
+  else if (onAeroDoor) $("#interact-hint-text").textContent = "to enter the Aerospace Room";
+  else if (onAeroReturn) $("#interact-hint-text").textContent = "to return to the Main Room";
 }
 
 function startFreeRoam(startX, minX, maxX, targetX, nextNode, facingRight, find) {
@@ -1116,7 +1192,7 @@ function startFreeRoam(startX, minX, maxX, targetX, nextNode, facingRight, find)
   moveKeys.left = false;
   moveKeys.right = false;
   updateWalkHint();
-  updateLiftHint();
+  updateInteractables();
 }
 
 // Every scene opens on the main room's ground floor — resets the lift's
@@ -1272,12 +1348,27 @@ function sceneAnimLoop(ts) {
       // edges to cross into aerospace/lab from up there — so movement clamps
       // to FLOOR2_MIN_X/MAX_X there instead of whatever broader
       // freeRoamMinX/MaxX the current free-roam segment is using (e.g. all
-      // the way into the lab).
+      // the way into the lab). The aerospace boundary itself (both from the
+      // main room's ground floor and from the aerospace side) is likewise
+      // clamped shut — that room is only reachable via the lift + the
+      // mezzanine door now (tryUseAeroDoor), not by walking off this edge.
       const onFloor2 = S.currentRoom === MAIN_ROOM_INDEX && S.mainFloor === 1;
-      const minX = onFloor2 ? FLOOR2_MIN_X : freeRoamMinX;
-      const maxX = onFloor2 ? FLOOR2_MAX_X : freeRoamMaxX;
+      // Blocks the main/aerospace edge specifically — from the main room's
+      // ground floor walking left, or from aerospace walking right — since
+      // roomCrossing below would otherwise still fire exactly at the
+      // boundary pixel even with it clamped shut (x <= room.min is true
+      // right at that pixel, not just past it).
+      const blockAeroEdge = (S.currentRoom === MAIN_ROOM_INDEX && dx < 0) || (S.currentRoom === 0 && dx > 0);
+      let minX = freeRoamMinX, maxX = freeRoamMaxX;
+      if (onFloor2) {
+        minX = FLOOR2_MIN_X; maxX = FLOOR2_MAX_X;
+      } else if (S.currentRoom === MAIN_ROOM_INDEX) {
+        minX = Math.max(minX, ROOMS[MAIN_ROOM_INDEX].min);
+      } else if (S.currentRoom === 0) {
+        maxX = Math.min(maxX, ROOMS[0].max);
+      }
       const newX = Math.max(minX, Math.min(maxX, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
-      const crossing = onFloor2 ? null : roomCrossing(newX, dx); // no room edges to cross on the mezzanine
+      const crossing = (onFloor2 || blockAeroEdge) ? null : roomCrossing(newX, dx); // aerospace is only reachable via the lift + mezzanine door now
       if (crossing) {
         beginRoomTransition(crossing.x, crossing.room, dx < 0);
         requestAnimationFrame(sceneAnimLoop);
@@ -1296,7 +1387,7 @@ function sceneAnimLoop(ts) {
       }
       $("#scene-sprite-ester").style.backgroundPosition = `-${S.walkFrame * 36}px 0`;
       updateWalkHint();
-      updateLiftHint();
+      updateInteractables();
     } else if (S.walkFrame !== 0) {
       S.walkFrame = 0;
       walkAnimTimer = 0;
@@ -1310,7 +1401,7 @@ function sceneAnimLoop(ts) {
       walkAnimTimer = 0;
       $("#scene-sprite-ester").style.backgroundPosition = "0 0";
       updateWalkHint();
-      updateLiftHint();
+      updateInteractables();
       runNode(freeRoamNextNode);
     }
   }
@@ -1322,8 +1413,10 @@ function sceneAnimLoop(ts) {
 // the new room's own clamp range and snap Ester to her new position while
 // the screen is fully black, then fade back in. Movement is frozen for the
 // duration (S.roomTransitioning) so a held direction key doesn't keep
-// walking mid-fade.
-function beginRoomTransition(newX, newRoom, facingLeft) {
+// walking mid-fade. onArrive is an optional callback run at the same moment
+// (still hidden behind the fade) for transitions that need to touch extra
+// state — e.g. tryUseAeroDoor resetting/setting the main room's floor.
+function beginRoomTransition(newX, newRoom, facingLeft, onArrive) {
   S.roomTransitioning = true;
   S.walkFrame = 0;
   walkAnimTimer = 0;
@@ -1337,8 +1430,9 @@ function beginRoomTransition(newX, newRoom, facingLeft) {
     $("#scene-sprite-ester").classList.toggle("facing-left", facingLeft); // art faces right natively
     S.sceneScrollX = clampScrollForRoom(S.currentRoom, S.playerX);
     $("#scene-world").style.left = -S.sceneScrollX + "px";
+    if (onArrive) onArrive();
     updateWalkHint();
-    updateLiftHint();
+    updateInteractables();
     fade.classList.remove("visible");
     setTimeout(() => { S.roomTransitioning = false; }, ROOM_FADE_MS);
   }, ROOM_FADE_MS);
@@ -1360,7 +1454,7 @@ function beginFloorTransition(newFloor) {
   const bg = $("#scene-main-bg");
   const fade = $("#room-fade");
   sprite.style.backgroundPosition = "0 0";
-  $("#lift-hint").classList.add("hidden");
+  $("#interact-hint").classList.add("hidden");
 
   const setRiderPos = (top, bottom) => {
     sprite.style.top = top + "px";
@@ -1389,7 +1483,7 @@ function beginFloorTransition(newFloor) {
       fade.classList.remove("visible");
       setTimeout(() => {
         S.roomTransitioning = false;
-        updateLiftHint();
+        updateInteractables();
       }, ROOM_FADE_MS);
     }, ROOM_FADE_MS);
   }, LIFT_RIDE_MS);
@@ -1523,7 +1617,7 @@ function resetSceneStage({ sam, jerry, ester, cameraX }) {
   S.roomTransitioning = false;
   $("#room-fade").classList.remove("visible");
   updateWalkHint();
-  updateLiftHint();
+  updateInteractables();
   moveKeys.left = false;
   moveKeys.right = false;
   S.walkFrame = 0;
@@ -1749,7 +1843,7 @@ function initInput() {
     if (S.screen === "scene" && S.freeRoam) {
       if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { moveKeys.left = true; e.preventDefault(); }
       if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { moveKeys.right = true; e.preventDefault(); }
-      if ((e.key === "e" || e.key === "E") && !e.repeat) tryUseLift();
+      if ((e.key === "e" || e.key === "E") && !e.repeat) { tryUseLift(); tryUseAeroDoor(); }
     }
     if (S.screen === "scene" && !S.freeRoam && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();

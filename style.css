@@ -462,6 +462,20 @@ button:focus-visible{outline:2px solid var(--yellow);}
 .lift-riding{
   transition:top 1200ms ease-in-out, bottom 1200ms ease-in-out; /* keep in sync with LIFT_RIDE_MS in script.js */
 }
+/* The aerospace double doors, on the main room's mezzanine — left/width/
+   height set from script.js (AERO_DOOR_X/WIDTH/HEIGHT). Sits flush with the
+   mezzanine's own floor line (bottom:0), same as .lift-prop. Which of the
+   two images (closed/open) is actually visible is toggled per-frame by
+   updateInteractables — the closed one by default (the room reads as locked
+   from Scene 1 on), swapping to the open one only once
+   sc4_walk_to_aerospace's reveal has unlocked #aero-door-unlocked and Ester
+   is close enough. Same z-index as the lift platform, below the sprites. */
+.aero-door-prop{
+  position:absolute;
+  bottom:0px;
+  z-index:4;
+  image-rendering:auto;
+}
 .scene-sprite{
   position:absolute;
   image-rendering:pixelated;
@@ -521,10 +535,11 @@ button:focus-visible{outline:2px solid var(--yellow);}
   color:var(--yellow);
   font-weight:bold;
 }
-/* Lift hint: shown only while Ester is standing on the lift's own footprint
-   (updateLiftHint in script.js) — same look as #walk-hint, bottom-center
-   instead of the top-left corner so the two never overlap. */
-#lift-hint{
+/* Interact hint: shown only while Ester is standing on an interactable's own
+   footprint — the lift, the aerospace door (updateInteractables in
+   script.js sets #interact-hint-text) — same look as #walk-hint,
+   bottom-center instead of the top-left corner so the two never overlap. */
+#interact-hint{
   position:absolute;
   bottom:4px;left:50%;
   transform:translateX(-50%);
@@ -537,7 +552,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   pointer-events:none;
   white-space:nowrap;
 }
-#lift-hint-key{
+.interact-hint-key{
   color:var(--yellow);
   font-weight:bold;
 }
