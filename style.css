@@ -459,13 +459,22 @@ button:focus-visible{outline:2px solid var(--yellow);}
    (LIFT_X/LIFT_WIDTH/LIFT_HEIGHT). Both the ground floor and the mezzanine's
    own crop (#scene-main-bg.floor2) land their floor line at the same
    screen-bottom position, so this needs no floor-specific override — it
-   sits flush with the floor either way. Below the sprites (z-index 10) so
-   Ester's feet always read as standing on top of it. */
+   sits flush with the floor either way, except while actually mid-ride (see
+   .lift-riding below). Below the sprites (z-index 10) so Ester's feet always
+   read as standing on top of it. */
 .lift-prop{
   position:absolute;
   bottom:0px;
   z-index:4;
   image-rendering:auto;
+}
+/* Applied to both the lift platform (animating .bottom) and Ester's sprite
+   (animating .top) for the duration of a ride — see beginFloorTransition in
+   script.js, which sets the target value right after adding this class (or
+   removes it first for the instant, invisible jump partway through a
+   descent). */
+.lift-riding{
+  transition:top 600ms ease-in-out, bottom 600ms ease-in-out; /* keep in sync with LIFT_RIDE_MS in script.js */
 }
 .scene-sprite{
   position:absolute;

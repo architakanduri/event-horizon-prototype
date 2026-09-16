@@ -1050,6 +1050,23 @@ liftEl.style.left = (LIFT_X - LIFT_WIDTH / 2) + "px";
 liftEl.style.width = LIFT_WIDTH + "px";
 liftEl.style.height = LIFT_HEIGHT + "px";
 
+// Riding the lift is played out as a visible rise/descent rather than a cut
+// (see beginFloorTransition) — Ester and the platform actually move up or
+// down the screen together, in front of an unmoving backdrop. This relies
+// on a coincidence of the two floor crops in style.css: the ground floor's
+// own crop (#scene-main-bg, top:-185px) already shows a sliver of the
+// mezzanine above its usual floor line, and that sliver's own floor line
+// (native y≈1954.5, css≈244.3) sits at local y = 244.3-185 = 59.3 under that
+// crop — exactly LIFT_RISE_PX above the screen-bottom resting position
+// (180-59.3). So rising Ester by LIFT_RISE_PX under the ground crop lands
+// her exactly on the same pixels the mezzanine crop (top:-64.3px) shows at
+// its own screen-bottom resting position — the crop can swap right there
+// with nothing visibly changing. LIFT_RISE_PX must stay equal to the
+// difference between those two top values (185 - 64.3) if either changes.
+const ESTER_TOP_GROUND = 117; // matches #scene-sprite-ester's own default top in style.css
+const LIFT_RISE_PX = 120.7; // 185 (ground top) - 64.3 (mezzanine top) — see above
+const LIFT_RIDE_MS = 600; // duration of the visible rise/descend
+
 // Riding the lift is an explicit action (E), not something walking onto its
 // footprint triggers on its own — see the "e"/"E" keydown handler in
 // initInput. Only fires while Ester's free-roaming (the same condition that
@@ -1176,6 +1193,14 @@ function startFreeRoam(startX, minX, maxX, targetX, nextNode, facingRight, find)
 function resetMainFloor() {
   S.mainFloor = 0;
   $("#scene-main-bg").classList.remove("floor2");
+  // Clear any inline top/bottom left over from an interrupted ride (see
+  // beginFloorTransition) so the CSS defaults (ESTER_TOP_GROUND / bottom:0)
+  // apply again.
+  const sprite = $("#scene-sprite-ester");
+  sprite.classList.remove("lift-riding");
+  sprite.style.top = "";
+  liftEl.classList.remove("lift-riding");
+  liftEl.style.bottom = "";
 }
 
 function startScene() {
@@ -1387,25 +1412,66 @@ function beginRoomTransition(newX, newRoom, facingLeft) {
 }
 
 // Riding the lift between the main room's ground floor and its mezzanine —
-// same fade-to-black beat as beginRoomTransition, but only the vertical crop
-// (#scene-main-bg's .floor2 class) changes; both floors' own floor lines land
-// at the same screen-bottom position, so Ester's sprite and the lift prop's
-// own position need no floor-specific adjustment. Her x and the horizontal
-// camera scroll are untouched too, since it's a vertical move, not a room
-// change. Only reached via tryUseLift (pressing E on the lift's footprint).
+// unlike beginRoomTransition, this plays out as a visible rise/descent
+// instead of a fade-to-black cut: Ester and the lift platform actually
+// translate up or down the screen together (see the LIFT_RISE_PX comment
+// above for why the crop swap partway through is invisible). Her x and the
+// horizontal camera scroll are untouched, since it's a vertical move, not a
+// room change. Only reached via tryUseLift (pressing E on the lift's
+// footprint).
 function beginFloorTransition(newFloor) {
   S.roomTransitioning = true;
   S.walkFrame = 0;
   walkAnimTimer = 0;
-  $("#scene-sprite-ester").style.backgroundPosition = "0 0";
-  const fade = $("#room-fade");
-  fade.classList.add("visible");
-  setTimeout(() => {
+  const sprite = $("#scene-sprite-ester");
+  const bg = $("#scene-main-bg");
+  sprite.style.backgroundPosition = "0 0";
+  $("#lift-hint").classList.add("hidden");
+
+  const setRiderPos = (top, bottom) => {
+    sprite.style.top = top + "px";
+    liftEl.style.bottom = bottom + "px";
+  };
+  const endTransition = () => {
     S.mainFloor = newFloor;
-    $("#scene-main-bg").classList.toggle("floor2", newFloor === 1);
-    fade.classList.remove("visible");
-    setTimeout(() => { S.roomTransitioning = false; }, ROOM_FADE_MS);
-  }, ROOM_FADE_MS);
+    S.roomTransitioning = false;
+    updateLiftHint();
+  };
+
+  if (newFloor === 1) {
+    // Rising: play the whole climb against the ground floor's own
+    // (unchanging) crop, then swap to the mezzanine crop and snap back to
+    // the resting position the instant Ester arrives — same pixels either
+    // way, so nothing visibly moves at that instant. The class comes off
+    // *before* that final position is set (both still in the same
+    // synchronous callback), so the snap itself isn't transitioned too.
+    sprite.classList.add("lift-riding");
+    liftEl.classList.add("lift-riding");
+    setRiderPos(ESTER_TOP_GROUND - LIFT_RISE_PX, LIFT_RISE_PX);
+    setTimeout(() => {
+      bg.classList.add("floor2");
+      sprite.classList.remove("lift-riding");
+      liftEl.classList.remove("lift-riding");
+      setRiderPos(ESTER_TOP_GROUND, 0);
+      endTransition();
+    }, LIFT_RIDE_MS);
+  } else {
+    // Descending: first jump (no transition yet) to the equivalent risen
+    // position under the ground floor's own crop — the same pixels Ester
+    // was already standing on under the mezzanine crop — then play the
+    // descent against that now-unchanging backdrop.
+    bg.classList.remove("floor2");
+    setRiderPos(ESTER_TOP_GROUND - LIFT_RISE_PX, LIFT_RISE_PX);
+    void sprite.offsetWidth; // flush the jump before the transition below picks it up
+    sprite.classList.add("lift-riding");
+    liftEl.classList.add("lift-riding");
+    setRiderPos(ESTER_TOP_GROUND, 0);
+    setTimeout(() => {
+      sprite.classList.remove("lift-riding");
+      liftEl.classList.remove("lift-riding");
+      endTransition();
+    }, LIFT_RIDE_MS);
+  }
 }
 
 function runNode(nodeId) {
