@@ -474,7 +474,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
    removes it first for the instant, invisible jump partway through a
    descent). */
 .lift-riding{
-  transition:top 600ms ease-in-out, bottom 600ms ease-in-out; /* keep in sync with LIFT_RIDE_MS in script.js */
+  transition:top 1200ms ease-in-out, bottom 1200ms ease-in-out; /* keep in sync with LIFT_RIDE_MS in script.js */
 }
 .scene-sprite{
   position:absolute;

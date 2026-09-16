@@ -1062,7 +1062,7 @@ liftEl.style.height = LIFT_HEIGHT + "px";
 // rather than arbitrary.
 const ESTER_TOP_GROUND = 117; // matches #scene-sprite-ester's own default top in style.css
 const LIFT_RISE_PX = 120.7; // 185 (ground top) - 64.3 (mezzanine top) — see above
-const LIFT_RIDE_MS = 600; // duration of the visible rise/descend, before the cut
+const LIFT_RIDE_MS = 1200; // duration of the visible rise/descend, before the cut — 0.5x speed (2x the original 600ms)
 
 // Riding the lift is an explicit action (E), not something walking onto its
 // footprint triggers on its own — see the "e"/"E" keydown handler in
