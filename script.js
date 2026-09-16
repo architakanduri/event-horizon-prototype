@@ -336,7 +336,7 @@ const SCENE_SCRIPT = [
   // the higher-x side) — matching targetX to Cameron's actual x:200 spot means Ester stops PROXIMITY_DIST (45px) short
   // of her, the same gap Sam gets by default in scene 1, rather than the old targetX:160 which put that stopping edge
   // at just 205 — 5px from Cameron, i.e. basically on top of her.
-  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:2126.49 /* LAB_MAX_X — duplicated as a literal since this array is defined before that const */, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-bg","door-aero-left","door-aero-right"], find:"Cameron"},
+  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:2126.49 /* LAB_MAX_X — duplicated as a literal since this array is defined before that const */, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-bg"], find:"Cameron"},
 
   // autoAdvanceMs: Ester's greeting plays on its own once she's close enough to Cameron, instead of needing an extra
   // space/click right after the walk-up.
@@ -957,72 +957,8 @@ function roomIndexForX(x) {
   return 0;
 }
 
-// Each room's own door, at its left end and right end (rendered in
-// index.html as #door-<room>-<side>, sized/positioned below). Doors sit a
-// little inside their room's own art border, not flush against it —
-// clampScrollForRoom stops the camera from scrolling past a room's own
-// min/max, so a door placed exactly on that pixel would spend the whole
-// final stretch of the walk pinned to the screen's own edge (the camera
-// can't scroll any further, so the door stops moving in frame while Ester
-// keeps walking toward it) instead of reading as a fixture inside the room.
-// DOOR_WALL_CLEARANCE below keeps it far enough from the true edge to stay
-// clear of that clamp. The two interior doorways (aerospace/main and lab/main) end
-// up as a matched pair, one door on each side, close together near the
-// seam between the rooms' background art. The outer two doors (aerospace's
-// far left, lab's far right) are dead ends with nothing beyond them.
-const DOOR_HEIGHT = 80; // smaller than the room itself, but big enough to actually read as a door
-const DOOR_ASPECT = 74 / 933; // door_closed.png's own width:height ratio
-const DOOR_WIDTH = DOOR_HEIGHT * DOOR_ASPECT;
-const DOOR_BOTTOM = 20; // raised above the floor line so it clears the room art's own rounded bottom corner instead of cutting into it
-const DOOR_STEP_IN = 8; // spawn this far past the new room's own door, so arriving there doesn't immediately re-trigger a walk back through it
-
-// The three room backgrounds aren't bordered consistently — aerospace_room.jpg,
-// main_room.jpg and nuclear_room.jpg each bake in their own decorative gray
-// margin before the actual wall content starts, measured (in native source-image
-// px, sampled at each image's vertical center to stay clear of the rounded-corner
-// curve near top/bottom) as: aerospace ~48px left/~25px right, main a clean
-// ~61px both sides, lab/nuclear ~0px (its art runs flush to the image edge on
-// the flat sides — only the very top/bottom corners round off). A single flat
-// world-space inset from the room seam therefore looked flush in main (which
-// already has a big built-in margin) but noticeably closer to the wall in lab
-// (which has none). ROOM_ART_BORDER_PX compensates so every door sits the same
-// DOOR_WALL_CLEARANCE past its own room's *actual* depicted wall, not just the
-// same distance from the abstract world-x seam.
-const ROOM_ART_SCALE = 0.125; // native source px -> world/css px, the same ratio for all three room backgrounds
-const ROOM_ART_BORDER_PX = [
-  { left: 48, right: 25 }, // aerospace_room.jpg
-  { left: 61, right: 61 }, // main_room.jpg
-  { left: 0, right: 0 },   // nuclear_room.jpg
-];
-const DOOR_WALL_CLEARANCE = 8; // world-space gap to leave past each room's own wall content, on top of that room's own baked-in border
-
-// Each room's own door positions — ROOMS[i].min/max nudged inward by that
-// room's own wall clearance. Reaching either one is what doorCrossing() below
-// treats as "at the door."
-const ROOM_DOORS = ROOMS.map((r, i) => ({
-  left: r.min + DOOR_WALL_CLEARANCE + ROOM_ART_BORDER_PX[i].left * ROOM_ART_SCALE,
-  right: r.max - DOOR_WALL_CLEARANCE - ROOM_ART_BORDER_PX[i].right * ROOM_ART_SCALE,
-}));
-
-// Positions and sizes the six door images in the DOM from the constants
-// above (centered on their ROOM_DOORS anchor), so their placement can't
-// drift out of sync with ROOMS/WORLD_WIDTH.
-[
-  { id: "door-aero-left", x: ROOM_DOORS[0].left },
-  { id: "door-aero-right", x: ROOM_DOORS[0].right },
-  { id: "door-main-left", x: ROOM_DOORS[1].left },
-  { id: "door-main-right", x: ROOM_DOORS[1].right },
-  { id: "door-lab-left", x: ROOM_DOORS[2].left },
-  { id: "door-lab-right", x: ROOM_DOORS[2].right },
-].forEach(({ id, x }) => {
-  const el = $("#" + id);
-  el.style.left = (x - DOOR_WIDTH / 2) + "px";
-  el.style.bottom = DOOR_BOTTOM + "px";
-  el.style.width = DOOR_WIDTH + "px";
-  el.style.height = DOOR_HEIGHT + "px";
-});
-
 const MAIN_ROOM_INDEX = 1; // ROOMS[1] — see ROOMS above
+const ROOM_STEP_IN = 8; // spawn this far past the new room's own edge, so arriving there doesn't immediately re-trigger a walk back through it
 
 // The lift, added to the main room's own darker wall panel (right side,
 // close to the lab-side wall) — main_room.jpg actually bakes in a second
@@ -1031,11 +967,12 @@ const MAIN_ROOM_INDEX = 1; // ROOMS[1] — see ROOMS above
 // assets/rooms/main_room.jpg (native px, sampled — a distinctly darker
 // blue-gray rectangle against the otherwise-white wall): x 6311-6895,
 // y 1953-2884. LIFT_X/LIFT_WIDTH below are that panel's own center/width
-// converted to world px via ROOM_ART_SCALE, so the lift platform art lines
-// up with the panel already painted into the room. Riding it is a deliberate
-// action (press E while standing on it — see tryUseLift), not automatic.
-const LIFT_X = 1666.87; // 841.49 + 6603 (panel x-center) * ROOM_ART_SCALE
-const LIFT_WIDTH = 73; // 584 (panel width) * ROOM_ART_SCALE
+// converted to world px (native px * 0.125, the same scale used to size all
+// three room backgrounds), so the lift platform art lines up with the panel
+// already painted into the room. Riding it is a deliberate action (press E
+// while standing on it — see tryUseLift), not automatic.
+const LIFT_X = 1666.87; // 841.49 + 6603 (panel x-center) * 0.125
+const LIFT_WIDTH = 73; // 584 (panel width) * 0.125
 const LIFT_ASPECT = 144 / 1072; // lift.png's own width:height ratio (a shallow floor platform, not a door)
 const LIFT_HEIGHT = LIFT_WIDTH * LIFT_ASPECT;
 const LIFT_MIN_X = LIFT_X - LIFT_WIDTH / 2;
@@ -1076,24 +1013,22 @@ function tryUseLift() {
 }
 
 // Checks whether Ester (moving in direction dx, currently in room
-// S.currentRoom) has reached her current room's own door at x. Returns
-// {room, x} to transition to if so — landing just past the new room's own
-// door — or null if she hasn't reached one yet. The freeRoamMinX/MaxX check
-// mirrors the guard the old boundary-crossing code got for free from
-// clampScrollForRoom: some story beats (e.g. before Scene 4 reveals the
-// aerospace department) deliberately keep the walkable range short of a
-// door so that room can't be entered early, even though its own door sits
-// a little inside the reachable range's edge.
-function doorCrossing(x, dx) {
+// S.currentRoom) has reached the edge of her current room at x. Returns
+// {room, x} to transition to if so — landing a little past the new room's
+// own edge — or null if she hasn't reached one yet. The freeRoamMinX/MaxX
+// check lets some story beats (e.g. before Scene 4 reveals the aerospace
+// department) deliberately keep the walkable range short of the edge, so
+// that room can't be entered early even though the edge itself is reachable.
+function roomCrossing(x, dx) {
   if (dx > 0 && S.currentRoom < ROOMS.length - 1) {
-    const nextRoom = ROOM_DOORS[S.currentRoom + 1];
-    if (x >= ROOM_DOORS[S.currentRoom].right && freeRoamMaxX >= nextRoom.left) {
-      return { room: S.currentRoom + 1, x: nextRoom.left + DOOR_STEP_IN };
+    const nextRoom = ROOMS[S.currentRoom + 1];
+    if (x >= ROOMS[S.currentRoom].max && freeRoamMaxX >= nextRoom.min) {
+      return { room: S.currentRoom + 1, x: nextRoom.min + ROOM_STEP_IN };
     }
   } else if (dx < 0 && S.currentRoom > 0) {
-    const prevRoom = ROOM_DOORS[S.currentRoom - 1];
-    if (x <= ROOM_DOORS[S.currentRoom].left && freeRoamMinX <= prevRoom.right) {
-      return { room: S.currentRoom - 1, x: prevRoom.right - DOOR_STEP_IN };
+    const prevRoom = ROOMS[S.currentRoom - 1];
+    if (x <= ROOMS[S.currentRoom].min && freeRoamMinX <= prevRoom.max) {
+      return { room: S.currentRoom - 1, x: prevRoom.max - ROOM_STEP_IN };
     }
   }
   return null;
@@ -1333,15 +1268,16 @@ function sceneAnimLoop(ts) {
     if (moveKeys.left) dx -= 1;
     if (moveKeys.right) dx += 1;
     if (dx !== 0) {
-      // The mezzanine only exists for the main room's own span — no doors,
-      // no aerospace/lab beyond it — so movement clamps to FLOOR2_MIN_X/MAX_X
-      // there instead of whatever broader freeRoamMinX/MaxX the current
-      // free-roam segment is using (e.g. all the way into the lab).
+      // The mezzanine only exists for the main room's own span — no room
+      // edges to cross into aerospace/lab from up there — so movement clamps
+      // to FLOOR2_MIN_X/MAX_X there instead of whatever broader
+      // freeRoamMinX/MaxX the current free-roam segment is using (e.g. all
+      // the way into the lab).
       const onFloor2 = S.currentRoom === MAIN_ROOM_INDEX && S.mainFloor === 1;
       const minX = onFloor2 ? FLOOR2_MIN_X : freeRoamMinX;
       const maxX = onFloor2 ? FLOOR2_MAX_X : freeRoamMaxX;
       const newX = Math.max(minX, Math.min(maxX, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
-      const crossing = onFloor2 ? null : doorCrossing(newX, dx); // no doors on the mezzanine
+      const crossing = onFloor2 ? null : roomCrossing(newX, dx); // no room edges to cross on the mezzanine
       if (crossing) {
         beginRoomTransition(crossing.x, crossing.room, dx < 0);
         requestAnimationFrame(sceneAnimLoop);

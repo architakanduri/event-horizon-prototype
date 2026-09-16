@@ -441,20 +441,6 @@ button:focus-visible{outline:2px solid var(--yellow);}
   width:841.49px;height:341.28px;
   image-rendering:auto;
 }
-/* Room doors — one at each end of each room, a little inside that room's own
-   art border (see ROOM_ART_BORDER_PX/DOOR_WALL_CLEARANCE in script.js — keeps
-   the door clear of clampScrollForRoom's scroll limit so it doesn't end up
-   pinned to the screen's own edge, and compensates for each room's own art
-   having a differently-sized baked-in border). left/bottom/width/height are
-   all set from script.js (DOOR_HEIGHT/DOOR_WIDTH/DOOR_BOTTOM/ROOM_DOORS), so
-   this only needs the shared positioning. Raised above the floor line (rather
-   than flush with it) so it clears the room art's own rounded bottom corner.
-   Sits above the room backgrounds but below the sprites, so a character can
-   walk in front. */
-.room-door{
-  position:absolute;
-  z-index:5;
-}
 /* The lift platform in the main room — left/width/height set from script.js
    (LIFT_X/LIFT_WIDTH/LIFT_HEIGHT). Both the ground floor and the mezzanine's
    own crop (#scene-main-bg.floor2) land their floor line at the same

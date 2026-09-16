@@ -131,22 +131,6 @@
                class to switch floors. -->
           <img id="lift-platform" class="lift-prop" src="./assets/ui/lift.png" alt="">
           <img id="scene-bg" src="./assets/rooms/nuclear_room.jpg" alt="">
-          <!-- Room doors: one at each end of each of the station's three rooms,
-               sized and positioned by script.js (see DOOR_HEIGHT/DOOR_WIDTH/
-               ROOM_DOORS right after ROOMS) a little inside that room's own art
-               border — not flush against it, so the camera's own scroll clamp
-               (clampScrollForRoom) doesn't pin the door to the screen's edge.
-               The two doorways between rooms (aerospace/main and main/lab) get
-               a door on each side, close together near the seam — reaching
-               either one is also where doorCrossing() in script.js triggers the
-               walk into the next room. The aerospace-side doors stay hidden
-               until sc4_walk_to_aerospace reveals them, matching #aerospace-bg. -->
-          <img id="door-aero-left" class="room-door hidden" src="./assets/rooms/door_closed.png" alt="">
-          <img id="door-aero-right" class="room-door hidden" src="./assets/rooms/door_closed.png" alt="">
-          <img id="door-main-left" class="room-door" src="./assets/rooms/door_closed.png" alt="">
-          <img id="door-main-right" class="room-door" src="./assets/rooms/door_closed.png" alt="">
-          <img id="door-lab-left" class="room-door" src="./assets/rooms/door_closed.png" alt="">
-          <img id="door-lab-right" class="room-door" src="./assets/rooms/door_closed.png" alt="">
           <div id="scene-sprite-sam" class="scene-sprite facing-left" data-char="sam"></div>
           <div id="scene-sprite-jerry" class="scene-sprite hidden" data-char="jerry"></div>
           <div id="scene-sprite-ester" class="scene-sprite" data-char="ester"></div>
