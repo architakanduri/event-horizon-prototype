@@ -441,27 +441,36 @@ button:focus-visible{outline:2px solid var(--yellow);}
   width:841.49px;height:341.28px;
   image-rendering:auto;
 }
-/* Room doors — one at each end of each room, a little inside that room's own
-   art border (see ROOM_ART_BORDER_PX/DOOR_WALL_CLEARANCE in script.js — keeps
-   the door clear of clampScrollForRoom's scroll limit so it doesn't end up
-   pinned to the screen's own edge, and compensates for each room's own art
-   having a differently-sized baked-in border). left/bottom/width/height are
-   all set from script.js (DOOR_HEIGHT/DOOR_WIDTH/DOOR_BOTTOM/ROOM_DOORS), so
-   this only needs the shared positioning. Raised above the floor line (rather
-   than flush with it) so it clears the room art's own rounded bottom corner.
-   Sits above the room backgrounds but below the sprites, so a character can
-   walk in front. */
-.room-door{
-  position:absolute;
-  z-index:5;
-}
 /* The lift platform in the main room — left/width/height set from script.js
    (LIFT_X/LIFT_WIDTH/LIFT_HEIGHT). Both the ground floor and the mezzanine's
    own crop (#scene-main-bg.floor2) land their floor line at the same
    screen-bottom position, so this needs no floor-specific override — it
-   sits flush with the floor either way. Below the sprites (z-index 10) so
-   Ester's feet always read as standing on top of it. */
+   sits flush with the floor either way, except while actually mid-ride (see
+   .lift-riding below). Below the sprites (z-index 10) so Ester's feet always
+   read as standing on top of it. */
 .lift-prop{
+  position:absolute;
+  bottom:0px;
+  z-index:4;
+  image-rendering:auto;
+}
+/* Applied to both the lift platform (animating .bottom) and Ester's sprite
+   (animating .top) for the duration of a ride — see beginFloorTransition in
+   script.js, which sets the target value right after adding this class (or
+   removes it first for the instant, invisible jump partway through a
+   descent). */
+.lift-riding{
+  transition:top 1200ms ease-in-out, bottom 1200ms ease-in-out; /* keep in sync with LIFT_RIDE_MS in script.js */
+}
+/* The aerospace double doors, on the main room's mezzanine — left/width/
+   height set from script.js (AERO_DOOR_X/WIDTH/HEIGHT). Sits flush with the
+   mezzanine's own floor line (bottom:0), same as .lift-prop. Which of the
+   two images (closed/open) is actually visible is toggled per-frame by
+   updateInteractables — the closed one by default (the room reads as locked
+   from Scene 1 on), swapping to the open one only once
+   sc4_walk_to_aerospace's reveal has unlocked #aero-door-unlocked and Ester
+   is close enough. Same z-index as the lift platform, below the sprites. */
+.aero-door-prop{
   position:absolute;
   bottom:0px;
   z-index:4;
@@ -526,10 +535,11 @@ button:focus-visible{outline:2px solid var(--yellow);}
   color:var(--yellow);
   font-weight:bold;
 }
-/* Lift hint: shown only while Ester is standing on the lift's own footprint
-   (updateLiftHint in script.js) — same look as #walk-hint, bottom-center
-   instead of the top-left corner so the two never overlap. */
-#lift-hint{
+/* Interact hint: shown only while Ester is standing on an interactable's own
+   footprint — the lift, the aerospace door (updateInteractables in
+   script.js sets #interact-hint-text) — same look as #walk-hint,
+   bottom-center instead of the top-left corner so the two never overlap. */
+#interact-hint{
   position:absolute;
   bottom:4px;left:50%;
   transform:translateX(-50%);
@@ -542,7 +552,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   pointer-events:none;
   white-space:nowrap;
 }
-#lift-hint-key{
+.interact-hint-key{
   color:var(--yellow);
   font-weight:bold;
 }
