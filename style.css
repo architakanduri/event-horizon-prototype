@@ -73,12 +73,12 @@ button:focus-visible{outline:2px solid var(--yellow);}
 /* === TITLE === */
 .title-layer{position:absolute;inset:0;}
 .title-bg{
-  background:url('./assets/title_bg.png') no-repeat;
+  background:url('./assets/ui/title_bg.png') no-repeat;
   background-size:320px 180px;
   image-rendering:pixelated;
 }
 /* .title-stars{
-  background:url('./assets/starfield_tile.png') repeat-x;
+  background:url('./assets/ui/starfield_tile.png') repeat-x;
   background-size:640px 180px;
   image-rendering:pixelated;
 } */
@@ -86,7 +86,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
   width:42px;height:24px;
   position:absolute;
   top:68px;
-  background:url('./assets/ship.png') no-repeat;
+  background:url('./assets/ui/ship.png') no-repeat;
   background-size:contain;
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
 }
@@ -360,9 +360,9 @@ button:focus-visible{outline:2px solid var(--yellow);}
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown */
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
 }
-.character-portrait.char-ester{background-image:url('./assets/player.png');}
-.character-portrait.char-astro{background-image:url('./assets/astro.png');}
-.character-portrait.char-nina{background-image:url('./assets/nina.png');}
+.character-portrait.char-ester{background-image:url('./assets/characters/player.png');}
+.character-portrait.char-astro{background-image:url('./assets/characters/astro.png');}
+.character-portrait.char-nina{background-image:url('./assets/characters/nina.png');}
 .character-info{
   display:flex;flex-direction:column;gap:1px;
   min-width:0;
@@ -378,7 +378,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 #screen-scene.active{display:block;}
 #scene-world{
   position:absolute;
-  width:1845px;height:180px; /* aerospace (0-320) + main room (320-1205) + lab/nuclear (1205-1845) */
+  width:2366.49px;height:180px; /* aerospace (0-841.49) + main room (841.49-1726.49) + lab/nuclear (1726.49-2366.49) */
   top:0;left:0;
   overflow:hidden;
 }
@@ -387,12 +387,12 @@ button:focus-visible{outline:2px solid var(--yellow);}
      staircase on a mezzanine. Ground level (where the sprites walk) is the
      lower band with the radiation crate/desk/stairs, so the crop is shifted
      up to that floor line rather than the mezzanine door's threshold. */
-  position:absolute;top:-185px;left:320px;
+  position:absolute;top:-185px;left:841.49px;
   width:885px;height:370px; /* scale kept consistent with the mezzanine door's height against the character sprites */
   image-rendering:auto;
 }
 #scene-bg{
-  position:absolute;top:-60px;left:1205px; /* right after the main room, so world x 1205+ (nuclear/lab) has no main-room art behind it */
+  position:absolute;top:-60px;left:1726.49px; /* right after the main room, so world x 1726.49+ (nuclear/lab) has no main-room art behind it */
   width:853.33px;height:240px; /* 1.33x zoom, undistorted; shifted up so only the bottom 75% shows */
   image-rendering:auto;
 }
@@ -408,15 +408,39 @@ button:focus-visible{outline:2px solid var(--yellow);}
   z-index:50;
 }
 #room-fade.visible{opacity:1;}
-#aerospace-placeholder{
-  position:absolute;left:10px;top:8px;
-  width:300px;height:164px;
-  border:1px dashed var(--yellow);
-  background:rgba(106,92,240,0.12);
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;padding:10px;
-  font-family:'Karla',Arial,sans-serif;font-size:5px;line-height:1.6;
-  color:var(--yellow);opacity:.85;
+#aerospace-bg{
+  /* Source art (originally aerospaceRoom.png, 7550x3062; assets/rooms/aerospace_room.jpg
+     is a resized/recompressed export of the same full image, nothing spatially cropped
+     out of the file) is two stacked floor illustrations,
+     not one continuous room — the ground floor (where sprites walk) is the
+     bottom panel, split from the top panel by a divider at source y=1447.
+     Scaled (0.1115x, undistorted) so the ground floor alone is exactly
+     180px tall — the full viewport height, with zero left/right crop — and
+     shifted up so the divider (source y=1447) lands at y:0, clipped out of
+     view by #scene-world's overflow:hidden. This makes the room's own
+     world-space span 841.49px wide (matching the full scaled image width)
+     instead of the fixed 320px viewport, so — like #scene-main-bg/#scene-bg
+     above — it scrolls: the camera pans across it as Ester walks, the same
+     way it already did for those two rooms, rather than cropping the art
+     itself down to viewport width. Bottom edge lands at top:179px
+     (=117+62), the character sprites' feet line. */
+  position:absolute;left:0;top:-161.28px;
+  width:841.49px;height:341.28px;
+  image-rendering:auto;
+}
+/* Room doors — one at each end of each room, a little inside that room's own
+   art border (see ROOM_ART_BORDER_PX/DOOR_WALL_CLEARANCE in script.js — keeps
+   the door clear of clampScrollForRoom's scroll limit so it doesn't end up
+   pinned to the screen's own edge, and compensates for each room's own art
+   having a differently-sized baked-in border). left/bottom/width/height are
+   all set from script.js (DOOR_HEIGHT/DOOR_WIDTH/DOOR_BOTTOM/ROOM_DOORS), so
+   this only needs the shared positioning. Raised above the floor line (rather
+   than flush with it) so it clears the room art's own rounded bottom corner.
+   Sits above the room backgrounds but below the sprites, so a character can
+   walk in front. */
+.room-door{
+  position:absolute;
+  z-index:5;
 }
 .scene-sprite{
   position:absolute;
@@ -428,7 +452,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 .scene-sprite.facing-left{transform:scaleX(-1);} /* art faces right natively; mirror when walking left */
 #scene-sprite-sam{
   width:36px;height:62px;
-  background:url('./assets/sam_walk.png') no-repeat;
+  background:url('./assets/characters/sam_walk.png') no-repeat;
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame */
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
   top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height, matching Ester */
@@ -436,7 +460,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-sprite-jerry{
   width:36px;height:62px;
-  background:url('./assets/jerry_walk.png') no-repeat;
+  background:url('./assets/characters/jerry_walk.png') no-repeat;
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame */
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
   top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height, matching Sam/Ester */
@@ -444,7 +468,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-sprite-cameron{
   width:36px;height:62px;
-  background:url('./assets/cameron.png') no-repeat;
+  background:url('./assets/characters/cameron.png') no-repeat;
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown, since Cameron never walks on screen */
   image-rendering:auto;
   top:117px; /* keeps feet on the same floor line as Sam/Jerry/Ester */
@@ -452,7 +476,7 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-sprite-ester{
   width:36px;height:62px;
-  background:url('./assets/player.png') no-repeat;
+  background:url('./assets/characters/player.png') no-repeat;
   background-size:144px 62px;
   image-rendering:auto; /* source is high-res art, not pixel art — smooth-downscale instead of nearest-neighbor */
   top:117px; /* overrides .scene-sprite's top:148px — keeps feet on the same floor line (148+31) at the doubled height */
@@ -495,49 +519,49 @@ button:focus-visible{outline:2px solid var(--yellow);}
   background-repeat:no-repeat;
 }
 #dialogue-portrait.char-sam{
-  background-image:url('./assets/sam_walk.png');
+  background-image:url('./assets/characters/sam_walk.png');
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-jerry{
-  background-image:url('./assets/jerry_walk.png');
+  background-image:url('./assets/characters/jerry_walk.png');
   background-size:144px 62px; /* 4-frame walk sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-ester{
-  background-image:url('./assets/player.png');
+  background-image:url('./assets/characters/player.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-astro{
-  background-image:url('./assets/astro.png');
+  background-image:url('./assets/characters/astro.png');
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-nina{
-  background-image:url('./assets/nina.png');
+  background-image:url('./assets/characters/nina.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-cameron{
-  background-image:url('./assets/cameron.png');
+  background-image:url('./assets/characters/cameron.png');
   background-size:144px 62px; /* 4-frame sheet, 36px per frame — frame 0 (neutral pose) shown */
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-judith{
-  background-image:url('./assets/judith.png');
+  background-image:url('./assets/characters/judith.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;
 }
 #dialogue-portrait.char-noor{
-  background-image:url('./assets/noor.png');
+  background-image:url('./assets/characters/noor.png');
   background-size:144px 62px;
   width:36px;height:62px;
   image-rendering:auto;

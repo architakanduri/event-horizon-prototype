@@ -336,7 +336,7 @@ const SCENE_SCRIPT = [
   // the higher-x side) — matching targetX to Cameron's actual x:200 spot means Ester stops PROXIMITY_DIST (45px) short
   // of her, the same gap Sam gets by default in scene 1, rather than the old targetX:160 which put that stopping edge
   // at just 205 — 5px from Cameron, i.e. basically on top of her.
-  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:1605, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-placeholder"], find:"Cameron"},
+  {id:"sc4_walk_to_aerospace", type:"control", action:"free_roam", minX:20, maxX:2126.49 /* LAB_MAX_X — duplicated as a literal since this array is defined before that const */, targetX:200, next:"sc4_arrive_aerospace", showSprites:["ester","cameron"], positions:{cameron:200}, reveal:["aerospace-bg","door-aero-left","door-aero-right"], find:"Cameron"},
 
   // autoAdvanceMs: Ester's greeting plays on its own once she's close enough to Cameron, instead of needing an extra
   // space/click right after the walk-up.
@@ -908,26 +908,34 @@ function advanceIntro() {
 /* ---- SCENE ---- */
 let walkAnimTimer = 0;
 
-// Free-roam bounds across the station. World x 0–320 is the aerospace-
-// engineering placeholder area (revealed in Scene 4), 320–1205 is the main
-// room (every scene now opens here), and 1205+ is the nuclear lab —
-// everything lab-related below is shifted accordingly to make room for it.
+// Free-roam bounds across the station. World x 0–841.49 is the aerospace-
+// engineering room (revealed in Scene 4; its width matches its background
+// art scaled to fill the viewport height undistorted, so it scrolls like
+// the other rooms instead of being cropped to fit in one screen),
+// 841.49–1726.49 is the main room (every scene now opens here), and
+// 1726.49+ is the nuclear lab — everything lab-related below is shifted
+// accordingly to make room for it.
 const VIEWPORT_WIDTH = 320;
-const WORLD_WIDTH = 1845;
-const MAIN_ROOM_X = 320; // world x where the main room begins (aerospace boundary)
-const LAB_ROOM_X = 1205; // world x where the lab/nuclear room's background begins
-const MAIN_MIN_X = 340; // a little inset from the aerospace-side wall
-const MAIN_MAX_X = 1185; // a little inset from the lab-side wall
-const MAIN_START_X = 650; // every scene spawns Ester here, in the main room
-const LAB_MIN_X = 1217;
-const LAB_MAX_X = 1605;
-const SAM_LAB_X = 1585; // Sam waits further into the lab, out of the starting frame
+const WORLD_WIDTH = 2366.49;
+const MAIN_ROOM_X = 841.49; // world x where the main room begins (aerospace boundary)
+const LAB_ROOM_X = 1726.49; // world x where the lab/nuclear room's background begins
+const MAIN_MIN_X = 861.49; // a little inset from the aerospace-side wall
+const MAIN_MAX_X = 1706.49; // a little inset from the lab-side wall
+const MAIN_START_X = 1171.49; // every scene spawns Ester here, in the main room
+const LAB_MIN_X = 1738.49;
+const LAB_MAX_X = 2126.49;
+const SAM_LAB_X = 2106.49; // Sam waits further into the lab, out of the starting frame
 const PROXIMITY_DIST = 45; // how close Ester must get to a target to trigger the next node
-const PLAYER_MOVE_SPEED = 60; // px/sec
+// DEV_UNLOCK_ALL (?unlockall) also speeds up walking — rooms can be 800+px
+// wide now, and at normal speed that's a lot of holding-the-arrow-key just
+// to get somewhere while testing. Leg-cycle frame rate scales down to match
+// so she doesn't visually slide/skate at the higher speed.
+const DEV_MOVE_SPEED_MULTIPLIER = 6;
+const PLAYER_MOVE_SPEED = DEV_UNLOCK_ALL ? 60 * DEV_MOVE_SPEED_MULTIPLIER : 60; // px/sec
 const JERRY_ENTER_X = SAM_LAB_X + 140; // where Jerry starts, further down the room
 const JERRY_JOIN_X = SAM_LAB_X + 40; // where Jerry ends up, beside Sam and Ester
 const JERRY_WALK_MS = 1300;
-const WALK_FRAME_MS = 130; // ms per leg-cycle frame while Ester is moving
+const WALK_FRAME_MS = DEV_UNLOCK_ALL ? 130 / DEV_MOVE_SPEED_MULTIPLIER : 130; // ms per leg-cycle frame while Ester is moving
 const moveKeys = { left: false, right: false };
 
 // The station's three rooms, as world-x spans matching where each room's
@@ -948,9 +956,99 @@ function roomIndexForX(x) {
   return 0;
 }
 
+// Each room's own door, at its left end and right end (rendered in
+// index.html as #door-<room>-<side>, sized/positioned below). Doors sit a
+// little inside their room's own art border, not flush against it —
+// clampScrollForRoom stops the camera from scrolling past a room's own
+// min/max, so a door placed exactly on that pixel would spend the whole
+// final stretch of the walk pinned to the screen's own edge (the camera
+// can't scroll any further, so the door stops moving in frame while Ester
+// keeps walking toward it) instead of reading as a fixture inside the room.
+// DOOR_WALL_CLEARANCE below keeps it far enough from the true edge to stay
+// clear of that clamp. The two interior doorways (aerospace/main and lab/main) end
+// up as a matched pair, one door on each side, close together near the
+// seam between the rooms' background art. The outer two doors (aerospace's
+// far left, lab's far right) are dead ends with nothing beyond them.
+const DOOR_HEIGHT = 80; // smaller than the room itself, but big enough to actually read as a door
+const DOOR_ASPECT = 74 / 933; // door_closed.png's own width:height ratio
+const DOOR_WIDTH = DOOR_HEIGHT * DOOR_ASPECT;
+const DOOR_BOTTOM = 20; // raised above the floor line so it clears the room art's own rounded bottom corner instead of cutting into it
+const DOOR_STEP_IN = 8; // spawn this far past the new room's own door, so arriving there doesn't immediately re-trigger a walk back through it
+
+// The three room backgrounds aren't bordered consistently — aerospace_room.jpg,
+// main_room.jpg and nuclear_room.jpg each bake in their own decorative gray
+// margin before the actual wall content starts, measured (in native source-image
+// px, sampled at each image's vertical center to stay clear of the rounded-corner
+// curve near top/bottom) as: aerospace ~48px left/~25px right, main a clean
+// ~61px both sides, lab/nuclear ~0px (its art runs flush to the image edge on
+// the flat sides — only the very top/bottom corners round off). A single flat
+// world-space inset from the room seam therefore looked flush in main (which
+// already has a big built-in margin) but noticeably closer to the wall in lab
+// (which has none). ROOM_ART_BORDER_PX compensates so every door sits the same
+// DOOR_WALL_CLEARANCE past its own room's *actual* depicted wall, not just the
+// same distance from the abstract world-x seam.
+const ROOM_ART_SCALE = 0.125; // native source px -> world/css px, the same ratio for all three room backgrounds
+const ROOM_ART_BORDER_PX = [
+  { left: 48, right: 25 }, // aerospace_room.jpg
+  { left: 61, right: 61 }, // main_room.jpg
+  { left: 0, right: 0 },   // nuclear_room.jpg
+];
+const DOOR_WALL_CLEARANCE = 8; // world-space gap to leave past each room's own wall content, on top of that room's own baked-in border
+
+// Each room's own door positions — ROOMS[i].min/max nudged inward by that
+// room's own wall clearance. Reaching either one is what doorCrossing() below
+// treats as "at the door."
+const ROOM_DOORS = ROOMS.map((r, i) => ({
+  left: r.min + DOOR_WALL_CLEARANCE + ROOM_ART_BORDER_PX[i].left * ROOM_ART_SCALE,
+  right: r.max - DOOR_WALL_CLEARANCE - ROOM_ART_BORDER_PX[i].right * ROOM_ART_SCALE,
+}));
+
+// Positions and sizes the six door images in the DOM from the constants
+// above (centered on their ROOM_DOORS anchor), so their placement can't
+// drift out of sync with ROOMS/WORLD_WIDTH.
+[
+  { id: "door-aero-left", x: ROOM_DOORS[0].left },
+  { id: "door-aero-right", x: ROOM_DOORS[0].right },
+  { id: "door-main-left", x: ROOM_DOORS[1].left },
+  { id: "door-main-right", x: ROOM_DOORS[1].right },
+  { id: "door-lab-left", x: ROOM_DOORS[2].left },
+  { id: "door-lab-right", x: ROOM_DOORS[2].right },
+].forEach(({ id, x }) => {
+  const el = $("#" + id);
+  el.style.left = (x - DOOR_WIDTH / 2) + "px";
+  el.style.bottom = DOOR_BOTTOM + "px";
+  el.style.width = DOOR_WIDTH + "px";
+  el.style.height = DOOR_HEIGHT + "px";
+});
+
+// Checks whether Ester (moving in direction dx, currently in room
+// S.currentRoom) has reached her current room's own door at x. Returns
+// {room, x} to transition to if so — landing just past the new room's own
+// door — or null if she hasn't reached one yet. The freeRoamMinX/MaxX check
+// mirrors the guard the old boundary-crossing code got for free from
+// clampScrollForRoom: some story beats (e.g. before Scene 4 reveals the
+// aerospace department) deliberately keep the walkable range short of a
+// door so that room can't be entered early, even though its own door sits
+// a little inside the reachable range's edge.
+function doorCrossing(x, dx) {
+  if (dx > 0 && S.currentRoom < ROOMS.length - 1) {
+    const nextRoom = ROOM_DOORS[S.currentRoom + 1];
+    if (x >= ROOM_DOORS[S.currentRoom].right && freeRoamMaxX >= nextRoom.left) {
+      return { room: S.currentRoom + 1, x: nextRoom.left + DOOR_STEP_IN };
+    }
+  } else if (dx < 0 && S.currentRoom > 0) {
+    const prevRoom = ROOM_DOORS[S.currentRoom - 1];
+    if (x <= ROOM_DOORS[S.currentRoom].left && freeRoamMinX <= prevRoom.right) {
+      return { room: S.currentRoom - 1, x: prevRoom.right - DOOR_STEP_IN };
+    }
+  }
+  return null;
+}
+
 // Clamps the camera to stay within one room's own span so it never shows
-// two rooms' art at once. Rooms no wider than the viewport (e.g. aerospace)
-// simply don't scroll.
+// two rooms' art at once. A room no wider than the viewport simply doesn't
+// scroll (all three rooms are wider than the viewport now, but the check
+// stays generic in case a future room isn't).
 function clampScrollForRoom(roomIdx, x) {
   const room = ROOMS[roomIdx];
   const roomWidth = room.max - room.min;
@@ -1024,7 +1122,7 @@ function startScene() {
   showScreen("scene");
   $("#dialogue-row").classList.add("hidden");
   $("#choice-panel").classList.add("hidden");
-  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/player.png')";
+  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/player.png')";
   showOnlySprites(["sam", "ester"]);
 
   // Opening: Ester starts in the main room and walks east into the lab. Sam
@@ -1044,7 +1142,7 @@ function startAstroScene() {
   showScreen("scene");
   $("#dialogue-row").classList.add("hidden");
   $("#choice-panel").classList.add("hidden");
-  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/astro.png')";
+  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/astro.png')";
   showOnlySprites(["sam", "ester"]);
   startFreeRoam(MAIN_START_X, MAIN_MIN_X, LAB_MAX_X, SAM_LAB_X, "astro_inner1", true, "Sam");
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
@@ -1059,7 +1157,7 @@ function startNinaScene() {
   showScreen("scene");
   $("#dialogue-row").classList.add("hidden");
   $("#choice-panel").classList.add("hidden");
-  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/nina.png')";
+  $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/nina.png')";
   showOnlySprites(["sam", "ester"]);
   startFreeRoam(MAIN_START_X, MAIN_MIN_X, LAB_MAX_X, SAM_LAB_X, "nina_inner1", true, "Sam");
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
@@ -1151,9 +1249,9 @@ function sceneAnimLoop(ts) {
     if (moveKeys.right) dx += 1;
     if (dx !== 0) {
       const newX = Math.max(freeRoamMinX, Math.min(freeRoamMaxX, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
-      const newRoom = roomIndexForX(newX);
-      if (newRoom !== S.currentRoom) {
-        beginRoomTransition(newX, newRoom, dx < 0);
+      const crossing = doorCrossing(newX, dx);
+      if (crossing) {
+        beginRoomTransition(crossing.x, crossing.room, dx < 0);
         requestAnimationFrame(sceneAnimLoop);
         return; // room fade owns the next update; skip this frame's normal movement/proximity logic
       }
@@ -1404,10 +1502,10 @@ const SCENES = [
   { num:5, entry:"sc5_open", start() {
     showScreen("scene");
     // Scene 5 always opens in the aerospace department, but the "hidden" class
-    // on #aerospace-placeholder is only removed at runtime when sc4_walk_to_aerospace
+    // on #aerospace-bg is only removed at runtime when sc4_walk_to_aerospace
     // actually plays — it isn't restored on reload/resume. Force it revealed here
     // so it's actually visible in the aerospace room rather than an empty box.
-    $("#aerospace-placeholder").classList.remove("hidden");
+    $("#aerospace-bg").classList.remove("hidden");
     resetSceneStage({ cameraX:160 }); // nobody's on screen yet — sc5_cut_aerospace places Ester/Jerry itself
     sceneAnimTs = performance.now();
     requestAnimationFrame(sceneAnimLoop);
