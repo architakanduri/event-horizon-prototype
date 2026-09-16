@@ -123,6 +123,13 @@
              #scene-bg below. -->
           <img id="aerospace-bg" class="hidden" src="./assets/rooms/aerospace_room.jpg" alt="">
           <img id="scene-main-bg" src="./assets/rooms/main_room.jpg" alt="">
+          <!-- The lift between the main room's ground floor and its mezzanine
+               (see #scene-main-bg.floor2 in style.css) — sized/positioned by
+               script.js (LIFT_X/LIFT_WIDTH), sitting on the darker wall panel
+               already painted into main_room.jpg. Pressing E on it (see
+               tryUseLift in script.js) toggles #scene-main-bg's .floor2
+               class to switch floors. -->
+          <img id="lift-platform" class="lift-prop" src="./assets/ui/lift.png" alt="">
           <img id="scene-bg" src="./assets/rooms/nuclear_room.jpg" alt="">
           <!-- Room doors: one at each end of each of the station's three rooms,
                sized and positioned by script.js (see DOOR_HEIGHT/DOOR_WIDTH/
@@ -151,6 +158,10 @@
           <span id="walk-hint-arrow">→</span>
           <span id="walk-hint-text"></span>
         </div>
+        <!-- Lift hint: shown only while Ester is standing on the lift's own
+             footprint (see LIFT_MIN_X/MAX_X and updateLiftHint in script.js) —
+             pressing E there is otherwise undiscoverable. -->
+        <div id="lift-hint" class="hidden">Press <span id="lift-hint-key">E</span> to use the lift</div>
         <div id="dialogue-row" class="hidden">
           <div id="dialogue-portrait" class="hidden"></div>
           <div id="dialogue-col">
@@ -225,6 +236,7 @@
           <div class="instructions-row"><span class="instructions-keys">CLICK</span><span>Choose an option</span></div>
           <div class="instructions-row"><span class="instructions-keys">P / II</span><span>Pause / settings</span></div>
           <div class="instructions-row"><span class="instructions-keys">M</span><span>Open station map</span></div>
+          <div class="instructions-row"><span class="instructions-keys">E</span><span>Use the lift</span></div>
           <button class="btn btn-purple" id="btn-instructions-close">CLOSE</button>
         </div>
       </div>

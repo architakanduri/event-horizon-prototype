@@ -735,6 +735,7 @@ const S = {
   freeRoam: false,
   currentRoom: 1, // index into ROOMS — which room Ester is currently standing in
   roomTransitioning: false, // true while the fade between two rooms is playing
+  mainFloor: 0, // which floor of the main room Ester is on — 0 (ground) or 1 (the mezzanine, via the lift)
   walkFrame: 0,
   playerX: 0,
   unlockedScene: 1, // highest scene number the player is allowed to start from the scene-select hub
@@ -1021,6 +1022,45 @@ const ROOM_DOORS = ROOMS.map((r, i) => ({
   el.style.height = DOOR_HEIGHT + "px";
 });
 
+const MAIN_ROOM_INDEX = 1; // ROOMS[1] — see ROOMS above
+
+// The lift, added to the main room's own darker wall panel (right side,
+// close to the lab-side wall) — main_room.jpg actually bakes in a second
+// floor (the mezzanine — see #scene-main-bg.floor2 in style.css) above the
+// ground floor, never used until now. Panel bounds measured directly off
+// assets/rooms/main_room.jpg (native px, sampled — a distinctly darker
+// blue-gray rectangle against the otherwise-white wall): x 6311-6895,
+// y 1953-2884. LIFT_X/LIFT_WIDTH below are that panel's own center/width
+// converted to world px via ROOM_ART_SCALE, so the lift platform art lines
+// up with the panel already painted into the room. Riding it is a deliberate
+// action (press E while standing on it — see tryUseLift), not automatic.
+const LIFT_X = 1666.87; // 841.49 + 6603 (panel x-center) * ROOM_ART_SCALE
+const LIFT_WIDTH = 73; // 584 (panel width) * ROOM_ART_SCALE
+const LIFT_ASPECT = 144 / 1072; // lift.png's own width:height ratio (a shallow floor platform, not a door)
+const LIFT_HEIGHT = LIFT_WIDTH * LIFT_ASPECT;
+const LIFT_MIN_X = LIFT_X - LIFT_WIDTH / 2;
+const LIFT_MAX_X = LIFT_X + LIFT_WIDTH / 2;
+// The mezzanine's own walkable span — just the main room's normal bounds,
+// since that floor's art only exists for the main room's width (no doors,
+// no aerospace/lab beyond it).
+const FLOOR2_MIN_X = MAIN_MIN_X, FLOOR2_MAX_X = MAIN_MAX_X;
+
+const liftEl = $("#lift-platform");
+liftEl.style.left = (LIFT_X - LIFT_WIDTH / 2) + "px";
+liftEl.style.width = LIFT_WIDTH + "px";
+liftEl.style.height = LIFT_HEIGHT + "px";
+
+// Riding the lift is an explicit action (E), not something walking onto its
+// footprint triggers on its own — see the "e"/"E" keydown handler in
+// initInput. Only fires while Ester's free-roaming (the same condition that
+// gates all her other movement) and not already mid-transition.
+function tryUseLift() {
+  if (!S.freeRoam || S.roomTransitioning) return;
+  if (S.currentRoom !== MAIN_ROOM_INDEX) return;
+  if (S.playerX < LIFT_MIN_X || S.playerX > LIFT_MAX_X) return;
+  beginFloorTransition(S.mainFloor === 0 ? 1 : 0);
+}
+
 // Checks whether Ester (moving in direction dx, currently in room
 // S.currentRoom) has reached her current room's own door at x. Returns
 // {room, x} to transition to if so — landing just past the new room's own
@@ -1085,6 +1125,17 @@ function updateWalkHint() {
   $("#walk-hint-text").textContent = "Go to " + destZone + (freeRoamFind ? " to find " + freeRoamFind : "");
 }
 
+// Shows "Press E to use the lift" only while Ester is free-roaming and
+// standing on the lift's own footprint (LIFT_MIN_X/MAX_X) — otherwise
+// pressing E there either does nothing (tryUseLift) or isn't even listened
+// for (the keydown handler in initInput gates on S.freeRoam too). Independent
+// of which floor she's currently on, since the footprint works the same from
+// either side.
+function updateLiftHint() {
+  const onLift = S.freeRoam && S.currentRoom === MAIN_ROOM_INDEX && S.playerX >= LIFT_MIN_X && S.playerX <= LIFT_MAX_X;
+  $("#lift-hint").classList.toggle("hidden", !onLift);
+}
+
 function startFreeRoam(startX, minX, maxX, targetX, nextNode, facingRight, find) {
   // startX/facingRight are optional — omit them to have Ester continue
   // walking from wherever she currently stands and however she's already
@@ -1116,6 +1167,15 @@ function startFreeRoam(startX, minX, maxX, targetX, nextNode, facingRight, find)
   moveKeys.left = false;
   moveKeys.right = false;
   updateWalkHint();
+  updateLiftHint();
+}
+
+// Every scene opens on the main room's ground floor — resets the lift's
+// state/visuals in case a previous scene ended mid-ride or up top (e.g. via
+// the scene-select hub) rather than back down where it started.
+function resetMainFloor() {
+  S.mainFloor = 0;
+  $("#scene-main-bg").classList.remove("floor2");
 }
 
 function startScene() {
@@ -1124,6 +1184,7 @@ function startScene() {
   $("#choice-panel").classList.add("hidden");
   $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/player.png')";
   showOnlySprites(["sam", "ester"]);
+  resetMainFloor();
 
   // Opening: Ester starts in the main room and walks east into the lab. Sam
   // waits further in, out of frame, until she walks over to him.
@@ -1144,6 +1205,7 @@ function startAstroScene() {
   $("#choice-panel").classList.add("hidden");
   $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/astro.png')";
   showOnlySprites(["sam", "ester"]);
+  resetMainFloor();
   startFreeRoam(MAIN_START_X, MAIN_MIN_X, LAB_MAX_X, SAM_LAB_X, "astro_inner1", true, "Sam");
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
 
@@ -1159,6 +1221,7 @@ function startNinaScene() {
   $("#choice-panel").classList.add("hidden");
   $("#scene-sprite-ester").style.backgroundImage = "url('./assets/characters/nina.png')";
   showOnlySprites(["sam", "ester"]);
+  resetMainFloor();
   startFreeRoam(MAIN_START_X, MAIN_MIN_X, LAB_MAX_X, SAM_LAB_X, "nina_inner1", true, "Sam");
   $("#scene-sprite-sam").style.left = SAM_LAB_X + "px";
 
@@ -1248,8 +1311,15 @@ function sceneAnimLoop(ts) {
     if (moveKeys.left) dx -= 1;
     if (moveKeys.right) dx += 1;
     if (dx !== 0) {
-      const newX = Math.max(freeRoamMinX, Math.min(freeRoamMaxX, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
-      const crossing = doorCrossing(newX, dx);
+      // The mezzanine only exists for the main room's own span — no doors,
+      // no aerospace/lab beyond it — so movement clamps to FLOOR2_MIN_X/MAX_X
+      // there instead of whatever broader freeRoamMinX/MaxX the current
+      // free-roam segment is using (e.g. all the way into the lab).
+      const onFloor2 = S.currentRoom === MAIN_ROOM_INDEX && S.mainFloor === 1;
+      const minX = onFloor2 ? FLOOR2_MIN_X : freeRoamMinX;
+      const maxX = onFloor2 ? FLOOR2_MAX_X : freeRoamMaxX;
+      const newX = Math.max(minX, Math.min(maxX, S.playerX + dx * PLAYER_MOVE_SPEED * dt / 1000));
+      const crossing = onFloor2 ? null : doorCrossing(newX, dx); // no doors on the mezzanine
       if (crossing) {
         beginRoomTransition(crossing.x, crossing.room, dx < 0);
         requestAnimationFrame(sceneAnimLoop);
@@ -1268,12 +1338,13 @@ function sceneAnimLoop(ts) {
       }
       $("#scene-sprite-ester").style.backgroundPosition = `-${S.walkFrame * 36}px 0`;
       updateWalkHint();
+      updateLiftHint();
     } else if (S.walkFrame !== 0) {
       S.walkFrame = 0;
       walkAnimTimer = 0;
       $("#scene-sprite-ester").style.backgroundPosition = "0 0";
     }
-    if (Math.abs(S.playerX - freeRoamTargetX) <= PROXIMITY_DIST) {
+    if (S.mainFloor === 0 && Math.abs(S.playerX - freeRoamTargetX) <= PROXIMITY_DIST) {
       S.freeRoam = false;
       moveKeys.left = false;
       moveKeys.right = false;
@@ -1281,6 +1352,7 @@ function sceneAnimLoop(ts) {
       walkAnimTimer = 0;
       $("#scene-sprite-ester").style.backgroundPosition = "0 0";
       updateWalkHint();
+      updateLiftHint();
       runNode(freeRoamNextNode);
     }
   }
@@ -1308,6 +1380,29 @@ function beginRoomTransition(newX, newRoom, facingLeft) {
     S.sceneScrollX = clampScrollForRoom(S.currentRoom, S.playerX);
     $("#scene-world").style.left = -S.sceneScrollX + "px";
     updateWalkHint();
+    updateLiftHint();
+    fade.classList.remove("visible");
+    setTimeout(() => { S.roomTransitioning = false; }, ROOM_FADE_MS);
+  }, ROOM_FADE_MS);
+}
+
+// Riding the lift between the main room's ground floor and its mezzanine —
+// same fade-to-black beat as beginRoomTransition, but only the vertical crop
+// (#scene-main-bg's .floor2 class) changes; both floors' own floor lines land
+// at the same screen-bottom position, so Ester's sprite and the lift prop's
+// own position need no floor-specific adjustment. Her x and the horizontal
+// camera scroll are untouched too, since it's a vertical move, not a room
+// change. Only reached via tryUseLift (pressing E on the lift's footprint).
+function beginFloorTransition(newFloor) {
+  S.roomTransitioning = true;
+  S.walkFrame = 0;
+  walkAnimTimer = 0;
+  $("#scene-sprite-ester").style.backgroundPosition = "0 0";
+  const fade = $("#room-fade");
+  fade.classList.add("visible");
+  setTimeout(() => {
+    S.mainFloor = newFloor;
+    $("#scene-main-bg").classList.toggle("floor2", newFloor === 1);
     fade.classList.remove("visible");
     setTimeout(() => { S.roomTransitioning = false; }, ROOM_FADE_MS);
   }, ROOM_FADE_MS);
@@ -1441,6 +1536,7 @@ function resetSceneStage({ sam, jerry, ester, cameraX }) {
   S.roomTransitioning = false;
   $("#room-fade").classList.remove("visible");
   updateWalkHint();
+  updateLiftHint();
   moveKeys.left = false;
   moveKeys.right = false;
   S.walkFrame = 0;
@@ -1666,6 +1762,7 @@ function initInput() {
     if (S.screen === "scene" && S.freeRoam) {
       if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { moveKeys.left = true; e.preventDefault(); }
       if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { moveKeys.right = true; e.preventDefault(); }
+      if ((e.key === "e" || e.key === "E") && !e.repeat) tryUseLift();
     }
     if (S.screen === "scene" && !S.freeRoam && (e.key === " " || e.key === "Enter")) {
       e.preventDefault();

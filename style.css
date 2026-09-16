@@ -384,12 +384,25 @@ button:focus-visible{outline:2px solid var(--yellow);}
 }
 #scene-main-bg{
   /* The art is a two-level room — the "aerospace room" door sits up a
-     staircase on a mezzanine. Ground level (where the sprites walk) is the
-     lower band with the radiation crate/desk/stairs, so the crop is shifted
-     up to that floor line rather than the mezzanine door's threshold. */
+     staircase on a mezzanine (there's a third band above that, windows/
+     shelving, unused so far — nothing in the game reaches it). Ground level
+     (where the sprites normally walk) is the lower band with the radiation
+     crate/desk/stairs, so the default crop is shifted up to that floor line
+     rather than the mezzanine door's threshold. */
   position:absolute;top:-185px;left:841.49px;
   width:885px;height:370px; /* scale kept consistent with the mezzanine door's height against the character sprites */
   image-rendering:auto;
+}
+#scene-main-bg.floor2{
+  /* The lift's own destination — the mezzanine, one level up. Its own floor
+     line (the divider between it and the ground floor below, native
+     y≈1954.5) lands at css y≈244.3 here — 180px above that (screen height)
+     puts the window's own top at css y≈64.3, so the crop only needs a less-
+     negative top than the ground floor's, not a full reset to 0. That
+     window's bottom coincides with the usual screen-bottom floor line, so
+     unlike the ground-floor crop, nothing here needs a matching sprite/lift
+     position override. */
+  top:-64.3px;
 }
 #scene-bg{
   position:absolute;top:-60px;left:1726.49px; /* right after the main room, so world x 1726.49+ (nuclear/lab) has no main-room art behind it */
@@ -441,6 +454,18 @@ button:focus-visible{outline:2px solid var(--yellow);}
 .room-door{
   position:absolute;
   z-index:5;
+}
+/* The lift platform in the main room — left/width/height set from script.js
+   (LIFT_X/LIFT_WIDTH/LIFT_HEIGHT). Both the ground floor and the mezzanine's
+   own crop (#scene-main-bg.floor2) land their floor line at the same
+   screen-bottom position, so this needs no floor-specific override — it
+   sits flush with the floor either way. Below the sprites (z-index 10) so
+   Ester's feet always read as standing on top of it. */
+.lift-prop{
+  position:absolute;
+  bottom:0px;
+  z-index:4;
+  image-rendering:auto;
 }
 .scene-sprite{
   position:absolute;
@@ -498,6 +523,26 @@ button:focus-visible{outline:2px solid var(--yellow);}
   pointer-events:none;
 }
 #walk-hint-arrow{
+  color:var(--yellow);
+  font-weight:bold;
+}
+/* Lift hint: shown only while Ester is standing on the lift's own footprint
+   (updateLiftHint in script.js) — same look as #walk-hint, bottom-center
+   instead of the top-left corner so the two never overlap. */
+#lift-hint{
+  position:absolute;
+  bottom:4px;left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  background:rgba(6,10,26,.7);
+  border:1px solid var(--yellow);
+  padding:2px 5px;
+  font-size:5px;line-height:1;
+  color:var(--lyellow);
+  pointer-events:none;
+  white-space:nowrap;
+}
+#lift-hint-key{
   color:var(--yellow);
   font-weight:bold;
 }
